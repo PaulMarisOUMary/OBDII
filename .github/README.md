@@ -53,14 +53,15 @@ pip install -i https://test.pypi.org/simple/ py-obdii
 > This library is still in the design phase and may change in the future.
 
 ```python
-from obdii import commands
-from obdii.connection import Connection
+from obdii import at_commands, commands, Connection
 
 conn = Connection("COM5")
 
-conn.connect()
+version = conn.query(at_commands.VERSION_ID)
+print(f"Version: {version}")
+
 response = conn.query(commands.VEHICLE_SPEED)
-print(f"Vehicle Speed: {response} km/h")
+print(f"Vehicle Speed: {int(response[-2:], 16)} km/h")
 
 conn.close()
 ```
