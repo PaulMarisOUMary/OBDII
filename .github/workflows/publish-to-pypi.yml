@@ -1,6 +1,9 @@
 name: Publish OBDII Package to PyPI
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
