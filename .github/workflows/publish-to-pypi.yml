@@ -38,7 +38,7 @@ jobs:
 
     environment:
       name: pypi
-      url: https://pypi.org/p/obdii  # Replace <package-name> with your PyPI project name
+      url: https://pypi.org/p/py-obdii
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
 
