@@ -34,7 +34,7 @@ jobs:
           path: dist/
 
   publish-to-pypi:
-    name: Publish OBDII Package to PyPI
+    name: Publish OBDII Package to PyPI 🚀
     if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
     needs: [ build ]
     runs-on: ubuntu-latest
@@ -55,9 +55,7 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
 
   github-release:
-    name: >-
-      Sign the Python 🐍 distribution 📦 with Sigstore
-      and upload them to GitHub Release
+    name: Sign Python distribution and Upload to Github Release 🔐
     needs:
     - publish-to-pypi
     runs-on: ubuntu-latest
