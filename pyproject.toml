@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "obdii"
+name = "py-obdii"
 description = "A Python library for interacting with OBD-II."
 readme = { file = ".github/README.md", content-type = "text/markdown" }
 authors = [{ name = "PaulMarisOUMary" }]
@@ -13,6 +13,9 @@ dynamic = ["version", "dependencies"]
 
 [project.urls]
 Repository = "https://github.com/PaulMarisOUMary/OBDII"
+
+[tool.setuptools]
+packages = ["obdii"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }
