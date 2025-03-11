@@ -44,7 +44,7 @@ jobs:
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/obdii
+      url: https://test.pypi.org/p/py-obdii
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
