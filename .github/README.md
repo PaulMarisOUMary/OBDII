@@ -8,7 +8,7 @@
 
 <!-- https://github.com/simple-icons/simple-icons/blob/3be056d3cf17acbd8a06325889ce4e70bdea3c4c/slugs.md -->
 
-A modern, easy to use, Python ≥3.8 library for interacting with OBDII.
+A modern, easy to use, Python ≥3.8 library for interacting with OBDII devices.
 
 ## Installing
 
@@ -44,7 +44,7 @@ cd OBDII
 pip install .[dev,test]
 
 # From test.pypi.org
-pip install -i https://test.pypi.org/simple/ py-obdii
+pip install -i https://test.pypi.org/simple/ py-obdii[dev,test]
 ```
 
 ## Usage Example
@@ -80,7 +80,7 @@ To streamline the development process, you can use the [ELM327-Emulator](https:/
 
 ### Setting Up the ELM327-Emulator
 
-1. **Install library with "dev" options**:
+1. **Install the library with "dev" options**:
     ```bash
     pip install py-obdii[dev]
     ```
@@ -89,8 +89,8 @@ To streamline the development process, you can use the [ELM327-Emulator](https:/
     ```bash
     python -m elm -p "REPLACE_WITH_PORT" -s car --baudrate 38400
     ```
-    > [!NOTE]
-    > Replace `REPLACE_WITH_PORT` with the serial port of your choice
+> [!NOTE]
+> Replace `REPLACE_WITH_PORT` with the serial port of your choice
 
 ### Use Virtual Ports on Windows
 
@@ -100,7 +100,7 @@ For Windows users, you can use [com0com](https://com0com.sourceforge.net) to cre
 
 2. In the **ELM327-Emulator**, set the port to `COM6`.
 
-3. In your **Python code**, bind the communication to `COM5`.
+3. In your **Python code**, set the connection port to `COM5`.
 
 ## Support & Contact
 
