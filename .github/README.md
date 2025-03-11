@@ -74,6 +74,34 @@ This library aims to deliver robust error handling, comprehensive logging, compl
 
 Please, feel free to contribute and share your feedback !
 
+## Testing Without a Physical Device
+
+To streamline the development process, you can use the [ELM327-Emulator](https://pypi.org/project/ELM327-emulator) library. This allows you to simulate an OBDII connection without needing a physical device. 
+
+### Setting Up the ELM327-Emulator
+
+1. **Install library with "dev" options**:
+    ```bash
+    pip install py-obdii[dev]
+    ```
+
+2. **Start the ELM327-Emulator**:
+    ```bash
+    python -m elm -p "REPLACE_WITH_PORT" -s car --baudrate 38400
+    ```
+    > [!NOTE]
+    > Replace `REPLACE_WITH_PORT` with the serial port of your choice
+
+### Use Virtual Ports on Windows
+
+For Windows users, you can use [com0com](https://com0com.sourceforge.net) to create virtual serial ports and connect the ELM327-Emulator to your Python code.
+
+1. **Install com0com** and create two virtual serial ports, (e.g. `COM5` and `COM6`).
+
+2. In the **ELM327-Emulator**, set the port to `COM6`.
+
+3. In your **Python code**, bind the communication to `COM5`.
+
 ## Support & Contact
 
 For questions or support, open an issue or start a discussion on GitHub.
