@@ -81,6 +81,17 @@ class Command():
 
     def __repr__(self) -> str:
         return f"<Command {self.mode} {self.pid if isinstance(self.pid, str) else f'{self.pid:02X}'} {self.name or 'Unnamed'} [{', '.join(self.command_args.keys())}]>"
+    
+    def __eq__(self, value: object) -> bool:
+        if not isinstance(value, Command):
+            return False
+
+        return (
+            self.mode == value.mode and
+            self.name == value.name and
+            self.description == value.description and
+            self.command_args == value.command_args
+        )
 
 
 class BaseMode():
