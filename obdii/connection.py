@@ -79,9 +79,9 @@ class Connection():
         self.serial_conn.write(query)
         self.serial_conn.flush()
 
-        return self.wait_for_prompt()
+        return self.wait_for_prompt(command)
 
-    def wait_for_prompt(self) -> str:
+    def wait_for_prompt(self, command: Optional[Command] = None) -> str:
         """Reads data dynamically until the OBDII prompt (>) or timeout."""
         if not self.serial_conn or not self.serial_conn.is_open:
             return ""
@@ -91,9 +91,9 @@ class Connection():
             chunk = self.serial_conn.read(1).decode(errors="ignore")
             if not chunk: # Timeout
                 break
-            if chunk in ['\r']:
+            if chunk in ['\r', '\n']:
                 continue
-            if chunk == ">":
+            if chunk == '>':
                 break
             response.append(chunk)
 
