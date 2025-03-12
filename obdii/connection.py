@@ -30,6 +30,13 @@ class Connection():
         self.timeout = 5.0
         self.write_timeout = 3.0
 
+        self.init_sequence = [
+            ModeAT.RESET,
+            ModeAT.ECHO_OFF,
+            ModeAT.LINEFEED_OFF,
+            ModeAT.HEADERS_ON,
+            ModeAT.SPACES_ON,
+        ]
         for key in list(serial_kwargs.keys()):
             if not callable(getattr(self, key, None)):
                 setattr(self, key, serial_kwargs.pop(key))
@@ -59,11 +66,8 @@ class Connection():
         if not self.serial_conn:
             raise ConnectionError("Attempted to initialize without an active connection.")
 
-        self.query(ModeAT.RESET)
-
-        echo_response = self.query(ModeAT.ECHO_OFF)
-        if "OK" not in echo_response:
-            raise ConnectionError(f"Failed to disable echo, received: {echo_response}")
+        for command in self.init_sequence:
+            self.query(command)
 
     def query(self, command: Command) -> str:
         """Sends a command and waits for a response."""
