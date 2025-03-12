@@ -108,3 +108,10 @@ class BaseMode():
 
     def __len__(self):
         return len([1 for attr_name in dir(self) if isinstance(getattr(self, attr_name), Command)])
+    
+    def has_command(self, command: Union[Command, str]) -> bool:
+        if isinstance(command, Command):
+            command = command.name
+
+        command = command.upper()
+        return hasattr(self, command) and isinstance(getattr(self, command), Command)
