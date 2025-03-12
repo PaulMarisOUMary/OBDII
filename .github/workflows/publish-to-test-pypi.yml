@@ -38,7 +38,7 @@ jobs:
           path: dist/
 
   publish-to-testpypi:
-    name: Publish OBDII Package to TestPyPI
+    name: Publish OBDII Package to TestPyPI 🚀
     needs: [ build ]
     runs-on: ubuntu-latest
 
