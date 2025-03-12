@@ -28,7 +28,10 @@ class Mode(Enum):
     """Request permanent DTCs (Diagnostic Trouble Codes)"""
 
     def __repr__(self) -> str:
-        return f"<Mode {self.name} {self.value if isinstance(self.value, str) else self.value:02X}>"
+        return f"<Mode {self.name} ({self.value if isinstance(self.value, str) else f'{self.value:02X}'})>"
+    
+    def __str__(self) -> str:
+        return self.__repr__()
 
 
 class Command():
