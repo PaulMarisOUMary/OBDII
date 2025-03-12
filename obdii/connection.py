@@ -10,6 +10,7 @@ class Connection():
                     port: str,
                     baudrate: int = 38400,
                     auto_connect: bool = True,
+                    smart_query: bool = True,
                     **serial_kwargs
                 ) -> None:
         """Initialize connection settings and auto-connect by default.
@@ -26,6 +27,8 @@ class Connection():
         self.port = port
         self.baudrate = baudrate
         self.serial_conn: Optional[Serial] = None
+        self.smart_query = smart_query
+        self.last_command: Optional[Command] = None
 
         self.timeout = 5.0
         self.write_timeout = 3.0
@@ -73,11 +76,17 @@ class Connection():
         """Sends a command and waits for a response."""
         if not self.serial_conn or not self.serial_conn.is_open:
             raise ConnectionRefusedError("Connection is not open")
+        
+        if self.smart_query and self.last_command and command == self.last_command:
+            query = self.build_command(ModeAT.REPEAT)
+        else:
+            query = self.build_command(command)
 
-        query = self.build_command(command)
         self.clear_buffer()
         self.serial_conn.write(query)
         self.serial_conn.flush()
+
+        self.last_command = command
 
         return self.wait_for_prompt(command)
 

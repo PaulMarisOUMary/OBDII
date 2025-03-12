@@ -11,7 +11,7 @@ class ModeAT(BaseMode):
     """AT Commands"""
 
     # General Commands
-    REPEAT = C('\r', 0x00, "REPEAT", "Repeat the last command")
+    REPEAT = Command(Mode.NONE, '', 0x00, "REPEAT", "Repeat the last command")
     BAUDRATE_DIVISOR = C("BRD {hh}", 0x00, "BAUDRATE_DIVISOR", "Try Baude Rate Divisor hh", command_args={"hh": int})
     SET_BAUDRATE_TIMEOUT = C("BRT {hh}", 0x00, "SET_BAUDRATE_TIMEOUT", "Set Baud Rate Timeout", command_args={"hh": int})
     TO_DEFAULT = C('D', 0x00, "TO_DEFAULT", "Set all to defaults")
