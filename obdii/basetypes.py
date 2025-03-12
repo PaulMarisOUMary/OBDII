@@ -6,29 +6,29 @@ class Mode(Enum):
     AT = "AT"
     """Special mode to send AT commands"""
 
-    REQUEST = 0x1
+    REQUEST = 0x01
     """Request current data"""
-    FREEZE_FRAME = 0x2
+    FREEZE_FRAME = 0x02
     """Request freeze frame data"""
-    STATUS_DTC = 0x3
+    STATUS_DTC = 0x03
     """Request stored DTCs (Diagnostic Trouble Codes)"""
-    CLEAR_DTC = 0x4
+    CLEAR_DTC = 0x04
     """Clear/reset DTCs (Diagnostic Trouble Codes)"""
-    O2_SENSOR = 0x5
+    O2_SENSOR = 0x05
     """Request oxygen sensor monitoring test results"""
-    PENDING_DTC = 0x6
+    PENDING_DTC = 0x06
     """Request DTCs (Diagnostic Trouble Codes) pending"""
-    CONTROL_MODULE = 0x7
+    CONTROL_MODULE = 0x07
     """Request control module information"""
-    O2_SENSOR_TEST = 0x8
+    O2_SENSOR_TEST = 0x08
     """Request oxygen sensor test results"""
-    VEHICLE_INFO = 0x9
+    VEHICLE_INFO = 0x09
     """Request vehicle information"""
-    PERMANENT_DTC = 0xA
+    PERMANENT_DTC = 0x0A
     """Request permanent DTCs (Diagnostic Trouble Codes)"""
 
     def __repr__(self) -> str:
-        return f"<Mode {self.value:02X} {self.name.replace('_', ' ').title()}>"
+        return f"<Mode {self.name} {self.value if isinstance(self.value, str) else self.value:02X}>"
 
 
 class Command():
@@ -56,15 +56,16 @@ class Command():
 
 
 class BaseMode():
-    def __getitem__(self, key: int) -> object:
-        for attr_name in dir(self):
-            attr = getattr(self, attr_name)
-            if hasattr(attr, "pid") and attr.pid == key:
-                return attr
+    def __getitem__(self, key) -> Command:
+        if isinstance(key, int):
+            for attr_name in dir(self):
+                attr = getattr(self, attr_name)
+                if hasattr(attr, "pid") and attr.pid == key:
+                    return attr
         raise KeyError(f"No command found with PID {key}")
     
     def __repr__(self) -> str:
-        return f"<Mode Commands: {len(self)}>" # type: ignore
+        return f"<Mode Commands: {len(self)}>"
 
     def __len__(self):
         return len([1 for attr_name in dir(self) if isinstance(getattr(self, attr_name), Command)])

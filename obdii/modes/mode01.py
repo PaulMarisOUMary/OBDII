@@ -8,6 +8,8 @@ C = partial(Command, M)
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_01_-_Show_current_data
 
 class Mode01(BaseMode):
+    """Request Commands"""
+
     PIDS_A = C(0x00, 0x04, "PIDS_SUPPORTED", "PIDs supported [$01 - $20]", None, None, None)
     STATUS = C(0x01, 0x04, "STATUS", "Monitor status since DTCs cleared. (Includes malfunction indicator lamp (MIL), status and number of DTCs, components tests, DTC readiness checks)", None, None, None)
     FREEZE_DTC = C(0x02, 0x02, "FREEZE_DTC", "DTC that caused freeze frame to be stored.", None, None, None)
