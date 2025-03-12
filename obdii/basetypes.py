@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, TypedDict, Union
+from typing import Any, Dict, Optional, TypedDict, Union
 
 
 class Mode(Enum):
@@ -43,7 +43,8 @@ class Command():
             description: Optional[str] = None,
             min_value: Optional[Union[int, float, str]] = None,
             max_value: Optional[Union[int, float, str]] = None,
-            units: Optional[str] = None
+            units: Optional[str] = None,
+            command_args: Optional[Dict[str, Any]] = None,
         ) -> None:
         self.mode = mode
         self.pid = pid
@@ -53,9 +54,33 @@ class Command():
         self.min_value = min_value
         self.max_value = max_value
         self.units = units
+        self.command_args = command_args or {}
+
+    def __call__(self, *args: Any, checks: bool = True) -> "Command":
+        if not self.command_args or not args or len(self.command_args) != len(args):
+            raise TypeError(f"{self.__repr__()} expects {len(self.command_args)} argument(s), but got {len(args)}")
+
+        try:
+            combined_args = {}
+            for (arg, arg_type), value in zip(self.command_args.items(), args):
+                if checks:
+                    if not isinstance(value, arg_type):
+                        raise TypeError(f"Argument '{arg}' should be of type {arg_type}")
+
+                    if isinstance(value, int):
+                        value = f"{value:0{len(arg)}d}"
+                    elif isinstance(value, str) and len(value) != len(arg):
+                        raise ValueError(f"Argument '{arg}' should have length {len(arg)}, but got {len(value)}")
+
+                combined_args[arg] = value
+
+            self.pid = str(self.pid).format(**combined_args)
+        except Exception as e:
+            raise e
+        return self
 
     def __repr__(self) -> str:
-        return f"<Command {self.mode} {self.pid:02X} {self.name or 'Unnamed'}>"
+        return f"<Command {self.mode} {self.pid if isinstance(self.pid, str) else f'{self.pid:02X}'} {self.name or 'Unnamed'} [{', '.join(self.command_args.keys())}]>"
 
 
 class BaseMode():
