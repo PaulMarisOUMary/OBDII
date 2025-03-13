@@ -1,7 +1,7 @@
 from typing import List, Optional
 from serial import Serial, SerialException, SerialTimeoutException # type: ignore
 
-from .basetypes import Command, Mode
+from .basetypes import BaseResponse, Command, Mode
 from .modes.modeat import ModeAT
 
 
@@ -73,44 +73,58 @@ class Connection():
         for command in self.init_sequence:
             self.query(command)
 
-    def query(self, command: Command) -> str:
-        """Sends a command and waits for a response."""
+    def _send_query(self, query: bytes) -> None:
+        """Sends a query to the ELM327."""
         if not self.serial_conn or not self.serial_conn.is_open:
             raise ConnectionRefusedError("Connection is not open")
-        
-        if self.smart_query and self.last_command and command == self.last_command:
-            query = self.build_command(ModeAT.REPEAT)
-        else:
-            query = self.build_command(command)
 
         self.clear_buffer()
         self.serial_conn.write(query)
         self.serial_conn.flush()
 
+    def query(self, command: Command) -> str:
+        """Sends a command and waits for a response."""        
+        if self.smart_query and self.last_command and command == self.last_command:
+            query = self.build_command(ModeAT.REPEAT)
+        else:
+            query = self.build_command(command)
+
+        self._send_query(query)
         self.last_command = command
 
-        return self.wait_for_prompt(command)
+        return self.wait_for_response(command)
 
-    def wait_for_prompt(self, command: Optional[Command] = None) -> str:
+    def wait_for_response(self, command: Command) -> str:
         """Reads data dynamically until the OBDII prompt (>) or timeout."""
         if not self.serial_conn or not self.serial_conn.is_open:
             return ""
 
-        response = []
+        raw_response: List[bytes] = []
+
+        message: List[List[bytes]] = []
+        current_line: List[bytes] = []
         while True:
-            chunk = self.serial_conn.read(1).decode(errors="ignore")
+            chunk = self.serial_conn.read(1)
             if not chunk: # Timeout
                 break
-            if chunk in ['\r', '\n']:
+            raw_response.append(chunk)
+            char = chunk.decode(errors="ignore")
+
+            if char in ['\r', '\n']:
+                if current_line:
+                    message.append(current_line)
+                    current_line = []
                 continue
-            if chunk == '>':
+            current_line.append(chunk)
+            if char == '>': # Ending prompt character
                 break
-            response.append(chunk)
+        if current_line:
+            message.append(current_line)
+
+        base_response = BaseResponse(command, raw_response, message)
 
 
-        full_response = self.parse_response(response, command)
 
-        if full_response:
             return full_response
         return ""
     

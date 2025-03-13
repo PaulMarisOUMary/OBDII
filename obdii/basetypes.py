@@ -1,5 +1,7 @@
+import time
+
 from enum import Enum
-from typing import Any, Dict, Optional, TypedDict, Union
+from typing import Any, Dict, List, NamedTuple, Optional, Union
 
 
 class Mode(Enum):
@@ -118,3 +120,10 @@ class BaseMode():
 
         command = command.upper()
         return hasattr(self, command) and isinstance(getattr(self, command), Command)
+
+
+class BaseResponse(NamedTuple):
+    command: Command
+    raw_response: List[bytes]
+    message: List[List[bytes]]
+    timestamp: float = time.time()
