@@ -127,7 +127,7 @@ class ModeAT(BaseMode):
     VARIABLE_DLC_OFF = C("V0", 0x00, "VARIABLE_DLC_OFF", "Use of Variable DLC off")
     VARIABLE_DLC_ON = C("V1", 0x00, "VARIABLE_DLC_OFF", "Use of Variable DLC on")
     
-    """J1939 CAN Specific Commands"""
+    # J1939 CAN Specific Commands
     MONITOR_DM1 = C("DM1", 0x00, "MONITOR_DM1", "Monitor for DM1 messages")
     FORMAT_ELM = C("JE", 0x00, "FORMAT_ELM", "Use J1939 Elm data format")
     FORMAT_SAE = C("JS", 0x00, "FORMAT_SAE", "Use J1939 SAE data format")
