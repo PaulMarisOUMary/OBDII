@@ -1,9 +1,8 @@
 from typing import Callable, List, Optional, Union
 from serial import Serial, SerialException, SerialTimeoutException # type: ignore
 
-from .basetypes import BaseResponse, Command, Mode
+from .basetypes import BaseResponse, Command, Mode, Protocol
 from .modes.modeat import ModeAT
-from .protocol import Protocol
 
 
 class Connection():
@@ -97,9 +96,9 @@ class Connection():
     def query(self, command: Command) -> str:
         """Sends a command and waits for a response."""        
         if self.smart_query and self.last_command and command == self.last_command:
-            query = self.build_command(ModeAT.REPEAT)
+            query = ModeAT.REPEAT.build()
         else:
-            query = self.build_command(command)
+            query = command.build()
 
         self._send_query(query)
         self.last_command = command
@@ -139,36 +138,10 @@ class Connection():
 
         return ""
     
-    def parse_response(self, raw_response: List[str], command: Optional[Command]) -> str:
-        line = ''.join(raw_response).strip()
-        if command and command.mode != Mode.AT:
-            try:
-                data = line.split(' ')
-
-                bytes_offset = 2 # Mode and PID offset
-                length = int(data[1], 16) - bytes_offset
-
-                response = data[-length:]
-                
-                return ''.join(response)
-            except IndexError:
-                return line
-        return line
-    
     def clear_buffer(self) -> None:
         """Clears any buffered input from the adapter."""
         if self.serial_conn:
             self.serial_conn.reset_input_buffer()
-
-    def build_command(self, command: Command) -> bytes:
-        """ELM327 is not case-sensitive, ignores spaces and all control characters."""
-        mode = command.mode.value
-        pid = command.pid
-        if isinstance(command.mode.value, int):
-            mode = f"{command.mode.value:02X}"
-        if isinstance(pid, int):
-            pid = f"{command.pid:02X}"
-        return f"{mode}{pid}\r".encode()
 
     def close(self) -> None:
         """Close the serial connection if not already done."""
