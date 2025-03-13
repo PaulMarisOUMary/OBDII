@@ -1,6 +1,5 @@
-import time
-
 from enum import Enum
+from time import time
 from typing import Any, Dict, List, NamedTuple, Optional, Union
 
 
@@ -34,6 +33,9 @@ class Mode(Enum):
 
 
 class Protocol(Enum):
+    UNKNOWN = -1
+    """Unknown protocol"""
+
     AUTO = 0x00
     """Automatically determine the protocol"""
     SAE_J1850_PWM = 0x01
@@ -159,4 +161,7 @@ class BaseResponse(NamedTuple):
     command: Command
     raw_response: List[bytes]
     message: List[List[bytes]]
-    timestamp: float = time.time()
+    timestamp: float = time()
+
+class Response(BaseResponse):
+    value: Optional[Union[int, float, str]] = None

@@ -1,8 +1,9 @@
 from typing import Callable, List, Optional, Union
 from serial import Serial, SerialException, SerialTimeoutException # type: ignore
 
-from .basetypes import BaseResponse, Command, Mode, Protocol
+from .basetypes import BaseResponse, Command, Protocol, Response
 from .modes.modeat import ModeAT
+from .protocol import BaseProtocol
 
 
 class Connection():
@@ -34,6 +35,7 @@ class Connection():
         self.smart_query = smart_query
 
         self.serial_conn: Optional[Serial] = None
+        self.protocol_handler = BaseProtocol.get_handler(Protocol.UNKNOWN)
         self.last_command: Optional[Command] = None
 
         self.timeout = 5.0
@@ -67,10 +69,7 @@ class Connection():
             raise ConnectionError(f"Failed to connect: {e}")
         
     def _initialize_connection(self) -> None:
-        """Initializes the device by resetting and disabling echo."""
-        if not self.serial_conn:
-            raise ConnectionError("Attempted to initialize without an active connection.")
-
+        """Initializes the connection using the init sequence."""
         for command in self.init_sequence:
             if isinstance(command, Command):
                 self.query(command)
@@ -82,18 +81,33 @@ class Connection():
     def _set_protocol(self, protocol: Optional[Protocol] = None) -> None:
         """Sets the protocol for communication."""
         protocol = protocol or self.protocol
+
         self.query(ModeAT.SET_PROTOCOL(protocol.value))
+        protocol_response = self.query(ModeAT.DESC_PROTOCOL_N)
+
+        try:
+            self.protocol = Protocol(int(protocol_response.raw_response[1], 16))
+        except ValueError:
+            self.protocol = Protocol.UNKNOWN
+
+        self.protocol_handler = BaseProtocol.get_handler(self.protocol)
 
     def _send_query(self, query: bytes) -> None:
         """Sends a query to the ELM327."""
         if not self.serial_conn or not self.serial_conn.is_open:
-            raise ConnectionRefusedError("Connection is not open")
+            raise ConnectionError("Attempted to send a query without an active connection.")
 
         self.clear_buffer()
         self.serial_conn.write(query)
         self.serial_conn.flush()
+    
+    def _read_byte(self) -> bytes:
+        if not self.serial_conn or not self.serial_conn.is_open:
+            raise ConnectionError("Attempted to read without an active connection.")
+        
+        return self.serial_conn.read(1)
 
-    def query(self, command: Command) -> str:
+    def query(self, command: Command) -> Response:
         """Sends a command and waits for a response."""        
         if self.smart_query and self.last_command and command == self.last_command:
             query = ModeAT.REPEAT.build()
@@ -105,17 +119,14 @@ class Connection():
 
         return self.wait_for_response(command)
 
-    def wait_for_response(self, command: Command) -> str:
+    def wait_for_response(self, command: Command) -> Response:
         """Reads data dynamically until the OBDII prompt (>) or timeout."""
-        if not self.serial_conn or not self.serial_conn.is_open:
-            return ""
-
         raw_response: List[bytes] = []
 
         message: List[List[bytes]] = []
         current_line: List[bytes] = []
         while True:
-            chunk = self.serial_conn.read(1)
+            chunk = self._read_byte()
             if not chunk: # Timeout
                 break
             raw_response.append(chunk)
@@ -135,8 +146,9 @@ class Connection():
         base_response = BaseResponse(command, raw_response, message)
 
 
+        # return self.protocol_handler.parse_response(base_response, command)
 
-        return ""
+        return Response(**base_response._asdict())
     
     def clear_buffer(self) -> None:
         """Clears any buffered input from the adapter."""
