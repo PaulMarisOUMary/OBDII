@@ -1,17 +1,18 @@
-from typing import List, Optional
+from typing import Callable, List, Optional, Union
 from serial import Serial, SerialException, SerialTimeoutException # type: ignore
 
 from .basetypes import BaseResponse, Command, Mode
 from .modes.modeat import ModeAT
+from .protocol import Protocol
 
 
 class Connection():
     def __init__(self, 
                     port: str,
                     baudrate: int = 38400,
+                    protocol: Protocol = Protocol.AUTO,
                     auto_connect: bool = True,
                     smart_query: bool = True,
-                    **serial_kwargs
                 ) -> None:
         """Initialize connection settings and auto-connect by default.
 
@@ -21,34 +22,35 @@ class Connection():
             The serial port (e.g., "COM5", "/dev/ttyUSB0", "/dev/rfcomm0").
         baudrate: :class:`int`
             The baud rate for communication (e.g., 38400, 115200).
+        protocol: :class:`Protocol`
+            The protocol to use for communication (default: Protocol.AUTO).
         auto_connect: Optional[:class:`bool`]
             If set to true, method connect will be called.
+        smart_query: Optional[:class:`bool`]
+            If set to true, and if the same command is sent twice, the second time it will be sent as a repeat command.
         """
         self.port = port
         self.baudrate = baudrate
-        self.serial_conn: Optional[Serial] = None
+        self.protocol = protocol
         self.smart_query = smart_query
+
+        self.serial_conn: Optional[Serial] = None
         self.last_command: Optional[Command] = None
 
         self.timeout = 5.0
         self.write_timeout = 3.0
 
-        self.init_sequence = [
+        self.init_sequence: List[Union[Command, Callable]] = [
             ModeAT.RESET,
             ModeAT.ECHO_OFF,
             ModeAT.LINEFEED_OFF,
             ModeAT.HEADERS_ON,
             ModeAT.SPACES_ON,
+            self._set_protocol,
         ]
 
-        for key in list(serial_kwargs.keys()):
-            if not callable(getattr(self, key, None)):
-                setattr(self, key, serial_kwargs.pop(key))
-
-        self.serial_kwargs = serial_kwargs
-
         if auto_connect:
-            self.connect(**serial_kwargs)
+            self.connect()
 
     def connect(self, **kwargs) -> None:
         """Establishes a connection and initializes the device."""
@@ -71,7 +73,17 @@ class Connection():
             raise ConnectionError("Attempted to initialize without an active connection.")
 
         for command in self.init_sequence:
-            self.query(command)
+            if isinstance(command, Command):
+                self.query(command)
+            elif callable(command):
+                command()
+            else:
+                raise TypeError(f"Invalid command type: {type(command)}")
+    
+    def _set_protocol(self, protocol: Optional[Protocol] = None) -> None:
+        """Sets the protocol for communication."""
+        protocol = protocol or self.protocol
+        self.query(ModeAT.SET_PROTOCOL(protocol.value))
 
     def _send_query(self, query: bytes) -> None:
         """Sends a query to the ELM327."""
@@ -125,7 +137,6 @@ class Connection():
 
 
 
-            return full_response
         return ""
     
     def parse_response(self, raw_response: List[str], command: Optional[Command]) -> str:
