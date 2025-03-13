@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import List, Optional
 from serial import Serial, SerialException, SerialTimeoutException # type: ignore
 
-from .basetypes import Command
+from .basetypes import Command, Mode
 from .modes.modeat import ModeAT
 
 
@@ -40,6 +40,7 @@ class Connection():
             ModeAT.HEADERS_ON,
             ModeAT.SPACES_ON,
         ]
+
         for key in list(serial_kwargs.keys()):
             if not callable(getattr(self, key, None)):
                 setattr(self, key, serial_kwargs.pop(key))
@@ -106,11 +107,28 @@ class Connection():
                 break
             response.append(chunk)
 
-        full_response = "".join(response).strip()
 
-        if full_response and full_response != ">":
+        full_response = self.parse_response(response, command)
+
+        if full_response:
             return full_response
         return ""
+    
+    def parse_response(self, raw_response: List[str], command: Optional[Command]) -> str:
+        line = ''.join(raw_response).strip()
+        if command and command.mode != Mode.AT:
+            try:
+                data = line.split(' ')
+
+                bytes_offset = 2 # Mode and PID offset
+                length = int(data[1], 16) - bytes_offset
+
+                response = data[-length:]
+                
+                return ''.join(response)
+            except IndexError:
+                return line
+        return line
     
     def clear_buffer(self) -> None:
         """Clears any buffered input from the adapter."""

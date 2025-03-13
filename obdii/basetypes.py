@@ -3,6 +3,9 @@ from typing import Any, Dict, Optional, TypedDict, Union
 
 
 class Mode(Enum):
+    NONE = ''
+    """Special mode used for the REPEAT command"""
+
     AT = "AT"
     """Special mode to send AT commands"""
 
