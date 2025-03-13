@@ -1,6 +1,7 @@
+from dataclasses import dataclass, field
 from enum import Enum
 from time import time
-from typing import Any, Dict, List, NamedTuple, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 
 class Mode(Enum):
@@ -157,11 +158,13 @@ class BaseMode():
         return hasattr(self, command) and isinstance(getattr(self, command), Command)
 
 
-class BaseResponse(NamedTuple):
+@dataclass
+class BaseResponse():
     command: Command
     raw_response: List[bytes]
     message: List[List[bytes]]
-    timestamp: float = time()
+    timestamp: float = field(default_factory=time)
 
+@dataclass
 class Response(BaseResponse):
-    value: Optional[Union[int, float, str]] = None
+    value: Optional[Any] = None

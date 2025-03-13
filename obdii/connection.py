@@ -146,9 +146,10 @@ class Connection():
         base_response = BaseResponse(command, raw_response, message)
 
 
-        # return self.protocol_handler.parse_response(base_response, command)
-
-        return Response(**base_response._asdict())
+        try:
+            return self.protocol_handler.parse_response(base_response, command)
+        except NotImplementedError:
+            return Response(**base_response.__dict__)
     
     def clear_buffer(self) -> None:
         """Clears any buffered input from the adapter."""
