@@ -169,5 +169,18 @@ class BaseResponse():
 
 @dataclass
 class Response(BaseResponse):
-    value: Optional[Any] = None
     parsed_data: Optional[List[List[str]]] = None
+
+    value: Optional[Any] = None
+
+    @property
+    def min_value(self) -> Optional[Union[int, float, str]]:
+        return self.command.min_value
+    
+    @property
+    def max_value(self) -> Optional[Union[int, float, str]]:
+        return self.command.max_value
+    
+    @property
+    def units(self) -> Optional[str]:
+        return self.command.units
