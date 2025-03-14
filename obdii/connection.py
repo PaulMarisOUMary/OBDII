@@ -1,5 +1,8 @@
-from typing import Callable, List, Optional, Union
+from re import IGNORECASE, search as research
 from serial import Serial, SerialException, SerialTimeoutException # type: ignore
+from typing import Callable, List, Optional, Union
+
+from .utils import bytes_to_string
 
 from .basetypes import BaseResponse, Command, Protocol, Response
 from .modes import ModeAT
@@ -47,7 +50,22 @@ class Connection():
             ModeAT.LINEFEED_OFF,
             ModeAT.HEADERS_ON,
             ModeAT.SPACES_ON,
-            self._set_protocol,
+            self._auto_protocol,
+        ]
+
+        self.protocol_preferences = [
+            Protocol.ISO_15765_4_CAN,       # 0x06
+            Protocol.ISO_15765_4_CAN_B,     # 0x07
+            Protocol.ISO_15765_4_CAN_C,     # 0x08
+            Protocol.ISO_15765_4_CAN_D,     # 0x09
+            Protocol.SAE_J1850_PWM,         # 0x01
+            Protocol.SAE_J1850_VPW,         # 0x02
+            Protocol.ISO_9141_2,            # 0x03
+            Protocol.ISO_14230_4_KWP,       # 0x04
+            Protocol.ISO_14230_4_KWP_FAST,  # 0x05 
+            Protocol.SAE_J1939_CAN,         # 0x0A
+            Protocol.USER1_CAN,             # 0x0B
+            Protocol.USER2_CAN,             # 0x0C
         ]
 
         if auto_connect:
@@ -77,20 +95,57 @@ class Connection():
                 command()
             else:
                 raise TypeError(f"Invalid command type: {type(command)}")
-    
-    def _set_protocol(self, protocol: Optional[Protocol] = None) -> None:
+
+    def _auto_protocol(self, protocol: Optional[Protocol] = None) -> None:
         """Sets the protocol for communication."""
         protocol = protocol or self.protocol
 
-        self.query(ModeAT.SET_PROTOCOL(protocol.value))
-        protocol_response = self.query(ModeAT.DESC_PROTOCOL_N)
+        protocol_number = self._set_protocol_to(protocol)
 
-        try:
-            self.protocol = Protocol(int(protocol_response.raw_response[1], 16))
-        except ValueError:
-            self.protocol = Protocol.UNKNOWN
+        if protocol_number in [0, -1]:
+            supported_protocols = self._get_supported_protocols()
 
+            if supported_protocols:
+                priority_dict = {protocol: idx for idx, protocol in enumerate(self.protocol_preferences)}
+                supported_protocols.sort(key=lambda p: priority_dict.get(p, len(self.protocol_preferences)))
+
+                protocol_number = self._set_protocol_to(supported_protocols[0])
+            else:
+                protocol_number = -1
+
+        self.protocol = Protocol(protocol_number)
         self.protocol_handler = BaseProtocol.get_handler(self.protocol)
+
+    def _set_protocol_to(self, protocol: Protocol) -> int:
+        """Attempts to set the protocol to the specified value, return the protocol number if successful."""
+        self.query(ModeAT.SET_PROTOCOL(protocol.value))
+        response = self.query(ModeAT.DESC_PROTOCOL_N)
+
+        line = bytes_to_string(response.raw_response, [b'\r', b'>'])
+        protocol_number = self._parse_protocol_number(line)
+
+        return protocol_number
+
+    def _get_supported_protocols(self) -> List[Protocol]:
+        """Attempts to find supported protocol(s)."""
+        supported_protocols = []
+
+        for protocol in Protocol:
+            if protocol in [Protocol.UNKNOWN, Protocol.AUTO]:
+                continue
+
+            protocol_number = self._set_protocol_to(protocol)
+            if protocol_number == protocol.value:
+                supported_protocols.append(protocol)
+
+        return supported_protocols if supported_protocols else [Protocol.UNKNOWN]
+
+    def _parse_protocol_number(self, line: str) -> int:
+        """Extracts and returns the protocol number from the response line."""
+        match = research(r"(\d)$", line, IGNORECASE)
+        if match:
+            return int(match.group(1), 16)
+        return -1
 
     def _send_query(self, query: bytes) -> None:
         """Sends a query to the ELM327."""
