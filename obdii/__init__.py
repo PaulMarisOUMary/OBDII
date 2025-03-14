@@ -7,3 +7,5 @@ __version__ = "0.0.3a0"
 from .connection import Connection
 from .commands import commands
 from .modes.modeat import at_commands
+
+from .protocols import ProtocolCAN

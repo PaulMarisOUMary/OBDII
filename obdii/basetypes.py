@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum
 from time import time
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 
 class Mode(Enum):
@@ -74,6 +74,7 @@ class Command():
             min_value: Optional[Union[int, float, str]] = None,
             max_value: Optional[Union[int, float, str]] = None,
             units: Optional[str] = None,
+            formula: Optional[Callable] = None,
             command_args: Optional[Dict[str, Any]] = None,
         ) -> None:
         self.mode = mode
@@ -84,6 +85,7 @@ class Command():
         self.min_value = min_value
         self.max_value = max_value
         self.units = units
+        self.formula = formula
         self.command_args = command_args or {}
 
     def __call__(self, *args: Any, checks: bool = True) -> "Command":
@@ -168,3 +170,4 @@ class BaseResponse():
 @dataclass
 class Response(BaseResponse):
     value: Optional[Any] = None
+    parsed_data: Optional[List[List[str]]] = None
