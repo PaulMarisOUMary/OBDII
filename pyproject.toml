@@ -15,7 +15,11 @@ dynamic = ["version", "dependencies"]
 Repository = "https://github.com/PaulMarisOUMary/OBDII"
 
 [tool.setuptools]
-packages = ["obdii"]
+packages = [
+    "obdii",
+    "obdii.modes",
+    "obdii.protocols",
+]
 
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }

@@ -2,7 +2,7 @@ from typing import Union, overload
 
 from .basetypes import BaseMode, Command
 
-from .modes.mode01 import Mode01
+from .modes import Mode01
 
 T_Modes = Union[Mode01]
 

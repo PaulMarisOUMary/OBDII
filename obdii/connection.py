@@ -2,7 +2,7 @@ from typing import Callable, List, Optional, Union
 from serial import Serial, SerialException, SerialTimeoutException # type: ignore
 
 from .basetypes import BaseResponse, Command, Protocol, Response
-from .modes.modeat import ModeAT
+from .modes import ModeAT
 from .protocol import BaseProtocol
 
 
