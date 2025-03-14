@@ -58,10 +58,10 @@ from obdii import at_commands, commands, Connection
 conn = Connection("COM5")
 
 version = conn.query(at_commands.VERSION_ID)
-print(f"Version: {version}")
+print(f"Version: {version.value}")
 
 response = conn.query(commands.VEHICLE_SPEED)
-print(f"Vehicle Speed: {int(response[-2:], 16)} km/h")
+print(f"Vehicle Speed: {response.value} {response.units}")
 
 conn.close()
 ```
