@@ -142,7 +142,7 @@ class Command():
             mode = f"{mode:02X}"
         if isinstance(pid, int):
             pid = f"{pid:02X}"
-        return f"{mode}{pid}\r".encode() # \r ends each command
+        return f"{mode} {pid}\r".encode() # \r ends each command
 
 
 class BaseMode():

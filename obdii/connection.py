@@ -1,12 +1,15 @@
+from logging import Formatter, Handler, debug, getLogger
 from re import IGNORECASE, search as research
 from serial import Serial, SerialException, SerialTimeoutException # type: ignore
 from typing import Callable, List, Optional, Union
 
-from .utils import bytes_to_string
+from .utils import bytes_to_string, debug_baseresponse, filter_bts, setup_logging
 
 from .basetypes import BaseResponse, Command, Protocol, Response
 from .modes import ModeAT
 from .protocol import BaseProtocol
+
+_log = getLogger(__name__)
 
 
 class Connection():
@@ -16,6 +19,11 @@ class Connection():
                     protocol: Protocol = Protocol.AUTO,
                     auto_connect: bool = True,
                     smart_query: bool = True,
+                    *,
+                    log_handler: Optional[Handler] = None,
+                    log_formatter: Optional[Formatter] = None,
+                    log_level: Optional[int] = None,
+                    log_root: bool = False,
                 ) -> None:
         """Initialize connection settings and auto-connect by default.
 
@@ -67,6 +75,14 @@ class Connection():
             Protocol.USER1_CAN,             # 0x0B
             Protocol.USER2_CAN,             # 0x0C
         ]
+
+        if log_handler or log_formatter or log_level:
+            setup_logging(
+                log_handler,
+                log_formatter,
+                log_level,
+                log_root
+            )
 
         if auto_connect:
             self.connect()
@@ -169,6 +185,8 @@ class Connection():
         else:
             query = command.build()
 
+        _log.debug(f">>> Send: {str(query)}")
+
         self._send_query(query)
         self.last_command = command
 
@@ -200,6 +218,7 @@ class Connection():
 
         base_response = BaseResponse(command, raw_response, message)
 
+        _log.debug(f"<<< Read:\n{debug_baseresponse(base_response)}")
 
         try:
             return self.protocol_handler.parse_response(base_response, command)
