@@ -55,11 +55,12 @@ class Formula:
 
     def _extract_variables(self):
         """Extract unique variable names from the parsed AST."""
-        return {
+        variables = {
             node.id 
             for node in walk(self.parsed_expr) 
             if isinstance(node, Name)
         }
+        return sorted(variables)
 
     def __call__(self, parsed_data: List[List[str]]) -> Any:
         """Evaluate the formula."""
