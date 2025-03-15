@@ -2,14 +2,18 @@ name: "CI Pytest"
 
 on:
   push:
-    paths: &paths
+    paths:
       - "obdii/**"
       - "**/*.py"
       - "requirements.txt"
       - "pyproject.toml"
     branches: [ main ]
   pull_request:
-    paths: *paths
+    paths:
+      - "obdii/**"
+      - "**/*.py"
+      - "requirements.txt"
+      - "pyproject.toml"
     branches: [ main ]
 
   workflow_dispatch:
