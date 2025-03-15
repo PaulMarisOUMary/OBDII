@@ -1,9 +1,9 @@
-from logging import Formatter, Handler, debug, getLogger
+from logging import Formatter, Handler, getLogger, INFO
 from re import IGNORECASE, search as research
-from serial import Serial, SerialException, SerialTimeoutException # type: ignore
+from serial import Serial, SerialException # type: ignore
 from typing import Callable, List, Optional, Union
 
-from .utils import bytes_to_string, debug_baseresponse, filter_bts, setup_logging
+from .utils import debug_baseresponse, filter_bts, setup_logging
 
 from .basetypes import BaseResponse, Command, Protocol, Response
 from .modes import ModeAT
@@ -17,17 +17,19 @@ class Connection():
                     port: str,
                     baudrate: int = 38400,
                     protocol: Protocol = Protocol.AUTO,
+                    timeout: float = 5.0,
+                    write_timeout: float = 3.0,
                     auto_connect: bool = True,
-                    smart_query: bool = True,
+                    smart_query: bool = False,
                     *,
                     log_handler: Optional[Handler] = None,
                     log_formatter: Optional[Formatter] = None,
-                    log_level: Optional[int] = None,
+                    log_level: Optional[int] = INFO,
                     log_root: bool = False,
                 ) -> None:
         """Initialize connection settings and auto-connect by default.
 
-        Attributes
+        Parameters
         -----------
         port: :class:`str`
             The serial port (e.g., "COM5", "/dev/ttyUSB0", "/dev/rfcomm0").
@@ -35,24 +37,41 @@ class Connection():
             The baud rate for communication (e.g., 38400, 115200).
         protocol: :class:`Protocol`
             The protocol to use for communication (default: Protocol.AUTO).
+        timeout: :class:`float`
+            The maximum time (in seconds) to wait for a response from the device before raising a timeout error (default: 5.0).
+        write_timeout: :class:`float`
+            The time (in seconds) to wait for data to be written to the device before raising a timeout error (default: 3.0).
         auto_connect: Optional[:class:`bool`]
             If set to true, method connect will be called.
         smart_query: Optional[:class:`bool`]
             If set to true, and if the same command is sent twice, the second time it will be sent as a repeat command.
+
+        *:
+            Keyword-only arguments (non-positional).
+
+
+        log_handler: Optional[:class:`logging.Handler`]
+            The log handler to use for the library's logger.
+        log_formatter: :class:`logging.Formatter`
+            The formatter to use with the given log handler.
+        log_level: :class:`int`
+            The default log level for the library's logger.
+        root_logger: :class:`bool`
+            Whether to set up the root logger rather than the library logger.
         """
         self.port = port
         self.baudrate = baudrate
         self.protocol = protocol
+        self.timeout = timeout
+        self.write_timeout = write_timeout
         self.smart_query = smart_query
 
         self.serial_conn: Optional[Serial] = None
         self.protocol_handler = BaseProtocol.get_handler(Protocol.UNKNOWN)
+        self.supported_protocols: List[Protocol] = []
         self.last_command: Optional[Command] = None
 
-        self.timeout = 5.0
-        self.write_timeout = 3.0
-
-        self.init_sequence: List[Union[Command, Callable]] = [
+        self.init_sequence: List[Union[Command, Callable[[], None]]] = [
             ModeAT.RESET,
             ModeAT.ECHO_OFF,
             ModeAT.LINEFEED_OFF,
@@ -90,16 +109,19 @@ class Connection():
     def connect(self, **kwargs) -> None:
         """Establishes a connection and initializes the device."""
         try:
+            _log.info(f"Attempting to connect to {self.port} at {self.baudrate} baud.")
             self.serial_conn = Serial(
-                self.port, 
-                self.baudrate, 
+                port=self.port, 
+                baudrate=self.baudrate, 
                 timeout=self.timeout, 
                 write_timeout=self.write_timeout,
                 **kwargs
             )
             self._initialize_connection()
+            _log.info(f"Successfully connected to {self.port}.")
         except SerialException as e:
             self.serial_conn = None
+            _log.error(f"Failed to connect to {self.port}: {e}")
             raise ConnectionError(f"Failed to connect: {e}")
         
     def _initialize_connection(self) -> None:
@@ -110,6 +132,7 @@ class Connection():
             elif callable(command):
                 command()
             else:
+                _log.error(f"Invalid type in init_sequence: {type(command)}")
                 raise TypeError(f"Invalid command type: {type(command)}")
 
     def _auto_protocol(self, protocol: Optional[Protocol] = None) -> None:
@@ -119,7 +142,8 @@ class Connection():
         protocol_number = self._set_protocol_to(protocol)
 
         if protocol_number in [0, -1]:
-            supported_protocols = self._get_supported_protocols()
+            self.supported_protocols = self._get_supported_protocols()
+            supported_protocols = self.supported_protocols
 
             if supported_protocols:
                 priority_dict = {protocol: idx for idx, protocol in enumerate(self.protocol_preferences)}
@@ -131,13 +155,14 @@ class Connection():
 
         self.protocol = Protocol(protocol_number)
         self.protocol_handler = BaseProtocol.get_handler(self.protocol)
+        _log.info(f"Protocol set to {self.protocol.name}.")
 
     def _set_protocol_to(self, protocol: Protocol) -> int:
         """Attempts to set the protocol to the specified value, return the protocol number if successful."""
         self.query(ModeAT.SET_PROTOCOL(protocol.value))
         response = self.query(ModeAT.DESC_PROTOCOL_N)
 
-        line = bytes_to_string(response.raw_response, [b'\r', b'>'])
+        line = filter_bts(response.raw_response)
         protocol_number = self._parse_protocol_number(line)
 
         return protocol_number
@@ -153,12 +178,16 @@ class Connection():
             protocol_number = self._set_protocol_to(protocol)
             if protocol_number == protocol.value:
                 supported_protocols.append(protocol)
+        
+        if not supported_protocols:
+            _log.warning("No supported protocols detected.")
+            supported_protocols = [Protocol.UNKNOWN]
 
-        return supported_protocols if supported_protocols else [Protocol.UNKNOWN]
+        return supported_protocols
 
     def _parse_protocol_number(self, line: str) -> int:
         """Extracts and returns the protocol number from the response line."""
-        match = research(r"(\d)$", line, IGNORECASE)
+        match = research(r"([0-9A-F])$", line, IGNORECASE)
         if match:
             return int(match.group(1), 16)
         return -1
@@ -166,6 +195,7 @@ class Connection():
     def _send_query(self, query: bytes) -> None:
         """Sends a query to the ELM327."""
         if not self.serial_conn or not self.serial_conn.is_open:
+            _log.error("Attempted to send a query without an active connection.")
             raise ConnectionError("Attempted to send a query without an active connection.")
 
         self.clear_buffer()
@@ -174,6 +204,7 @@ class Connection():
     
     def _read_byte(self) -> bytes:
         if not self.serial_conn or not self.serial_conn.is_open:
+            _log.error("Attempted to read without an active connection.")
             raise ConnectionError("Attempted to read without an active connection.")
         
         return self.serial_conn.read(1)
@@ -234,3 +265,4 @@ class Connection():
         """Close the serial connection if not already done."""
         if self.serial_conn:
             self.serial_conn.close()
+            _log.debug("Connection closed.")
