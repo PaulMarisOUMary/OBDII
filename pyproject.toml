@@ -4,10 +4,27 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "py-obdii"
-description = "A Python library for interacting with OBD-II."
+description = "A Python library for interacting with OBDII."
 readme = { file = ".github/README.md", content-type = "text/markdown" }
 authors = [{ name = "PaulMarisOUMary" }]
 license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
 requires-python = ">=3.8"
 dynamic = ["version", "dependencies"]
 
@@ -20,6 +37,7 @@ packages = [
     "obdii.modes",
     "obdii.protocols",
 ]
+include-package-data = true
 
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }
@@ -33,3 +51,18 @@ test = [
 dev = [
     "ELM327-emulator",
 ]
+
+[tool.pyright]
+include = [
+    "obdii",
+    "obdii/modes",
+    "obdii/protocols",
+]
+exclude = [
+    "**/__pycache__",
+    "build",
+    "dist",
+    "docs",
+]
+pythonVersion = "3.8"
+typeCheckingMode = "basic"
