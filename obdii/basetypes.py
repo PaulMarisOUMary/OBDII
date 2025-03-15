@@ -1,3 +1,4 @@
+from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from time import time
@@ -86,12 +87,15 @@ class Command():
         self.max_value = max_value
         self.units = units
         self.formula = formula
+
         self.command_args = command_args or {}
+        self.is_formatted = False
 
     def __call__(self, *args: Any, checks: bool = True) -> "Command":
         if not self.command_args or not args or len(self.command_args) != len(args):
             raise TypeError(f"{self.__repr__()} expects {len(self.command_args)} argument(s), but got {len(args)}")
-
+        
+        fmt_command = deepcopy(self) # we don't want to modify the original command pid
         try:
             combined_args = {}
             for (arg, arg_type), value in zip(self.command_args.items(), args):
@@ -100,16 +104,17 @@ class Command():
                         raise TypeError(f"Argument '{arg}' should be of type {arg_type}")
 
                     if isinstance(value, int):
-                        value = f"{value:0{len(arg)}d}"
+                        value = f"{value:0{len(arg)}X}"
                     elif isinstance(value, str) and len(value) != len(arg):
                         raise ValueError(f"Argument '{arg}' should have length {len(arg)}, but got {len(value)}")
 
                 combined_args[arg] = value
 
-            self.pid = str(self.pid).format(**combined_args)
+            fmt_command.is_formatted = True
+            fmt_command.pid = str(self.pid).format(**combined_args)
         except Exception as e:
             raise e
-        return self
+        return fmt_command
 
     def __repr__(self) -> str:
         return f"<Command {self.mode} {self.pid if isinstance(self.pid, str) else f'{self.pid:02X}'} {self.name or 'Unnamed'} [{', '.join(self.command_args.keys())}]>"
@@ -128,6 +133,9 @@ class Command():
     def build(self) -> bytes:
         """Builds the query to be sent.
         ELM327 is not case-sensitive, ignores spaces and all control characters."""
+        if self.command_args and not self.is_formatted:
+            raise ValueError(f"Command has unset arguments for '{self.pid}': {self.command_args}")
+
         mode = self.mode.value
         pid = self.pid
         if isinstance(mode, int):
