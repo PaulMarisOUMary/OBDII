@@ -27,6 +27,8 @@ dependencies = { file = "requirements.txt" }
 [project.optional-dependencies]
 test = [
     "pytest",
+    "pytest-cov",
+    "pytest-mock",
 ]
 dev = [
     "ELM327-emulator",
