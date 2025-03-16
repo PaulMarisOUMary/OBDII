@@ -2,7 +2,7 @@ __title__ = "obdii"
 __author__ = "PaulMarisOUMary"
 __license__ = "MIT"
 __copyright__ = "Copyright 2025-present PaulMarisOUMary"
-__version__ = "0.1.0a4"
+__version__ = "0.1.0a5"
 
 from logging import NullHandler, getLogger
 
