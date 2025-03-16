@@ -94,3 +94,32 @@ def test_command_invalid_arguments(arg_command_factory, pid, command_args, argum
 
     with pytest.raises(expected_exception):
         command(*arguments)
+
+
+@pytest.mark.parametrize(
+    "pid, command_args, expected_query",
+    [
+        # 1. Basic Command
+        (0x01, None, b"AT 01\r"),
+        (0x01, {}, b"AT 01\r"),
+        (0x0A, None, b"AT 0A\r"),
+        (0xFF, {}, b"AT FF\r"),
+        ("01", None, b"AT 01\r"),
+        ("01", {}, b"AT 01\r"),
+        ("TEST", None, b"AT TEST\r"),
+        ("TEST", {}, b"AT TEST\r"),
+
+        # 2. Missing Arguments (and Expected Errors)
+        (0x01, {'h': int}, ValueError),
+        ("01", {'h': int}, ValueError),
+    ]
+)
+def test_build_function(arg_command_factory, pid, command_args, expected_query):
+    command = arg_command_factory(pid, command_args)
+
+    if isinstance(expected_query, bytes):
+        query = command.build()
+        assert query == expected_query
+    else:
+        with pytest.raises(expected_query):
+            command.build()
