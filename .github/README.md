@@ -44,7 +44,7 @@ cd OBDII
 pip install .[dev,test]
 
 # From test.pypi.org
-pip install -i https://test.pypi.org/simple/ py-obdii[dev,test]
+pip install -i https://test.pypi.org/simple/ py-obdii
 ```
 
 ## Usage Example

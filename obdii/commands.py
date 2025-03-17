@@ -2,20 +2,12 @@ from typing import Union, overload
 
 from .basetypes import BaseMode, Command
 
-from .modes import Mode01
+from .modes import Modes, T_Modes, d_modes
 
-T_Modes = Union[Mode01]
-
-class Modes(
-    Mode01, 
-    ):
-    pass
 
 class Commands(Modes):
     def __init__(self):
-        self.modes = {
-            0x01: Mode01(),
-        }
+        self.modes = d_modes
 
     @overload
     def __getitem__(self, key: str) -> Command: ...
@@ -39,8 +31,3 @@ class Commands(Modes):
             if not isinstance(mode, BaseMode):
                 raise TypeError(f"Expected Mode but got {type(mode)} for key '{key}'")
             return mode
-        else:
-            raise TypeError(f"Unsupported {type(key)} type")
-
-# Initialize Commands
-commands = Commands()

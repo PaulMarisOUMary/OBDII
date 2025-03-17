@@ -1,6 +1,7 @@
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
+from re import findall
 from time import time
 from typing import Any, Callable, Dict, List, Optional, Union
 
@@ -92,28 +93,51 @@ class Command():
         self.is_formatted = False
 
     def __call__(self, *args: Any, checks: bool = True) -> "Command":
-        if not self.command_args or not args or len(self.command_args) != len(args):
-            raise TypeError(f"{self.__repr__()} expects {len(self.command_args)} argument(s), but got {len(args)}")
+        expected_args = len(self.command_args)
+
+        if not expected_args:
+            raise ValueError(f"Command '{self.__repr__()}' should not be parametrized, as no arguments has been described")
+
+        received_args = len(args)
+        if expected_args != received_args:
+            raise ValueError(f"{self.__repr__()} expects {expected_args} argument(s), but got {received_args}")
+
+        actual_placeholders = set(findall(r"{(\w+)}", str(self.pid)))
+        expected_placeholders = set(self.command_args.keys())
+
+        if actual_placeholders != expected_placeholders:
+            missing = expected_placeholders - actual_placeholders
+            extra = actual_placeholders - expected_placeholders
+            raise ValueError(f"PID format mismatch. Missing placeholders: {missing}. Extra placeholders: {extra}")
         
-        fmt_command = deepcopy(self) # we don't want to modify the original command pid
+        fmt_command = deepcopy(self)
+        combined_args = {}
         try:
-            combined_args = {}
-            for (arg, arg_type), value in zip(self.command_args.items(), args):
+            for (arg_name, arg_type), value in zip(self.command_args.items(), args):
                 if checks:
                     if not isinstance(value, arg_type):
-                        raise TypeError(f"Argument '{arg}' should be of type {arg_type}")
+                        raise TypeError(f"Argument '{arg_name}' must be of type {arg_type}, but got {type(value).__name__}")
 
+                    arg_len = len(arg_name)
                     if isinstance(value, int):
-                        value = f"{value:0{len(arg)}X}"
-                    elif isinstance(value, str) and len(value) != len(arg):
-                        raise ValueError(f"Argument '{arg}' should have length {len(arg)}, but got {len(value)}")
+                        if value < 0:
+                            raise ValueError(f"Argument '{arg_name}' cannot be negative (got {value}).")
+                        formatted_value = f"{value:0{arg_len}X}"
 
-                combined_args[arg] = value
+                        if len(formatted_value) > arg_len:
+                            raise ValueError(f"Formatted value '{formatted_value}' exceeds expected length {len(arg_name)} for argument '{arg_name}'")
+                        value = formatted_value
+
+                    elif isinstance(value, str) and len(value) != arg_len:
+                        raise ValueError(f"Argument '{arg_name}' should have length {arg_len}, but got {len(value)}")
+
+                combined_args[arg_name] = value
 
             fmt_command.is_formatted = True
             fmt_command.pid = str(self.pid).format(**combined_args)
         except Exception as e:
             raise e
+
         return fmt_command
 
     def __repr__(self) -> str:

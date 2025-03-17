@@ -36,7 +36,7 @@ class ModeAT(BaseMode):
     PROG_PARAM_OFF = C("PP {xx} OFF", 0x00, "PROG_PARAM_OFF", "Disable Prog Parameter xx", command_args={"xx": str})
     PROG_PARAMS_OFF = C("PP FF OFF", 0x00, "PROG_PARAMS_OFF", "All Prog Parameters off")
     PROG_PARAM_ON = C("PP {xx} ON", 0x00, "PROG_PARAM_ON", "Enable Prog Parameter xx", command_args={"xx": str})
-    PROG_PARAMS_ON = C("PP FF ON", 0x00, "PROG_ON", "All Prog Parameters on")
+    PROG_PARAMS_ON = C("PP FF ON", 0x00, "PROG_PARAMS_ON", "All Prog Parameters on")
     PROG_SET_PARAM = C("PP {xx} SV {yy}", 0x00, "PROG_SET_PARAM", "For PP xx, Set the Value to yy", command_args={"xx": str, "yy": str})
     PROG_SUMMARY = C("PPS", 0x00, "PROG_SUMMARY", "Print a PP Summary")
 
@@ -90,7 +90,7 @@ class ModeAT(BaseMode):
     KEY_WORDS = C("KW", 0x00, "KEY_WORDS", "Display the Key Words")
     KEY_WORD_OFF = C("KW0", 0x00, "KEY_WORD_OFF", "Key Word checking off")
     KEY_WORD_ON = C("KW1", 0x00, "KEY_WORD_ON", "Key Word checking on")
-    SLOW_INIT = C("SI", 0x00, "SLO_INIT", "Perform a Slow (5 baud) Initiation")
+    SLOW_INIT = C("SI", 0x00, "SLOW_INIT", "Perform a Slow (5 baud) Initiation")
     SET_WAKEUP = C("SW {hh}", 0x00, "SET_WAKEUP", "Set Wakeup interval to hh x 20 msec", command_args={"hh": int})
     # WAKEUP_MESSAGE = C("", 0x00, "WAKEUP_MESSAGE", "Set the Wakeup Message")
 
@@ -125,7 +125,7 @@ class ModeAT(BaseMode):
     PROTOCOL_B_BAUDRATE = C("PB {xx} {yy}", 0x00, "PROTOCOL_B_BAUDRATE", "Protocol B options and baud rate", command_args={"xx": str, "yy": str})
     RTR_MESSAGE = C("RTR", 0x00, "RTR_MESSAGE", "Send an RTR message")
     VARIABLE_DLC_OFF = C("V0", 0x00, "VARIABLE_DLC_OFF", "Use of Variable DLC off")
-    VARIABLE_DLC_ON = C("V1", 0x00, "VARIABLE_DLC_OFF", "Use of Variable DLC on")
+    VARIABLE_DLC_ON = C("V1", 0x00, "VARIABLE_DLC_ON", "Use of Variable DLC on")
     
     # J1939 CAN Specific Commands
     MONITOR_DM1 = C("DM1", 0x00, "MONITOR_DM1", "Monitor for DM1 messages")
@@ -133,6 +133,3 @@ class ModeAT(BaseMode):
     FORMAT_SAE = C("JS", 0x00, "FORMAT_SAE", "Use J1939 SAE data format")
     MONITOR_PGN = C("MP {hhhh}", 0x00, "MONITOR_PGN", "Monitor for PGN 0hhhh", command_args={"hhhh": int})
     MONITOR_PGN_LONG = C("MP {hhhhhh}", 0x00, "MONITOR_PGN_LONG", "Monitor for PGN hhhhhh", command_args={"hhhhhh": int})
-
-# Initialize AT Commands
-at_commands = ModeAT()
