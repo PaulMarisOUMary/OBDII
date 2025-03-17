@@ -1,7 +1,7 @@
 import pytest
 
 from obdii.basetypes import Command
-from obdii.modes import ModeAT, Mode01
+from obdii.modes import ModeAT, Mode01, Mode02, Mode03, Mode04
 
 
 @pytest.mark.parametrize(
@@ -9,6 +9,9 @@ from obdii.modes import ModeAT, Mode01
     [
         ModeAT,
         Mode01,
+        Mode02,
+        Mode03,
+        Mode04,
     ]
 )
 def test_field_name_matches_command_name(mode):
