@@ -198,6 +198,8 @@ class Connection():
             _log.error("Attempted to send a query without an active connection.")
             raise ConnectionError("Attempted to send a query without an active connection.")
 
+        _log.debug(f">>> Send: {str(query)}")
+
         self.clear_buffer()
         self.serial_conn.write(query)
         self.serial_conn.flush()
@@ -215,8 +217,6 @@ class Connection():
             query = ModeAT.REPEAT.build()
         else:
             query = command.build()
-
-        _log.debug(f">>> Send: {str(query)}")
 
         self._send_query(query)
         self.last_command = command
