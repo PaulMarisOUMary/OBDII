@@ -2,7 +2,7 @@ import pytest
 
 from ast import parse
 
-from obdii.formula import Formula, SafeEvaluator
+from obdii.formula import Formula, MultiFormula, SafeEvaluator
 
 
 @pytest.mark.parametrize(
@@ -80,3 +80,36 @@ def test_formula_invalid_input():
 
     with pytest.raises(ValueError):
         formula([])
+
+
+@pytest.mark.parametrize(
+    "expressions, parsed_data, expected_results",
+    [
+        (["A", "B", "C"], [["1", "2", "3"]], [1, 2, 3]),
+        (["A", "B", "C"], [["10", "11", "12"]], [16, 17, 18]),
+
+        (["A + B", "C - A"], [["1", "2", "3"]], [3, 2]),
+        (["A + B", "C - A"], [["10", "11", "12"]], [33, 2]),
+
+        (["A * 2", "B / 2"], [["8", "10"]], [16, 8]),
+        (["(A + B) * C", "A - (B / C)"], [["1", "2", "4"]], [12, 0.5]),
+        (["A + B", "C * 2"], [["A", "5", "8"]], [15, 16]),
+        (["A * (B + C)", "(A + B) / C"], [["2", "3", "1"]], [8, 5]),
+
+        (["A + B"], [["4", "2"]], [6]),
+
+        (["A + B", "C - D"], [[]], pytest.raises(ValueError)),
+        (["A", "B", "C", "D * 10"], [["10", "11"]], pytest.raises(ValueError)),
+
+        (["C"], [["1", "2", "3"]], [3]),
+    ]
+)
+def test_multi_formula(expressions, parsed_data, expected_results):
+    multi_formula = MultiFormula(*expressions)
+
+    if isinstance(expected_results, list):
+        result = multi_formula(parsed_data)
+        assert result == expected_results
+    else:
+        with expected_results:
+            multi_formula(parsed_data)
