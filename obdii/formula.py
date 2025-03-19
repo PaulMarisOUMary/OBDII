@@ -1,5 +1,5 @@
 from ast import (
-    Add, Sub, Mult, Div, FloorDiv, Mod, Pow, BitXor, UAdd, USub, parse, NodeVisitor, Expr, BinOp, UnaryOp, Name, Constant, walk
+    Add, Sub, Mult, Div, FloorDiv, Mod, Pow, BitXor, UAdd, USub, parse, NodeVisitor, Expr, BinOp, UnaryOp, Name, Constant
 )
 from typing import List, Any, NoReturn
 from operator import add, sub, mul, truediv, floordiv, mod, pow as opow, xor
@@ -44,38 +44,34 @@ class SafeEvaluator(NodeVisitor):
         raise ValueError("Unsupported operation in formula")
 
 
-class Formula:
-    def __init__(self, expression: str, multi_line: bool = False):
+class Formula():
+    def __init__(self, expression: str):
         """Initialize with a formula string and extract variable names dynamically."""
-        self.expression = expression
-        self.multi_line = multi_line
+        self.expression = expression.upper()
 
-        self.parsed_expr = parse(expression, mode="eval")
-        self.variables = self._extract_variables()
-
-    def _extract_variables(self):
-        """Extract unique variable names from the parsed AST."""
-        variables = {
-            node.id 
-            for node in walk(self.parsed_expr) 
-            if isinstance(node, Name)
-        }
-        return sorted(variables)
+        self.parsed_expr = parse(self.expression, mode="eval")
 
     def __call__(self, parsed_data: List[List[str]]) -> Any:
         """Evaluate the formula."""
         if not parsed_data or not parsed_data[0]:
             raise ValueError("Invalid parsed_data: must contain at least one non-empty list.")
-        
-        if self.multi_line:
-            raise NotImplementedError("Multi-line formulas are not supported yet.")
 
         first_item = parsed_data[0]
+        
         values = {
-            var: int(first_item[i], 16)
-            for i, var in enumerate(self.variables) 
-            if i < len(first_item)
+            chr(ord('A') + i): int(first_item[i], 16) 
+            for i in range(len(first_item))
         }
 
         evaluator = SafeEvaluator(values)
         return evaluator.visit(self.parsed_expr.body)
+
+
+class MultiFormula():
+    def __init__(self, *expressions: str) -> None:
+        """Initialize multiple Formula objects from a list of expressions."""
+        self.formulas = [Formula(expr) for expr in expressions]
+
+    def __call__(self, parsed_data: List[List[str]]) -> List[Any]:
+        """Evaluate all stored formulas on the given parsed_data."""
+        return [formula(parsed_data) for formula in self.formulas]
