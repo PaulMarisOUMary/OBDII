@@ -1,15 +1,28 @@
 from functools import partial
 from logging import Handler, Formatter, DEBUG, INFO, WARNING, ERROR, CRITICAL, StreamHandler, getLogger
 from os import environ
+from re import fullmatch
 from sys import platform
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple
 
 from .basetypes import BaseResponse
 
 
-def bytes_to_string(raw_response: List[bytes], filter_bytes: List[bytes] = []) -> str:
-    filtered_response = [c for c in raw_response if c not in filter_bytes]
+def split_by_bytes(hex_string: str) -> Tuple[str, ...]:
+    if len(hex_string) % 2 != 0:
+        hex_string = '0' + hex_string
+    
+    return tuple(hex_string[i:i+2] for i in range(0, len(hex_string), 2))
+
+
+def is_hexadecimal(s: str) -> bool:
+    return bool(fullmatch(r"[0-9A-Fa-f]+", s))
+
+
+def bytes_to_string(raw_bytes: List[bytes], filter_bytes: List[bytes] = []) -> str:
+    filtered_response = [c for c in raw_bytes if c not in filter_bytes]
     return b''.join(filtered_response).decode(errors="ignore").strip()
+
 
 filter_bts = partial(bytes_to_string, filter_bytes=[b'\r', b'>'])
 

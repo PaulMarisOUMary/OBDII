@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from re import findall
 from time import time
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 
 class Mode(Enum):
@@ -201,7 +201,7 @@ class BaseResponse():
 
 @dataclass
 class Response(BaseResponse):
-    parsed_data: Optional[List[List[str]]] = None
+    parsed_data: Optional[List[Tuple[str, ...]]] = None
 
     value: Optional[Any] = None
 

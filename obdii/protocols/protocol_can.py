@@ -1,5 +1,11 @@
+from logging import getLogger
+
 from ..basetypes import BaseResponse, Command, Mode, Protocol, Response
 from ..protocol import BaseProtocol
+from ..utils import bytes_to_string, is_hexadecimal, split_by_bytes
+
+
+_log = getLogger(__name__)
 
 
 class ProtocolCAN(BaseProtocol):
@@ -23,21 +29,25 @@ class ProtocolCAN(BaseProtocol):
             value = None
             parsed_data = list()
             for raw_line in base_response.message[:-1]: # Skip the last line (prompt character)
-                line = ''.join([c.decode(errors="ignore") for c in raw_line]).strip()
+                line = bytes_to_string(raw_line)
+                line = line.replace(' ', '')
                 
-                components = line.split(' ')
+                if not is_hexadecimal(line):
+                    continue # code error handling
 
-                if len(components) <= 4: # Skip header-less lines
+                components = split_by_bytes(line)
+
+                if len(components) <= 5: # Skip header-less lines
                     continue
 
-                header = components[0]
+                header = components[0] + components[1]
                 bytes_offset = 2 # Mode and PID offset
-                length = int(components[1], 16) - bytes_offset
+                length = int(components[2], 16) - bytes_offset
 
                 data = components[-length:]
 
                 parsed_data.append(data)
-            
+
             if command.formula:
                 try:
                     value = command.formula(parsed_data)
