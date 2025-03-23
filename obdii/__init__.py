@@ -9,6 +9,7 @@ from logging import NullHandler, getLogger
 from .connection import Connection
 from .commands import Commands
 from .modes import at_commands
+from .protocol import Protocol
 
 # We must __init__ .protocols to BaseProtocol.register supported protocols
 from .protocols import *
@@ -17,9 +18,10 @@ from .protocols import *
 commands = Commands()
 
 __all__ = [
-    "Connection",
-    "commands",
     "at_commands",
+    "commands",
+    "Connection",
+    "Protocol",
 ]
 
 getLogger(__name__).addHandler(NullHandler())
