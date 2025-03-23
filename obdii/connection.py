@@ -5,7 +5,7 @@ from typing import Callable, List, Optional, Union
 
 from .utils import bytes_to_string, debug_baseresponse, filter_bytes, setup_logging
 
-from .basetypes import BaseResponse, Command, Protocol, Response
+from .basetypes import BaseResponse, Command, Context, Protocol, Response
 from .modes import ModeAT
 from .protocol import BaseProtocol
 
@@ -164,7 +164,7 @@ class Connection():
         self.query(ModeAT.SET_PROTOCOL(protocol.value))
         response = self.query(ModeAT.DESC_PROTOCOL_N)
 
-        line = bytes_to_string(filter_bytes(response.raw_response, b'\r', b'>'))
+        line = bytes_to_string(filter_bytes(response.raw, b'\r', b'>'))
         protocol_number = self._parse_protocol_number(line)
 
         return protocol_number
@@ -222,27 +222,29 @@ class Connection():
         else:
             query = command.build()
 
+        context = Context(command, self.protocol)
+
         self._send_query(query)
         self.last_command = command
 
-        return self.wait_for_response(command)
+        return self.wait_for_response(context)
 
-    def wait_for_response(self, command: Command) -> Response:
+    def wait_for_response(self, context: Context) -> Response:
         """Reads data dynamically until the OBDII prompt (>) or timeout."""
-        raw_response = self._read_byte()
+        raw = self._read_byte()
 
         message = [
             line
-            for line in raw_response.splitlines()
+            for line in raw.splitlines()
             if line
         ]
 
-        base_response = BaseResponse(command, raw_response, message)
+        base_response = BaseResponse(context, raw, message)
 
         _log.debug(f"<<< Read:\n{debug_baseresponse(base_response)}")
 
         try:
-            return self.protocol_handler.parse_response(base_response, command)
+            return self.protocol_handler.parse_response(base_response, context)
         except NotImplementedError:
             return Response(**base_response.__dict__)
     

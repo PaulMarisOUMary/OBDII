@@ -191,11 +191,16 @@ class BaseMode():
         command = command.upper()
         return hasattr(self, command) and isinstance(getattr(self, command), Command)
 
+@dataclass
+class Context():
+    command: Command
+    protocol: Protocol
+    timestamp: float = field(default_factory=time)
 
 @dataclass
 class BaseResponse():
-    command: Command
-    raw_response: bytes
+    context: Context
+    raw: bytes
     message: List[bytes]
     timestamp: float = field(default_factory=time)
 
@@ -209,12 +214,12 @@ class Response(BaseResponse):
 
     @property
     def min_value(self) -> Optional[Union[int, float, str]]:
-        return self.command.min_value
+        return self.context.command.min_value
     
     @property
     def max_value(self) -> Optional[Union[int, float, str]]:
-        return self.command.max_value
+        return self.context.command.max_value
     
     @property
     def units(self) -> Optional[str]:
-        return self.command.units
+        return self.context.command.units

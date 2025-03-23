@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import List
 
-from ..basetypes import BaseResponse, Command, Mode, Protocol, Response
+from ..basetypes import BaseResponse, Context, Mode, Protocol, Response
 from ..protocol import BaseProtocol
 from ..utils import bytes_to_string, filter_bytes, is_bytes_hexadecimal
 
@@ -19,7 +19,8 @@ class ProtocolCAN(BaseProtocol):
     - [0x0B] USER1 CAN (11 bit ID, 125 Kbaud)
     - [0x0C] USER2 CAN (11 bit ID, 50 Kbaud)
     """
-    def parse_response(self, base_response: BaseResponse, command: Command) -> Response:
+    def parse_response(self, base_response: BaseResponse, context: Context) -> Response:
+        command = context.command
         if command.mode == Mode.AT: # AT Commands
             status = None
             if len(base_response.message[:-1]) == 1:

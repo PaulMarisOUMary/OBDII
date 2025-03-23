@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Callable, Dict, List, Type, Union
 
 
-from .basetypes import BaseResponse, Command, Protocol, Response
+from .basetypes import BaseResponse, Command, Context, Protocol, Response
 
 
 class BaseProtocol(ABC):
@@ -13,7 +13,7 @@ class BaseProtocol(ABC):
     def __init__(self) -> None: ...
 
     @abstractmethod
-    def parse_response(self, base_response: BaseResponse, command: Command) -> Response: ...
+    def parse_response(self, base_response: BaseResponse, context: Context) -> Response: ...
 
     @classmethod
     def register(cls, *protocols: Protocol) -> None:
@@ -33,5 +33,5 @@ class ProtocolUnknown(BaseProtocol):
     In such cases, basic serial communication might still be possible,
     but full message parsing could be limited.
     """
-    def parse_response(self, base_response: BaseResponse, command: Command) -> Response:
+    def parse_response(self, base_response: BaseResponse, context: Context) -> Response:
         raise NotImplementedError
