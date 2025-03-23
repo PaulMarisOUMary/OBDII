@@ -74,7 +74,6 @@ class Connection():
         self.init_sequence: List[Union[Command, Callable[[], None]]] = [
             ModeAT.RESET,
             ModeAT.ECHO_OFF,
-            ModeAT.LINEFEED_OFF,
             ModeAT.HEADERS_ON,
             ModeAT.SPACES_ON,
             self._auto_protocol,
