@@ -195,8 +195,8 @@ class BaseMode():
 @dataclass
 class BaseResponse():
     command: Command
-    raw_response: List[bytes]
-    message: List[List[bytes]]
+    raw_response: bytes
+    message: List[bytes]
     timestamp: float = field(default_factory=time)
 
 T_Parsed_Data = List[Tuple[str, ...]]

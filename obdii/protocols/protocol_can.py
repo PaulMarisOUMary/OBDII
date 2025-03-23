@@ -1,8 +1,9 @@
 from logging import getLogger
+from typing import List
 
 from ..basetypes import BaseResponse, Command, Mode, Protocol, Response
 from ..protocol import BaseProtocol
-from ..utils import bytes_to_string, is_hexadecimal, split_by_bytes
+from ..utils import bytes_to_string, filter_bytes, is_bytes_hexadecimal
 
 
 _log = getLogger(__name__)
@@ -22,31 +23,23 @@ class ProtocolCAN(BaseProtocol):
         if command.mode == Mode.AT: # AT Commands
             status = None
             if len(base_response.message[:-1]) == 1:
-                status = ''.join([c.decode(errors="ignore") for c in base_response.message[0]]).strip()
+                status = bytes_to_string(base_response.message[0])
 
             return Response(**base_response.__dict__, value=status)
         else: # OBD Commands
             value = None
             parsed_data = list()
             for raw_line in base_response.message[:-1]: # Skip the last line (prompt character)
-                line = bytes_to_string(raw_line)
-                line = line.replace(' ', '')
-                
-                if not is_hexadecimal(line):
+                line = filter_bytes(raw_line, b' ')
+
+
+                if not is_bytes_hexadecimal(line):
                     continue # code error handling
 
-                components = split_by_bytes(line)
 
-                if len(components) <= 5: # Skip header-less lines
-                    continue
 
-                header = components[0] + components[1]
-                bytes_offset = 2 # Mode and PID offset
-                length = int(components[2], 16) - bytes_offset
 
-                data = components[-length:]
 
-                parsed_data.append(data)
 
             if command.formula:
                 try:
