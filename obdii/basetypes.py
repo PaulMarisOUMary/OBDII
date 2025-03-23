@@ -199,9 +199,11 @@ class BaseResponse():
     message: List[List[bytes]]
     timestamp: float = field(default_factory=time)
 
+T_Parsed_Data = List[Tuple[str, ...]]
+
 @dataclass
 class Response(BaseResponse):
-    parsed_data: Optional[List[Tuple[str, ...]]] = None
+    parsed_data: Optional[T_Parsed_Data] = None
 
     value: Optional[Any] = None
 
