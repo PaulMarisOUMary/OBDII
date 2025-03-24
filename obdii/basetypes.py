@@ -204,7 +204,7 @@ class BaseResponse():
     message: List[bytes]
     timestamp: float = field(default_factory=time)
 
-T_Parsed_Data = List[Tuple[str, ...]]
+T_Parsed_Data = List[Tuple[bytes, ...]]
 
 @dataclass
 class Response(BaseResponse):

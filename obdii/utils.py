@@ -2,14 +2,16 @@ from logging import Handler, Formatter, DEBUG, INFO, WARNING, ERROR, CRITICAL, S
 from os import environ
 from re import escape, fullmatch, sub
 from sys import platform
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 
 from .basetypes import BaseResponse
 
 
-    
+def split_by_byte(raw: bytes) -> Tuple[bytes, ...]:
+    if len(raw) % 2 != 0:
+        raw = b'0' + raw
 
-
+    return tuple(raw[i:i+2] for i in range(0, len(raw), 2))
 
 
 def is_bytes_hexadecimal(raw: bytes) -> bool:

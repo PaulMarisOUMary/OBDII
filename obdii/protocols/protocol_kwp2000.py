@@ -12,4 +12,8 @@ class ProtocolKWP2000(BaseProtocol):
         raise NotImplementedError
 
 
-ProtocolKWP2000.register(Protocol.ISO_9141_2, Protocol.ISO_14230_4_KWP, Protocol.ISO_14230_4_KWP_FAST)
+ProtocolKWP2000.register({
+    Protocol.ISO_9141_2:           {},
+    Protocol.ISO_14230_4_KWP:      {},
+    Protocol.ISO_14230_4_KWP_FAST: {},
+})

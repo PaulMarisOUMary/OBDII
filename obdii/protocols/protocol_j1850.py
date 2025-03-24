@@ -11,4 +11,7 @@ class ProtocolJ1850(BaseProtocol):
         raise NotImplementedError
 
 
-ProtocolJ1850.register(Protocol.SAE_J1850_PWM, Protocol.SAE_J1850_VPW)
+ProtocolJ1850.register({
+    Protocol.SAE_J1850_PWM: {},
+    Protocol.SAE_J1850_VPW: {},
+})
