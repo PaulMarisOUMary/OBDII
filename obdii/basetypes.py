@@ -216,13 +216,13 @@ class Response(BaseResponse):
     value: Optional[Any] = None
 
     @property
-    def min_value(self) -> Optional[Union[int, float, str]]:
-        return self.context.command.min_value
+    def min_value(self) -> Optional[Union[TNumeric, List[TNumeric]]]:
+        return self.context.command.min_values
     
     @property
-    def max_value(self) -> Optional[Union[int, float, str]]:
-        return self.context.command.max_value
+    def max_value(self) -> Optional[Union[TNumeric, List[TNumeric]]]:
+        return self.context.command.max_values
     
     @property
-    def units(self) -> Optional[str]:
+    def units(self) -> Optional[Union[str, List[str]]]:
         return self.context.command.units
