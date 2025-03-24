@@ -4,6 +4,7 @@ __license__ = "MIT"
 __copyright__ = "Copyright 2025-present PaulMarisOUMary"
 __version__ = "0.2.0a0"
 
+
 from logging import NullHandler, getLogger
 
 from .connection import Connection

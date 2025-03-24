@@ -3,7 +3,7 @@ from functools import partial
 from ..basetypes import BaseMode, Command, Mode
 
 M = Mode.AT
-C = partial(Command, M, min_value=None, max_value=None, units=None)
+C = partial(Command, M, min_values=None, max_values=None, units=None)
 
 # ELM327.pdf | AT Command Summary | Page 8 - 9
 

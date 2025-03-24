@@ -66,6 +66,9 @@ class Protocol(Enum):
     USER2_CAN = 0x0C
     """USER2 CAN (11* bit ID, 50* kbaud) *default settings (user adjustable)"""
 
+
+TNumeric = Union[int, float]
+
 class Command():
     def __init__(self, 
             mode: Mode,
@@ -73,9 +76,9 @@ class Command():
             n_bytes: int,
             name: str,
             description: Optional[str] = None,
-            min_value: Optional[Union[int, float, str]] = None,
-            max_value: Optional[Union[int, float, str]] = None,
-            units: Optional[str] = None,
+            min_values: Optional[Union[TNumeric, List[TNumeric]]] = None,
+            max_values: Optional[Union[TNumeric, List[TNumeric]]] = None,
+            units: Optional[Union[str, List[str]]] = None,
             formula: Optional[Callable] = None,
             command_args: Optional[Dict[str, Any]] = None,
         ) -> None:
@@ -84,8 +87,8 @@ class Command():
         self.n_bytes = n_bytes
         self.name = name
         self.description = description
-        self.min_value = min_value
-        self.max_value = max_value
+        self.min_values = min_values
+        self.max_values = max_values
         self.units = units
         self.formula = formula
 
