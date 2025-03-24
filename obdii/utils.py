@@ -1,25 +1,35 @@
-from functools import partial
 from logging import Handler, Formatter, DEBUG, INFO, WARNING, ERROR, CRITICAL, StreamHandler, getLogger
 from os import environ
+from re import escape, fullmatch, sub
 from sys import platform
-from typing import Any, List, Optional
+from typing import Any, Optional, Tuple
 
 from .basetypes import BaseResponse
 
 
-def bytes_to_string(raw_response: List[bytes], filter_bytes: List[bytes] = []) -> str:
-    filtered_response = [c for c in raw_response if c not in filter_bytes]
-    return b''.join(filtered_response).decode(errors="ignore").strip()
+def split_by_byte(raw: bytes) -> Tuple[bytes, ...]:
+    if len(raw) % 2 != 0:
+        raw = b'0' + raw
 
-filter_bts = partial(bytes_to_string, filter_bytes=[b'\r', b'>'])
+    return tuple(raw[i:i+2] for i in range(0, len(raw), 2))
+
+
+def is_bytes_hexadecimal(raw: bytes) -> bool:
+    return bool(fullmatch(b"[0-9A-Fa-f]+", raw))
+
+
+def filter_bytes(raw: bytes, *filter_bytes: bytes) -> bytes:
+    pattern = b'|'.join(escape(filter_byte) for filter_byte in filter_bytes)
+
+    return sub(pattern, b'', raw)
+
+
+def bytes_to_string(raw: bytes) -> str:
+    return raw.decode(errors="ignore").strip()
+
 
 def debug_baseresponse(base_response: BaseResponse) -> str:
-    out = ''
-
-    for line in base_response.message[:-1]: # omit prompt line
-        out += f"[{filter_bts(line)}]\n"
-    
-    return out
+    return '\n'.join(f"[{bytes_to_string(line)}]" for line in base_response.message[:-1]) + '\n'
 
 
 def setup_logging(

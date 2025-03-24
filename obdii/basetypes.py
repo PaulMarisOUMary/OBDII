@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from re import findall
 from time import time
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 
 class Mode(Enum):
@@ -194,28 +194,35 @@ class BaseMode():
         command = command.upper()
         return hasattr(self, command) and isinstance(getattr(self, command), Command)
 
-
 @dataclass
-class BaseResponse():
+class Context():
     command: Command
-    raw_response: List[bytes]
-    message: List[List[bytes]]
+    protocol: Protocol
     timestamp: float = field(default_factory=time)
 
 @dataclass
+class BaseResponse():
+    context: Context
+    raw: bytes
+    message: List[bytes]
+    timestamp: float = field(default_factory=time)
+
+T_Parsed_Data = List[Tuple[bytes, ...]]
+
+@dataclass
 class Response(BaseResponse):
-    parsed_data: Optional[List[List[str]]] = None
+    parsed_data: Optional[T_Parsed_Data] = None
 
     value: Optional[Any] = None
 
     @property
     def min_values(self) -> Optional[Union[TNumeric, List[TNumeric]]]:
-        return self.command.min_values
+        return self.context.command.min_values
     
     @property
     def max_values(self) -> Optional[Union[TNumeric, List[TNumeric]]]:
-        return self.command.max_values
+        return self.context.command.max_values
     
     @property
     def units(self) -> Optional[Union[str, List[str]]]:
-        return self.command.units
+        return self.context.command.units

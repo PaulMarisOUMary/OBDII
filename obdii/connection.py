@@ -3,9 +3,9 @@ from re import IGNORECASE, search as research
 from serial import Serial, SerialException # type: ignore
 from typing import Callable, List, Optional, Union
 
-from .utils import debug_baseresponse, filter_bts, setup_logging
+from .utils import bytes_to_string, debug_baseresponse, filter_bytes, setup_logging
 
-from .basetypes import BaseResponse, Command, Protocol, Response
+from .basetypes import BaseResponse, Command, Context, Protocol, Response
 from .modes import ModeAT
 from .protocol import BaseProtocol
 
@@ -74,7 +74,6 @@ class Connection():
         self.init_sequence: List[Union[Command, Callable[[], None]]] = [
             ModeAT.RESET,
             ModeAT.ECHO_OFF,
-            ModeAT.LINEFEED_OFF,
             ModeAT.HEADERS_ON,
             ModeAT.SPACES_ON,
             self._auto_protocol,
@@ -106,6 +105,7 @@ class Connection():
         if auto_connect:
             self.connect()
 
+
     def connect(self, **kwargs) -> None:
         """Establishes a connection and initializes the device."""
         try:
@@ -123,7 +123,7 @@ class Connection():
             self.serial_conn = None
             _log.error(f"Failed to connect to {self.port}: {e}")
             raise ConnectionError(f"Failed to connect: {e}")
-        
+
     def _initialize_connection(self) -> None:
         """Initializes the connection using the init sequence."""
         for command in self.init_sequence:
@@ -134,6 +134,7 @@ class Connection():
             else:
                 _log.error(f"Invalid type in init_sequence: {type(command)}")
                 raise TypeError(f"Invalid command type: {type(command)}")
+
 
     def _auto_protocol(self, protocol: Optional[Protocol] = None) -> None:
         """Sets the protocol for communication."""
@@ -162,7 +163,7 @@ class Connection():
         self.query(ModeAT.SET_PROTOCOL(protocol.value))
         response = self.query(ModeAT.DESC_PROTOCOL_N)
 
-        line = filter_bts(response.raw_response)
+        line = bytes_to_string(filter_bytes(response.raw, b'\r', b'>'))
         protocol_number = self._parse_protocol_number(line)
 
         return protocol_number
@@ -192,6 +193,7 @@ class Connection():
             return int(match.group(1), 16)
         return -1
 
+
     def _send_query(self, query: bytes) -> None:
         """Sends a query to the ELM327."""
         if not self.serial_conn or not self.serial_conn.is_open:
@@ -209,7 +211,8 @@ class Connection():
             _log.error("Attempted to read without an active connection.")
             raise ConnectionError("Attempted to read without an active connection.")
         
-        return self.serial_conn.read(1)
+        return self.serial_conn.read_until(b'>')
+
 
     def query(self, command: Command) -> Response:
         """Sends a command and waits for a response."""        
@@ -218,44 +221,33 @@ class Connection():
         else:
             query = command.build()
 
+        context = Context(command, self.protocol)
+
         self._send_query(query)
         self.last_command = command
 
-        return self.wait_for_response(command)
+        return self.wait_for_response(context)
 
-    def wait_for_response(self, command: Command) -> Response:
+    def wait_for_response(self, context: Context) -> Response:
         """Reads data dynamically until the OBDII prompt (>) or timeout."""
-        raw_response: List[bytes] = []
+        raw = self._read_byte()
 
-        message: List[List[bytes]] = []
-        current_line: List[bytes] = []
-        while True:
-            chunk = self._read_byte()
-            if not chunk: # Timeout
-                break
-            raw_response.append(chunk)
-            char = chunk.decode(errors="ignore")
+        message = [
+            line
+            for line in raw.splitlines()
+            if line
+        ]
 
-            if char in ['\r', '\n']:
-                if current_line:
-                    message.append(current_line)
-                    current_line = []
-                continue
-            current_line.append(chunk)
-            if char == '>': # Ending prompt character
-                break
-        if current_line:
-            message.append(current_line)
-
-        base_response = BaseResponse(command, raw_response, message)
+        base_response = BaseResponse(context, raw, message)
 
         _log.debug(f"<<< Read:\n{debug_baseresponse(base_response)}")
 
         try:
-            return self.protocol_handler.parse_response(base_response, command)
+            return self.protocol_handler.parse_response(base_response, context)
         except NotImplementedError:
             return Response(**base_response.__dict__)
     
+
     def clear_buffer(self) -> None:
         """Clears any buffered input from the adapter."""
         if self.serial_conn:

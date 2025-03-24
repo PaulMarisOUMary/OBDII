@@ -2,19 +2,21 @@ from functools import partial
 
 from ..basetypes import BaseMode, Command, Mode
 from ..formula import Formula, MultiFormula
+from ..parser import SupportedPIDS
 
 M = Mode.REQUEST
 C = partial(Command, M)
 
 F = Formula
 MF = MultiFormula
+SP = SupportedPIDS
 
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_01_-_Show_current_data
 
 class Mode01(BaseMode):
     """Request Commands"""
 
-    PIDS_A = C(0x00, 0x04, "PIDS_A", "PIDs supported [$01 - $20]", None, None, None)
+    PIDS_A = C(0x00, 0x04, "PIDS_A", "PIDs supported [$01 - $20]", None, None, None, SP(0x01))
     STATUS = C(0x01, 0x04, "STATUS", "Monitor status since DTCs cleared. (Includes malfunction indicator lamp (MIL), status and number of DTCs, components tests, DTC readiness checks)", None, None, None)
     FREEZE_DTC = C(0x02, 0x02, "FREEZE_DTC", "DTC that caused freeze frame to be stored.", None, None, None)
     FUEL_STATUS = C(0x03, 0x02, "FUEL_STATUS", "Fuel system status", None, None, None)
@@ -47,7 +49,7 @@ class Mode01(BaseMode):
     AUX_INPUT_STATUS = C(0x1E, 0x01, "AUX_INPUT_STATUS", "Auxiliary input status", None, None, None)
     RUN_TIME = C(0x1F, 0x02, "RUN_TIME", "Run time since engine start", 0, 65535, 's', F("256*A+B"))
 
-    PIDS_B = C(0x20, 0x04, "PIDS_B", "PIDs supported [$21 - $40]", None, None, None)
+    PIDS_B = C(0x20, 0x04, "PIDS_B", "PIDs supported [$21 - $40]", None, None, None, SP(0x21))
     DISTANCE_W_MIL = C(0x21, 0x02, "DISTANCE_W_MIL", "Distance traveled with malfunction indicator lamp (MIL) on", 0, 65535, "km", F("256*A+B"))
     FUEL_RAIL_PRESSURE_VAC = C(0x22, 0x02, "FUEL_RAIL_PRESSURE_VAC", "Fuel Rail Pressure (relative to manifold vacuum)", 0, 5177.265, "kPa", F("0.079*(256*A+B)"))
     FUEL_RAIL_GAUGE_PRESSURE = C(0x23, 0x02, "FUEL_RAIL_GAUGE_PRESSURE", "Fuel Rail Gauge Pressure (diesel, or gasoline direct injection)", 0, 655350, "kPa", F("10*(256*A+B)"))
@@ -80,7 +82,7 @@ class Mode01(BaseMode):
     CATALYST_TEMP_B1_S2 = C(0x3E, 0x02, "CATALYST_TEMP_B1_S2", "Catalyst Temperature: Bank 1, Sensor 2", -40, 6513.5, "°C", F("(256*A+B)/10-40"))
     CATALYST_TEMP_B2_S2 = C(0x3F, 0x02, "CATALYST_TEMP_B2_S2", "Catalyst Temperature: Bank 2, Sensor 2", -40, 6513.5, "°C", F("(256*A+B)/10-40"))
 
-    PIDS_C = C(0x40, 0x04, "PIDS_C", "PIDs supported [$41 - $60]", None, None, None)
+    PIDS_C = C(0x40, 0x04, "PIDS_C", "PIDs supported [$41 - $60]", None, None, None, SP(0x41))
     STATUS_DRIVE_CYCLE = C(0x41, 0x04, "STATUS_DRIVE_CYCLE", "Monitor status this drive cycle", None, None, None)
     CONTROL_MODULE_VOLTAGE = C(0x42, 0x02, "CONTROL_MODULE_VOLTAGE", "Control module voltage", 0, 65.535, 'V', F("(256*A+B)/1000"))
     ABSOLUTE_LOAD = C(0x43, 0x02, "ABSOLUTE_LOAD", "Absolute load value", 0, 25700, '%', F("100/255*(256*A+B)"))
