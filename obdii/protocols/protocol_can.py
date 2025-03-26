@@ -2,6 +2,7 @@ from logging import getLogger
 from typing import List, Tuple
 
 from ..basetypes import BaseResponse, Context, Mode, Protocol, Response
+from ..errors import BaseResponseError
 from ..protocol import BaseProtocol
 from ..utils import bytes_to_string, filter_bytes, is_bytes_hexadecimal, split_by_byte
 
@@ -34,9 +35,11 @@ class ProtocolCAN(BaseProtocol):
                 line = filter_bytes(raw_line, b' ')
 
                 if not is_bytes_hexadecimal(line):
-                    # if pattern match our_errors
-                    # _log.error("Check for errors.py Soon TM")
-                    continue # code error handling
+                    is_error = BaseResponseError.detect(raw_line)
+                    if not is_error:
+                        continue
+                    _log.error(is_error.message)
+                    raise is_error
 
                 attr = self.get_protocol_attributes(context.protocol)
                 if not "header_length" in attr:
