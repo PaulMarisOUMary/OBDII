@@ -56,7 +56,7 @@ class CanError(BaseResponseError):
 
 class DataError(BaseResponseError):
     """There was a response from the vehicle, but the information was incorrect or could not be recovered."""
-    pattern = b"DATA ERROR"
+    regex_pattern = compile(rb"(?<!<)DATA ERROR")
 
 class DataPointError(BaseResponseError):
     """There was an error in the line that this points to."""
