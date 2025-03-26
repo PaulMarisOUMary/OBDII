@@ -232,13 +232,13 @@ class Connection():
         """Reads data dynamically until the OBDII prompt (>) or timeout."""
         raw = self._read_byte()
 
-        message = [
+        messages = [
             line
             for line in raw.splitlines()
             if line
         ]
 
-        base_response = BaseResponse(context, raw, message)
+        base_response = BaseResponse(context, raw, messages)
 
         _log.debug(f"<<< Read:\n{debug_baseresponse(base_response)}")
 

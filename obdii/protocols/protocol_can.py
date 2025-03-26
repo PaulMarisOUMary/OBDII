@@ -24,14 +24,14 @@ class ProtocolCAN(BaseProtocol):
         command = context.command
         if command.mode == Mode.AT: # AT Commands
             status = None
-            if len(base_response.message[:-1]) == 1:
-                status = bytes_to_string(base_response.message[0])
+            if len(base_response.messages[:-1]) == 1:
+                status = bytes_to_string(base_response.messages[0])
 
             return Response(**base_response.__dict__, value=status)
         else: # OBD Commands
             value = None
             parsed_data: List[Tuple[bytes, ...]] = list()
-            for raw_line in base_response.message[:-1]: # Skip the last line (prompt character)
+            for raw_line in base_response.messages[:-1]: # Skip the last line (prompt character)
                 line = filter_bytes(raw_line, b' ')
 
                 if not is_bytes_hexadecimal(line):

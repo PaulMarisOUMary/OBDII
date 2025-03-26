@@ -29,7 +29,7 @@ def bytes_to_string(raw: bytes) -> str:
 
 
 def debug_baseresponse(base_response: BaseResponse) -> str:
-    return '\n'.join(f"[{bytes_to_string(line)}]" for line in base_response.message[:-1]) + '\n'
+    return '\n'.join(f"[{bytes_to_string(line)}]" for line in base_response.messages[:-1]) + '\n'
 
 
 def setup_logging(

@@ -204,7 +204,7 @@ class Context():
 class BaseResponse():
     context: Context
     raw: bytes
-    message: List[bytes]
+    messages: List[bytes]
     timestamp: float = field(default_factory=time)
 
 T_Parsed_Data = List[Tuple[bytes, ...]]
