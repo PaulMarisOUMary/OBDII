@@ -12,7 +12,7 @@ class Mode02(BaseMode):
 
     @classmethod
     def _populate_commands(cls):
-        for field_name, command in Mode01.__dict__.items():
+        for field_name, command in vars(Mode01).items():
             if isinstance(command, Command):
                 field = f"DTC_{field_name}"
                 dtc_command = deepcopy(command)

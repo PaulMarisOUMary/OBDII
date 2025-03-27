@@ -27,7 +27,7 @@ class ProtocolCAN(BaseProtocol):
             if len(base_response.messages[:-1]) == 1:
                 status = bytes_to_string(base_response.messages[0])
 
-            return Response(**base_response.__dict__, value=status)
+            return Response(**vars(base_response), value=status)
         else: # OBD Commands
             value = None
             parsed_data: List[Tuple[bytes, ...]] = list()
@@ -81,7 +81,7 @@ class ProtocolCAN(BaseProtocol):
                     _log.error(f"Unexpected error during formula execution: {e}", exc_info=True)
                     value = None
 
-            return Response(**base_response.__dict__, parsed_data=parsed_data, value=value)
+            return Response(**vars(base_response), parsed_data=parsed_data, value=value)
 
 
 ProtocolCAN.register({

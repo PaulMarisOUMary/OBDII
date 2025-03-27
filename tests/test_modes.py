@@ -19,7 +19,7 @@ TEST_MODES = [
     TEST_MODES,
 )
 def test_field_name_matches_command_name(mode):
-    for field_name, field_value in mode.__dict__.items():
+    for field_name, field_value in vars(mode).items():
         if isinstance(field_value, Command):
             assert field_value.name == field_name, f"Field '{field_value.name}' does not match with the command name '{field_value.name}'."
 
@@ -28,7 +28,7 @@ def test_field_name_matches_command_name(mode):
     TEST_MODES,
 )
 def test_mins_maxs_units(mode):
-    for command in mode.__dict__.values():
+    for command in vars(mode).values():
         if isinstance(command, Command):
             min_vals = command.min_values
             max_vals = command.max_values

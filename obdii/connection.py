@@ -136,6 +136,9 @@ class Connection():
                 _log.error(f"Invalid type in init_sequence: {type(command)}")
                 raise TypeError(f"Invalid command type: {type(command)}")
 
+    def is_connected(self) -> bool:
+        return self.serial_conn is not None and self.serial_conn.is_open
+
 
     def _auto_protocol(self, protocol: Optional[Protocol] = None) -> None:
         """Sets the protocol for communication."""
@@ -246,7 +249,7 @@ class Connection():
         try:
             return self.protocol_handler.parse_response(base_response, context)
         except NotImplementedError:
-            return Response(**base_response.__dict__)
+            return Response(**vars(base_response))
     
 
     def clear_buffer(self) -> None:
@@ -258,7 +261,8 @@ class Connection():
         """Close the serial connection if not already done."""
         if self.serial_conn:
             self.serial_conn.close()
-            _log.debug("Connection closed.")
+        self.serial_conn = None
+        _log.debug("Connection closed.")
     
 
     def __enter__(self):
