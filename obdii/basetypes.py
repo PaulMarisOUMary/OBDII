@@ -150,12 +150,7 @@ class Command():
         if not isinstance(value, Command):
             return False
 
-        return (
-            self.mode == value.mode and
-            self.name == value.name and
-            self.description == value.description and
-            self.command_args == value.command_args
-        )
+        return vars(self) == vars(value)
 
     def build(self) -> bytes:
         """Builds the query to be sent.
@@ -186,6 +181,12 @@ class BaseMode():
 
     def __len__(self) -> int:
         return len([1 for attr_name in dir(self) if isinstance(getattr(self, attr_name), Command)])
+    
+    def __eq__(self, value: object) -> bool:
+        if not isinstance(value, BaseMode):
+            return False
+        
+        return vars(self) == vars(value)
     
     def has_command(self, command: Union[Command, str]) -> bool:
         if isinstance(command, Command):
