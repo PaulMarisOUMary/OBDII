@@ -1,5 +1,6 @@
 from logging import Formatter, Handler, getLogger, INFO
 from re import IGNORECASE, search as research
+from types import TracebackType
 from serial import Serial, SerialException # type: ignore
 from typing import Callable, List, Optional, Union
 
@@ -206,12 +207,12 @@ class Connection():
         self.serial_conn.write(query)
         self.serial_conn.flush()
     
-    def _read_byte(self) -> bytes:
+    def _read_bytes(self, max_size=4096) -> bytes:
         if not self.serial_conn or not self.serial_conn.is_open:
             _log.error("Attempted to read without an active connection.")
             raise ConnectionError("Attempted to read without an active connection.")
         
-        return self.serial_conn.read_until(b'>')
+        return self.serial_conn.read_until(expected=b'>', size=max_size)
 
 
     def query(self, command: Command) -> Response:
@@ -230,7 +231,7 @@ class Connection():
 
     def wait_for_response(self, context: Context) -> Response:
         """Reads data dynamically until the OBDII prompt (>) or timeout."""
-        raw = self._read_byte()
+        raw = self._read_bytes()
 
         messages = [
             line
@@ -258,3 +259,10 @@ class Connection():
         if self.serial_conn:
             self.serial_conn.close()
             _log.debug("Connection closed.")
+    
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type: Optional[BaseException], exc_value: Optional[BaseException], traceback: Optional[TracebackType]) -> None:
+        self.close()
