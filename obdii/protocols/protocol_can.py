@@ -50,6 +50,11 @@ class ProtocolCAN(BaseProtocol):
                 if attr["header_length"] == 11: # Normalize to 29 bits (32 with hex)
                     components = (b"00",) * 2 + components
 
+                minimal_length = 7 # Less means no data
+                if len(components) < minimal_length:
+                    _log.warning(f"Invalid line: too few components (expected at least {minimal_length}, got {len(components)})")
+                    continue
+
                 # header_end = 4 # unused
                 length_idx = 4
                 bytes_offset = 2
@@ -85,6 +90,6 @@ ProtocolCAN.register({
     Protocol.ISO_15765_4_CAN_C: {"header_length": 11},
     Protocol.ISO_15765_4_CAN_D: {"header_length" :29},
     Protocol.SAE_J1939_CAN:     {"header_length": 29},
-    Protocol.USER1_CAN:         {"header_length": 11}, # 11 bits by default
-    Protocol.USER2_CAN:         {"header_length": 11},
+    Protocol.USER1_CAN:         {"header_length": 11}, # 11 bits by default, can be extended
+    Protocol.USER2_CAN:         {"header_length": 11}, # 11 bits by default, can be extended
 })
