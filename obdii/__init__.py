@@ -13,7 +13,7 @@ from .protocol import Protocol
 
 from .protocols import *
 
-# Initialize Commands
+
 commands = Commands()
 
 __all__ = [

@@ -1,7 +1,7 @@
 import pytest
 
 from obdii.basetypes import Command
-from obdii.modes import ModeAT, Mode01, Mode02, Mode03, Mode04
+from obdii.modes import ModeAT, Mode01, Mode02, Mode03, Mode04, Mode09
 
 TEST_MODES = [
     ModeAT,
@@ -9,6 +9,8 @@ TEST_MODES = [
     Mode02,
     Mode03,
     Mode04,
+
+    Mode09,
 ]
 
 
