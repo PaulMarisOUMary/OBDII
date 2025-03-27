@@ -2,9 +2,9 @@ import pytest
 
 from obdii.errors import (
     BaseResponseError, 
-    UnknownCommandError, BufferFullError, BusBusyError, BusError, 
-    CanError, DataError, DataPointError, ErrxxError, FeedbackError, 
-    NoDataError, RxError, StoppedError, ConnectionFailureError,
+    InvalidCommandError, BufferFullError, BusBusyError, BusError, 
+    CanError, InvalidDataError, InvalidLineError, DeviceInternalError, SignalFeedbackError, 
+    MissingDataError, CanDataError, StoppedError, ConnectionError,
     InactivityWarning, LowPowerWarning, LowVoltageResetWarning,
 )
 
@@ -12,22 +12,22 @@ from obdii.errors import (
 @pytest.mark.parametrize(
     "response, expected_error",
     [
-        (b'?', UnknownCommandError),
+        (b'?', InvalidCommandError),
         (b"BUFFER FULL", BufferFullError),
         (b"BUS BUSY", BusBusyError),
         (b"BUS ERROR", BusError),
         (b"CAN ERROR", CanError),
-        (b"DATA ERROR", DataError),
-        (b"SOME DATA ERROR", DataError),
-        (b"<DATA ERROR", DataPointError),
-        (b"SOME <DATA ERROR", DataPointError),
-        (b"ERR01", ErrxxError),
-        (b"ERR99", ErrxxError),
-        (b"FB ERROR", FeedbackError),
-        (b"NO DATA", NoDataError),
-        (b"<RX ERROR", RxError),
+        (b"DATA ERROR", InvalidDataError),
+        (b"SOME DATA ERROR", InvalidDataError),
+        (b"<DATA ERROR", InvalidLineError),
+        (b"SOME <DATA ERROR", InvalidLineError),
+        (b"ERR01", DeviceInternalError),
+        (b"ERR99", DeviceInternalError),
+        (b"FB ERROR", SignalFeedbackError),
+        (b"NO DATA", MissingDataError),
+        (b"<RX ERROR", CanDataError),
         (b"STOPPED", StoppedError),
-        (b"UNABLE TO CONNECT", ConnectionFailureError),
+        (b"UNABLE TO CONNECT", ConnectionError),
 
         (b"ACT ALERT", InactivityWarning),
         (b"LP ALERT", LowPowerWarning),

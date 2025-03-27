@@ -10,7 +10,7 @@ class BaseResponseError(Exception):
 
     def __init__(self, response: bytes) -> None:
         self.response = response
-        self.message = f"{self.__class__.__name__} - {self.__class__.__doc__} - Got: {str(self.response)}"
+        self.message = f"{self.__class__.__name__}: {self.__class__.__doc__} - Got: {str(self.response)}"
 
         super().__init__(self.message)
 
@@ -34,7 +34,7 @@ class BaseResponseError(Exception):
 
 # Errors
 
-class UnknownCommandError(BaseResponseError):
+class InvalidCommandError(BaseResponseError):
     """The command received on the RS232 input was not recognized or misunderstood."""
     pattern = b'?'
 
@@ -54,27 +54,27 @@ class CanError(BaseResponseError):
     """The CAN system had difficulty initializing, sending, or receiving."""
     pattern = b"CAN ERROR"
 
-class DataError(BaseResponseError):
+class InvalidDataError(BaseResponseError):
     """There was a response from the vehicle, but the information was incorrect or could not be recovered."""
     regex_pattern = compile(rb"(?<!<)DATA ERROR")
 
-class DataPointError(BaseResponseError):
+class InvalidLineError(BaseResponseError):
     """There was an error in the line that this points to."""
     pattern = b"<DATA ERROR"
 
-class ErrxxError(BaseResponseError):
+class DeviceInternalError(BaseResponseError):
     """Internal errors reported as ERR with a two digit code following."""
     regex_pattern = compile(rb"ERR\d{2}")
 
-class FeedbackError(BaseResponseError):
+class SignalFeedbackError(BaseResponseError):
     """Output energized, but input signal not detected. Possible wiring issue. Verify connections."""
     pattern = b"FB ERROR"
 
-class NoDataError(BaseResponseError):
+class MissingDataError(BaseResponseError):
     """Vehicle did not respond within timeout."""
     pattern = b"NO DATA"
 
-class RxError(BaseResponseError):
+class CanDataError(BaseResponseError):
     """Received CAN data contains errors. Verify protocol and baud rate settings."""
     pattern = b"<RX ERROR"
 
@@ -82,7 +82,7 @@ class StoppedError(BaseResponseError):
     """Operation interrupted by RS232 character or low RTS signal."""
     pattern = b"STOPPED"
 
-class ConnectionFailureError(BaseResponseError):
+class ConnectionError(BaseResponseError):
     """No supported protocol detected. Verify vehicle ignition status, compatibility, and connections."""
     pattern = b"UNABLE TO CONNECT"
 
@@ -98,5 +98,5 @@ class LowPowerWarning(BaseResponseError):
     pattern = b"LP ALERT"
 
 class LowVoltageResetWarning(BaseResponseError):
-    """Indicates low 5V supply voltage, triggering a reset"""
+    """Indicates low 5V supply voltage, triggering a reset."""
     pattern = b"LV RESET"
