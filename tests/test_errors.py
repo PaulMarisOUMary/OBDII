@@ -4,7 +4,7 @@ from obdii.errors import (
     BaseResponseError, 
     InvalidCommandError, BufferFullError, BusBusyError, BusError, 
     CanError, InvalidDataError, InvalidLineError, DeviceInternalError, SignalFeedbackError, 
-    MissingDataError, CanDataError, StoppedError, ConnectionError,
+    MissingDataError, CanDataError, StoppedError, ProtocolConnectionError,
     InactivityWarning, LowPowerWarning, LowVoltageResetWarning,
 )
 
@@ -27,7 +27,7 @@ from obdii.errors import (
         (b"NO DATA", MissingDataError),
         (b"<RX ERROR", CanDataError),
         (b"STOPPED", StoppedError),
-        (b"UNABLE TO CONNECT", ConnectionError),
+        (b"UNABLE TO CONNECT", ProtocolConnectionError),
 
         (b"ACT ALERT", InactivityWarning),
         (b"LP ALERT", LowPowerWarning),

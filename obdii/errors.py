@@ -82,7 +82,7 @@ class StoppedError(BaseResponseError):
     """Operation interrupted by RS232 character or low RTS signal."""
     pattern = b"STOPPED"
 
-class ConnectionError(BaseResponseError):
+class ProtocolConnectionError(BaseResponseError):
     """No supported protocol detected. Verify vehicle ignition status, compatibility, and connections."""
     pattern = b"UNABLE TO CONNECT"
 
