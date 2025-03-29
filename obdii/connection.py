@@ -22,6 +22,7 @@ class Connection():
                     write_timeout: float = 3.0,
                     auto_connect: bool = True,
                     smart_query: bool = False,
+                    early_return: bool = False,
                     *,
                     log_handler: Optional[Handler] = None,
                     log_formatter: Optional[Formatter] = None,
@@ -66,6 +67,7 @@ class Connection():
         self.timeout = timeout
         self.write_timeout = write_timeout
         self.smart_query = smart_query
+        self.early_return = early_return
 
         self.serial_conn: Optional[Serial] = None
         self.protocol_handler = BaseProtocol.get_handler(Protocol.UNKNOWN)
@@ -223,7 +225,7 @@ class Connection():
         if self.smart_query and self.last_command and command == self.last_command:
             query = ModeAT.REPEAT.build()
         else:
-            query = command.build()
+            query = command.build(self.early_return)
 
         context = Context(command, self.protocol)
 

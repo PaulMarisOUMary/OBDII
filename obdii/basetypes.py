@@ -152,19 +152,39 @@ class Command():
 
         return vars(self) == vars(value)
 
-    def build(self) -> bytes:
-        """Builds the query to be sent.
-        ELM327 is not case-sensitive, ignores spaces and all control characters."""
+    def build(self, early_return: bool = False) -> bytes:
+        """Builds the query to be sent to the ELM327 device.
+        (The ELM327 is case-insensitive, ignores spaces and all control characters.)
+
+        Parameters
+        -----------
+        early_return: :class:`bool`
+            If set to True, appends a single hex digit representing the expected number of responses in the query, allowing the ELM327 to return immediately after sending the specified number of responses. Works only with ELM327 v1.3 and later.
+
+        Returns
+        --------
+        :class:`bytes`
+            The formatted query as a byte string, ready to be sent to the ELM327 device.
+        """
         if self.command_args and not self.is_formatted:
             raise ValueError(f"Command has unset arguments for '{self.pid}': {self.command_args}")
 
         mode = self.mode.value
         pid = self.pid
+
+        return_digit = ''
+        if early_return and self.n_bytes and self.mode != Mode.AT:
+            data_bytes = 7
+            n_lines = self.n_bytes // data_bytes + (1 if self.n_bytes % data_bytes != 0 else 0)
+            if 0 < n_lines < 16:
+                return_digit = f" {n_lines:X}"
+
         if isinstance(mode, int):
             mode = f"{mode:02X}"
         if isinstance(pid, int):
             pid = f"{pid:02X}"
-        return f"{mode} {pid}\r".encode() # \r ends each command
+
+        return f"{mode} {pid}{return_digit}\r".encode()
 
 
 class BaseMode():
