@@ -1,5 +1,8 @@
 import pytest
 
+from inspect import getsource
+from ast import parse, walk, Assign, Name
+
 from obdii.basetypes import Command
 from obdii.modes import ModeAT, Mode01, Mode02, Mode03, Mode04, Mode09
 
@@ -41,3 +44,24 @@ def test_mins_maxs_units(mode):
 
                 # Ensure they have the same length
                 assert len(max_vals) == len(min_vals) == len(units), f"Length mismatch: max={len(max_vals)}, min={len(min_vals)}, units={len(units)}"
+
+@pytest.mark.parametrize(
+    "mode",
+    TEST_MODES,
+)
+def test_for_unique_fields(mode):
+    source = getsource(mode)
+    tree = parse(source)
+    assignments = {}
+    duplicates = []
+
+    for node in walk(tree):
+        if isinstance(node, Assign):
+            for target in node.targets:
+                if isinstance(target, Name):
+                    var_name = target.id
+                    if var_name in assignments:
+                        duplicates.append(var_name)
+                    assignments[var_name] = True
+    
+    assert not duplicates, f"Duplicate field(s) defined in {mode.__name__}: {', '.join(duplicates)}"
