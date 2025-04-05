@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -30,6 +30,17 @@ dynamic = ["version", "dependencies"]
 
 [project.urls]
 Repository = "https://github.com/PaulMarisOUMary/OBDII"
+Issues = "https://github.com/PaulMarisOUMary/OBDII/issues"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+]
+dev = [
+    "ELM327-emulator",
+]
 
 [tool.setuptools]
 packages = [
@@ -42,15 +53,9 @@ include-package-data = true
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }
 
-[project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "pytest-mock",
-]
-dev = [
-    "ELM327-emulator",
-]
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
+local_scheme = "node-and-date"
 
 [tool.pyright]
 include = [
