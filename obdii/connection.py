@@ -4,11 +4,10 @@ from types import TracebackType
 from serial import Serial, SerialException # type: ignore
 from typing import Callable, List, Optional, Union
 
-from .utils import bytes_to_string, debug_baseresponse, filter_bytes, setup_logging
-
 from .basetypes import BaseResponse, Command, Context, Protocol, Response
 from .modes import ModeAT
 from .protocol import BaseProtocol
+from .utils import bytes_to_string, debug_baseresponse, filter_bytes, setup_logging
 
 _log = getLogger(__name__)
 
@@ -44,9 +43,11 @@ class Connection():
         write_timeout: :class:`float`
             The time (in seconds) to wait for data to be written to the device before raising a timeout error (default: 3.0).
         auto_connect: Optional[:class:`bool`]
-            If set to true, method connect will be called.
+            By default set to true, calls connect method.
         smart_query: Optional[:class:`bool`]
             If set to true, and if the same command is sent twice, the second time it will be sent as a repeat command.
+        early_return: Optional[:class:`bool`]
+            If set to true, the ELM327 will return immediately after sending the specified number of responses specified in the command (n_bytes). Works only with ELM327 v1.3 and later.
 
         *:
             Keyword-only arguments (non-positional).
@@ -81,6 +82,7 @@ class Connection():
             ModeAT.SPACES_ON,
             self._auto_protocol,
         ]
+        self.init_completed = False
 
         self.protocol_preferences = [
             Protocol.ISO_15765_4_CAN,       # 0x06
@@ -121,6 +123,7 @@ class Connection():
                 **kwargs
             )
             self._initialize_connection()
+            self.init_completed = True
             _log.info(f"Successfully connected to {self.port}.")
         except SerialException as e:
             self.serial_conn = None
@@ -145,10 +148,11 @@ class Connection():
     def _auto_protocol(self, protocol: Optional[Protocol] = None) -> None:
         """Sets the protocol for communication."""
         protocol = protocol or self.protocol
+        unwanted_protocols = [Protocol.AUTO, Protocol.UNKNOWN]
 
         protocol_number = self._set_protocol_to(protocol)
 
-        if protocol_number in [0, -1]:
+        if Protocol(protocol_number) in unwanted_protocols:
             self.supported_protocols = self._get_supported_protocols()
             supported_protocols = self.supported_protocols
 
@@ -162,6 +166,8 @@ class Connection():
 
         self.protocol = Protocol(protocol_number)
         self.protocol_handler = BaseProtocol.get_handler(self.protocol)
+        if protocol not in unwanted_protocols and protocol != self.protocol:
+            _log.warning(f"Requested protocol {protocol.name} cannot be used.")
         _log.info(f"Protocol set to {self.protocol.name}.")
 
     def _set_protocol_to(self, protocol: Protocol) -> int:
@@ -251,6 +257,8 @@ class Connection():
         try:
             return self.protocol_handler.parse_response(base_response, context)
         except NotImplementedError:
+            if self.init_completed:
+                _log.warning(f"Unsupported Protocol used: {self.protocol.name}")
             return Response(**vars(base_response))
     
 
