@@ -66,6 +66,8 @@ print(f"Vehicle Speed: {response.value} {response.units}")
 conn.close()
 ```
 
+You can find more detailed examples and usage scenarios in the [examples folder](/examples/) of this repository.
+
 ## Using the Library Without a Physical Device
 
 To streamline the development process, you can use the [ELM327-Emulator](https://pypi.org/project/ELM327-emulator) library. This allows you to simulate an OBDII connection without needing a physical device. 
