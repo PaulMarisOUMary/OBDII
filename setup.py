@@ -5,6 +5,8 @@ ci_environment = environ.get("CI", "false").lower() == "true"
 
 local_scheme = "no-local-version" if ci_environment else "node-and-date"
 
+print(f"DEBUG_HERE: {local_scheme=}, {ci_environment=}") # The versioning is working as expected with act, but doesn't on "prod"
+
 setup(
     use_scm_version={
         "local_scheme": local_scheme,
