@@ -14,8 +14,6 @@ jobs:
   build:
     name: Build distribution 📦
     runs-on: ubuntu-latest
-    env:
-      SETUPTOOLS_SCM_DEBUG: 1
 
     steps:
       - uses: actions/checkout@v4
