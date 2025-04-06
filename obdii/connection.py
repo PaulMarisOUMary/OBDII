@@ -112,14 +112,35 @@ class Connection():
 
 
     def connect(self, **kwargs) -> None:
-        """Establishes a connection and initializes the device."""
+        """Establishes a connection and initializes the device.
+        
+        Parameters
+        -----------
+        **kwargs:
+            Keyword arguments that can override the default connection parameters.
+            The following keys will update the corresponding instance attributes:
+                - `port`
+                - `baudrate`
+                - `timeout`
+                - `write_timeout`
+            
+            Any other valid keyword arguments for the `serial.Serial`
+            constructor can also be passed and will be used directly
+            when establishing the connection.
+        """
+        overridable_attributes = ["port", "baudrate", "timeout", "write_timeout"]
+        for key in set(kwargs.keys()):
+            if key in overridable_attributes:
+                setattr(self, key, kwargs.pop(key))
+                _log.debug(f"Overriding connection attribute '{key}' with '{getattr(self, key)}' from kwargs.")
+
+        _log.info(f"Attempting to connect to {self.port} at {self.baudrate} baud.")
         try:
-            _log.info(f"Attempting to connect to {self.port} at {self.baudrate} baud.")
             self.serial_conn = Serial(
-                port=self.port, 
-                baudrate=self.baudrate, 
-                timeout=self.timeout, 
-                write_timeout=self.write_timeout,
+                port = self.port, 
+                baudrate = self.baudrate, 
+                timeout = self.timeout, 
+                write_timeout = self.write_timeout,
                 **kwargs
             )
             self._initialize_connection()
@@ -272,7 +293,7 @@ class Connection():
         if self.serial_conn:
             self.serial_conn.close()
         self.serial_conn = None
-        _log.debug("Connection closed.")
+        _log.info("Connection closed.")
     
 
     def __enter__(self):
