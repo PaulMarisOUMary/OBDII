@@ -151,6 +151,9 @@ class Command():
             return False
 
         return vars(self) == vars(value)
+    
+    def __hash__(self) -> int:
+        return hash((self.mode, self.pid, self.name))
 
     def build(self, early_return: bool = False) -> bytes:
         """Builds the query to be sent to the ELM327 device.
