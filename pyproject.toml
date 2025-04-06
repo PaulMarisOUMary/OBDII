@@ -7,11 +7,11 @@ name = "py-obdii"
 description = "A Python library for interacting with OBDII."
 readme = { file = ".github/README.md", content-type = "text/markdown" }
 authors = [{ name = "PaulMarisOUMary" }]
-license = "MIT"
-license-files = ["LICENSE"]
+license = { file = "LICENSE" }
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.8",
