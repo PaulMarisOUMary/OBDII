@@ -70,3 +70,7 @@ exclude = [
 ]
 pythonVersion = "3.8"
 typeCheckingMode = "basic"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
