@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - "obdii/**"
-      - "tests/*.py"
+      - "**/*.py"
+      - "!docs/**/*.py"
       - "requirements.txt"
       - "pyproject.toml"
     branches: [ main ]
@@ -12,6 +13,7 @@ on:
     paths:
       - "obdii/**"
       - "**/*.py"
+      - "!docs/**/*.py"
       - "requirements.txt"
       - "pyproject.toml"
     branches: [ main ]

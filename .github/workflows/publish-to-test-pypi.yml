@@ -3,10 +3,11 @@ name: Publish OBDII Package to TestPyPI
 on: 
   push:
     paths:
-      - 'obdii/**'
-      - 'tests/*.py'
-      - 'requirements.txt'
-      - 'pyproject.toml'
+      - "obdii/**"
+      - "**/*.py"
+      - "!docs/**/*.py"
+      - "requirements.txt"
+      - "pyproject.toml"
     branches: [ main ]
   workflow_dispatch:
 
