@@ -1,0 +1,16 @@
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+version: 2
+
+build:
+  os: ubuntu-24.04
+  tools:
+    python: latest
+
+python:
+  install:
+  - path: ../
+    method: pip
+    extra_requirements: [docs]
+
+sphinx:
+  configuration: docs/conf.py
