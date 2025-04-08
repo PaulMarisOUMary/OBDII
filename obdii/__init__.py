@@ -2,7 +2,7 @@ from importlib.metadata import version, PackageNotFoundError
 from logging import NullHandler, getLogger
 from pkgutil import extend_path
 
-from .basetypes import Context, Command, Mode, Protocol, Response
+from .basetypes import BaseResponse, Context, Command, Mode, Protocol, Response
 from .connection import Connection
 from .commands import Commands
 from .modes import at_commands
@@ -25,6 +25,7 @@ commands = Commands()
 
 __all__ = [
     "at_commands",
+    "BaseResponse",
     "commands",
     "Connection",
     "Context",

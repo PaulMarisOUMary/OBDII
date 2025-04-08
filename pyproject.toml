@@ -41,6 +41,10 @@ test = [
 dev = [
     "ELM327-emulator",
 ]
+docs = [
+    "sphinx",
+    "sphinxawesome-theme",
+]
 
 [tool.setuptools]
 packages = [
