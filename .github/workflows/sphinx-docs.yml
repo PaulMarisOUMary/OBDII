@@ -40,4 +40,4 @@ jobs:
       - name: Build documentation
         working-directory: docs
         run: |
-          sphinx-build -b html -j auto -a -n -T --keep-going source build/html
+          sphinx-build -b html -j auto -a -n -T -W --keep-going source build/html
