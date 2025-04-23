@@ -60,11 +60,11 @@ class Protocol(Enum):
     ISO_15765_4_CAN_D = 0x09
     """ISO 15765-4 CAN (29 bit ID, 250 kbaud)"""
     SAE_J1939_CAN = 0x0A
-    """SAE J1939 CAN (29 bit ID, 250* kbaud) *default settings (user adjustable)"""
+    """SAE J1939 CAN (29 bit ID, 250* kbaud), default settings (user adjustable)"""
     USER1_CAN = 0x0B
-    """USER1 CAN (11* bit ID, 125* kbaud) *default settings (user adjustable)"""
+    """USER1 CAN (11* bit ID, 125* kbaud), default settings (user adjustable)"""
     USER2_CAN = 0x0C
-    """USER2 CAN (11* bit ID, 50* kbaud) *default settings (user adjustable)"""
+    """USER2 CAN (11* bit ID, 50* kbaud), default settings (user adjustable)"""
 
 
 TNumeric = Union[int, float]
@@ -82,6 +82,32 @@ class Command():
             formula: Optional[Callable] = None,
             command_args: Optional[Dict[str, Any]] = None,
         ) -> None:
+        """
+        Initializes a Command instance with the given parameters.
+
+        Parameters
+        ----------
+        mode: :class:`Mode`
+            Command mode to be used.
+        pid: Union[:class:`int`, :class:`str`]
+            Command PID (Parameter Identifier) to be used.
+        n_bytes: :class:`int`
+            The number of bytes expected in the response.
+        name: :class:`str`
+            The name of the command.
+        description: Optional[:class:`str`]
+            A description of the command.
+        min_values: Optional[Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]]
+            The minimum valid values for the command's parameters.
+        max_values: Optional[Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]]
+            The maximum valid values for the command's parameters.
+        units: Optional[Union[:class:`str`, List[:class:`str`]]]
+            The units for the command's response.
+        formula: Optional[:class:`Callable`]
+            A formula for transforming the response value.
+        command_args: Optional[Dict[:class:`str`, Any]]
+            A dictionary containing the argument names and their expected types for formatting the command.
+        """
         self.mode = mode
         self.pid = pid
         self.n_bytes = n_bytes
@@ -96,6 +122,28 @@ class Command():
         self.is_formatted = False
 
     def __call__(self, *args: Any, checks: bool = True) -> "Command":
+        """
+        Formats the command with the provided arguments and checks for validity.
+
+        Parameters
+        ----------
+        *args: :class:`Any`
+            The values for the arguments of the command, in the order they are defined in `command_args`.
+        checks: :class:`bool`
+            If `True`, performs validation checks on the arguments. Defaults to `True`.
+
+        Returns
+        -------
+        :class:`Command`
+            A new `Command` object with the formatted PID.
+
+        Raises
+        ------
+        ValueError
+            If the number of arguments does not match the expected number or if the placeholders are mismatched.
+        TypeError
+            If the argument type does not match the expected type.
+        """
         expected_args = len(self.command_args)
 
         if not expected_args:
@@ -156,18 +204,25 @@ class Command():
         return hash((self.mode, self.pid, self.name))
 
     def build(self, early_return: bool = False) -> bytes:
-        """Builds the query to be sent to the ELM327 device.
+        """
+        Builds the query to be sent to the ELM327 device as a byte string.
         (The ELM327 is case-insensitive, ignores spaces and all control characters.)
 
         Parameters
-        -----------
+        ----------
         early_return: :class:`bool`
-            If set to True, appends a single hex digit representing the expected number of responses in the query, allowing the ELM327 to return immediately after sending the specified number of responses. Works only with ELM327 v1.3 and later.
+            If set to `True`, appends a hex digit representing the expected number of responses in the query. 
+            Defaults to `False`.
 
         Returns
-        --------
+        -------
         :class:`bytes`
             The formatted query as a byte string, ready to be sent to the ELM327 device.
+
+        Raises
+        ------
+        ValueError
+            If arguments have not been set or are incorrectly formatted.
         """
         if self.command_args and not self.is_formatted:
             raise ValueError(f"Command has unset arguments for '{self.pid}': {self.command_args}")

@@ -25,42 +25,39 @@ class Connection():
                     *,
                     log_handler: Optional[Handler] = None,
                     log_formatter: Optional[Formatter] = None,
-                    log_level: Optional[int] = INFO,
+                    log_level: int = INFO,
                     log_root: bool = False,
                 ) -> None:
-        """Initialize connection settings and auto-connect by default.
+        """
+        Initialize connection settings and optionally auto-connect.
 
         Parameters
-        -----------
+        ----------
         port: :class:`str`
             The serial port (e.g., "COM5", "/dev/ttyUSB0", "/dev/rfcomm0").
         baudrate: :class:`int`
-            The baud rate for communication (e.g., 38400, 115200).
+            Baud rate for serial communication (e.g., 38400, 115200).
         protocol: :class:`Protocol`
-            The protocol to use for communication (default: Protocol.AUTO).
+            The protocol to use for communication.
         timeout: :class:`float`
-            The maximum time (in seconds) to wait for a response from the device before raising a timeout error (default: 5.0).
+            Timeout in seconds for reading operations.
         write_timeout: :class:`float`
-            The time (in seconds) to wait for data to be written to the device before raising a timeout error (default: 3.0).
-        auto_connect: Optional[:class:`bool`]
-            By default set to true, calls connect method.
-        smart_query: Optional[:class:`bool`]
-            If set to true, and if the same command is sent twice, the second time it will be sent as a repeat command.
-        early_return: Optional[:class:`bool`]
+            Timeout in seconds for writing operations.
+        auto_connect: :class:`bool`
+            If True, connect to the adapter immediately.
+        smart_query: :class:`bool`
+            If True, send repeat command when the same command is issued again.
+        early_return: :class:`bool`
             If set to true, the ELM327 will return immediately after sending the specified number of responses specified in the command (n_bytes). Works only with ELM327 v1.3 and later.
-
-        *:
-            Keyword-only arguments (non-positional).
-
-
+        
         log_handler: Optional[:class:`logging.Handler`]
-            The log handler to use for the library's logger.
-        log_formatter: :class:`logging.Formatter`
-            The formatter to use with the given log handler.
+            Custom log handler for the logger.
+        log_formatter: Optional[:class:`logging.Formatter`]
+            Formatter to use with the given log handler.
         log_level: :class:`int`
-            The default log level for the library's logger.
-        root_logger: :class:`bool`
-            Whether to set up the root logger rather than the library logger.
+            Logging level for the logger.
+        log_root: :class:`bool`
+            Whether to set up the root logger.
         """
         self.port = port
         self.baudrate = baudrate
@@ -112,21 +109,15 @@ class Connection():
 
 
     def connect(self, **kwargs) -> None:
-        """Establishes a connection and initializes the device.
-        
+        """
+        Establish the serial connection and run initialization sequence.
+
         Parameters
-        -----------
-        **kwargs:
-            Keyword arguments that can override the default connection parameters.
-            The following keys will update the corresponding instance attributes:
-                - `port`
-                - `baudrate`
-                - `timeout`
-                - `write_timeout`
-            
-            Any other valid keyword arguments for the `serial.Serial`
-            constructor can also be passed and will be used directly
-            when establishing the connection.
+        ----------
+        **kwargs: :class:`dict`
+            Overrides for connection attributes like `port`, `baudrate`,
+            `timeout`, or `write_timeout`. Additional parameters are passed
+            directly to the :class:`serial.Serial` constructor.
         """
         overridable_attributes = ["port", "baudrate", "timeout", "write_timeout"]
         for key in set(kwargs.keys()):
@@ -163,6 +154,14 @@ class Connection():
                 raise TypeError(f"Invalid command type: {type(command)}")
 
     def is_connected(self) -> bool:
+        """
+        Check if the serial connection is open.
+
+        Returns
+        -------
+        :class:`bool`
+            True if the connection is active.
+        """
         return self.serial_conn is not None and self.serial_conn.is_open
 
 
@@ -235,7 +234,7 @@ class Connection():
 
         _log.debug(f">>> Send: {str(query)}")
 
-        self.clear_buffer()
+        self._clear_buffer()
         self.serial_conn.write(query)
         self.serial_conn.flush()
     
@@ -248,7 +247,19 @@ class Connection():
 
 
     def query(self, command: Command) -> Response:
-        """Sends a command and waits for a response."""        
+        """
+        Send a command and wait for the response.
+
+        Parameters
+        ----------
+        command: :class:`Command`
+            Command to send.
+
+        Returns
+        -------
+        :class:`Response`
+            Parsed response from the adapter.
+        """      
         if self.smart_query and self.last_command and command == self.last_command:
             query = ModeAT.REPEAT.build()
         else:
@@ -262,7 +273,19 @@ class Connection():
         return self.wait_for_response(context)
 
     def wait_for_response(self, context: Context) -> Response:
-        """Reads data dynamically until the OBDII prompt (>) or timeout."""
+        """
+        Wait for and parse a response from the adapter.
+
+        Parameters
+        ----------
+        context: :class:`Context`
+            Context to use for parsing.
+
+        Returns
+        -------
+        :class:`Response`
+            Parsed response or raw fallback response.
+        """
         raw = self._read_bytes()
 
         messages = [
@@ -283,7 +306,7 @@ class Connection():
             return Response(**vars(base_response))
     
 
-    def clear_buffer(self) -> None:
+    def _clear_buffer(self) -> None:
         """Clears any buffered input from the adapter."""
         if self.serial_conn:
             self.serial_conn.reset_input_buffer()
@@ -297,7 +320,18 @@ class Connection():
     
 
     def __enter__(self):
+        """
+        Support usage as a context manager.
+
+        Returns
+        -------
+        :class:`Connection`
+            The connection instance itself.
+        """
         return self
 
     def __exit__(self, exc_type: Optional[BaseException], exc_value: Optional[BaseException], traceback: Optional[TracebackType]) -> None:
+        """
+        Close the connection when exiting the context.
+        """
         self.close()
