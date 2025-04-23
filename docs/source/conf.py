@@ -12,6 +12,7 @@ from sphinxawesome_theme import ThemeOptions # type: ignore
 from sphinxawesome_theme.postprocess import Icons # type: ignore
 from sys import path
 
+path.insert(0, str(Path('.')))
 
 project = "py-obdii"
 copyright = "2025-present, PaulMarisOUMary"
@@ -102,6 +103,7 @@ theme_options = ThemeOptions(
 )
 
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 
 html_theme_options = asdict(theme_options)
 html_permalinks_icon = Icons.permalinks_icon
