@@ -75,9 +75,9 @@ theme_options = ThemeOptions(
     show_scrolltop=True,
     awesome_external_links=True,
     main_nav_links={
-        "Home": "/index",
-        "Emulator": '/emulator',
-        "API": "/api",
+        "Home": "index",
+        "Emulator": 'emulator',
+        "API": "api",
         # "Bluetooth": '',
     },
     extra_header_link_icons={
