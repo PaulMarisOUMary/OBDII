@@ -1,1 +1,6 @@
 /* Custom CSS */
+
+#scrolltop {
+    right: auto !important;
+    left: 2rem !important;
+}
