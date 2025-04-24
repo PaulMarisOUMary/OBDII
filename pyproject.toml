@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "py-obdii"
 description = "A Python library for interacting with OBDII."
-readme = { file = ".github/README.md", content-type = "text/markdown" }
+readme = { file = ".github/README.rst", content-type = "text/x-rst" }
 authors = [{ name = "PaulMarisOUMary" }]
 license = { file = "LICENSE" }
 classifiers = [
@@ -20,6 +20,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Topic :: Documentation",
+    "Topic :: Documentation :: Sphinx",
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Utilities",
@@ -30,6 +32,7 @@ dynamic = ["version", "dependencies"]
 
 [project.urls]
 Repository = "https://github.com/PaulMarisOUMary/OBDII"
+Documentation = "https://py-obdii.readthedocs.io"
 Issues = "https://github.com/PaulMarisOUMary/OBDII/issues"
 
 [project.optional-dependencies]

@@ -19,6 +19,29 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
 .. tab-set::
 
+    .. tab-item:: Linux
+    
+        Run and use the emulator on Linux.
+
+        #. Install the library with development dependencies
+
+        #. Start the ELM327 Emulator.
+
+            .. code-block:: bash
+
+                python -m elm -s car --baudrate 38400
+            
+            The emulator will display the virtual port (e.g., /dev/pts/1) to use for connection.
+
+        #. Connect your Python code to the emulator (e.g., /dev/pts/1):
+
+            .. code-block:: python
+
+                from obdii import Connection
+
+                with Connection("/dev/pts/1", baudrate=38400) as conn:
+                    # Your code here
+
     .. tab-item:: Windows
 
         To run and use the emulator on Windows, you will need to create virtual serial ports.
