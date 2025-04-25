@@ -1,19 +1,20 @@
 from typing import Union, overload
 
-from .basetypes import BaseMode, Command
+from .basetypes import MODE_REGISTRY, Modes, ModesType
+from .group_commands import GroupCommands
 
-from .modes import Modes, T_Modes, d_modes
+from ..command import Command
 
 
-class Commands(Modes):
+class GroupModes(Modes):
     def __init__(self):
-        self.modes = d_modes
+        self.modes = MODE_REGISTRY
 
     @overload
     def __getitem__(self, key: str) -> Command: ...
 
     @overload
-    def __getitem__(self, key: int) -> T_Modes: ...
+    def __getitem__(self, key: int) -> ModesType: ...
 
     def __getitem__(self, key: Union[str, int]):
         if isinstance(key, str):
@@ -28,6 +29,6 @@ class Commands(Modes):
             if not key in self.modes:
                 raise KeyError(f"Mode '{key}' not found")
             mode = self.modes.get(key)
-            if not isinstance(mode, BaseMode):
+            if not isinstance(mode, GroupCommands):
                 raise TypeError(f"Expected Mode but got {type(mode)} for key '{key}'")
             return mode

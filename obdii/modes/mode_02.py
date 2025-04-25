@@ -1,13 +1,15 @@
 from copy import deepcopy
 
-from ..basetypes import BaseMode, Command, Mode
+from .group_commands import GroupCommands
+from .mode_01 import Mode01
 
-from .mode01 import Mode01
+from ..command import Command
+from ..mode import Mode
 
 
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_02_-_Show_freeze_frame_data
 
-class Mode02(BaseMode):
+class Mode02(GroupCommands):
     """Freeze frame Commands"""
 
     @classmethod

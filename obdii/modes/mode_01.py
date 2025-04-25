@@ -1,8 +1,12 @@
 from functools import partial
 
-from ..basetypes import BaseMode, Command, Mode
+from .group_commands import GroupCommands
+
+from ..command import Command
 from ..formula import Formula, MultiFormula
+from ..mode import Mode
 from ..parser import SupportedPIDS
+
 
 M = Mode.REQUEST
 C = partial(Command, M)
@@ -13,7 +17,7 @@ SP = SupportedPIDS
 
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_01_-_Show_current_data
 
-class Mode01(BaseMode):
+class Mode01(GroupCommands):
     """Request Commands - OBD Mode 01 PIDs
 
     Abbreviations:
