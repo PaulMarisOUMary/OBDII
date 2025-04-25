@@ -2,7 +2,7 @@ from ast import (
     Add, Sub, Mult, Div, FloorDiv, Mod, Pow, BitXor, UAdd, USub, parse, NodeVisitor, Expr, BinOp, UnaryOp, Name, Constant
 )
 from typing import List, Any, NoReturn
-from operator import add, sub, mul, truediv, floordiv, mod, pow as opow, xor
+from operator import add, sub, mul, truediv, floordiv, mod, pow, xor
 
 
 class SafeEvaluator(NodeVisitor):
@@ -12,7 +12,7 @@ class SafeEvaluator(NodeVisitor):
         Add: add, Sub: sub,
         Mult: mul, Div: truediv,
         FloorDiv: floordiv, Mod: mod,
-        Pow: opow, BitXor: xor
+        Pow: pow, BitXor: xor
     }
 
     def __init__(self, variables):

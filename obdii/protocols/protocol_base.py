@@ -9,7 +9,7 @@ from ..response import BaseResponse, Response
 
 
 class BaseProtocol(ABC):
-    _registry: Dict[Protocol, Type["BaseProtocol"]] = {}
+    _registry: Dict[Protocol, Type[BaseProtocol]] = {}
     _protocol_attributes: Dict[Protocol, Dict] = {}
 
     extra_init_sequence: List[Union[Command, Callable]]

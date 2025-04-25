@@ -2,11 +2,14 @@ from importlib.metadata import version, PackageNotFoundError
 from logging import NullHandler, getLogger
 from pkgutil import extend_path
 
-from .basetypes import BaseResponse, Context, Command, Mode, Protocol, Response
+from .command import Command
 from .connection import Connection
-from .commands import Commands
-from .modes import at_commands
-from .protocols import *
+from .mode import Mode
+from .modes import at_commands, commands
+from .protocol import Protocol
+# note: Need to import the protocols to register them
+from .protocols import ProtocolCAN, ProtocolJ1850, ProtocolKWP2000
+from .response import BaseResponse, Context, Response
 
 
 __title__ = "obdii"
@@ -21,15 +24,13 @@ except PackageNotFoundError:
 __path__ = extend_path(__path__, __name__)
 
 
-commands = Commands()
-
 __all__ = [
     "at_commands",
-    "BaseResponse",
     "commands",
+    "BaseResponse",
+    "Command",
     "Connection",
     "Context",
-    "Command",
     "Mode",
     "Protocol",
     "Response",

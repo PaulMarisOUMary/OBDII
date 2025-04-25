@@ -3,7 +3,7 @@ import pytest
 from inspect import getsource
 from ast import parse, walk, Assign, Name
 
-from obdii.basetypes import Command
+from obdii.command import Command
 from obdii.modes import ModeAT, Mode01, Mode02, Mode03, Mode04, Mode09
 
 TEST_MODES = [
