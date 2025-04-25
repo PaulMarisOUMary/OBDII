@@ -19,16 +19,14 @@ class GroupModes(Modes):
     def __getitem__(self, key: Union[str, int]):
         if isinstance(key, str):
             key = key.upper()
-            if not key in dir(self):
-                raise KeyError(f"Command '{key}' not found")
-            item = getattr(self, key)
+            item = getattr(self, key, None)
             if not isinstance(item, Command):
-                raise TypeError(f"Expected Command but got {type(item)} for key '{key}'")
+                raise KeyError(f"Command '{key}' not found")
             return item
         elif isinstance(key, int):
-            if not key in self.modes:
-                raise KeyError(f"Mode '{key}' not found")
             mode = self.modes.get(key)
             if not isinstance(mode, GroupCommands):
-                raise TypeError(f"Expected Mode but got {type(mode)} for key '{key}'")
+                raise KeyError(f"Mode '{key}' not found")
             return mode
+
+        raise TypeError(f"Invalid key type: {type(key)}. Expected str or int.")
