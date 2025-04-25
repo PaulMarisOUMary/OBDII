@@ -1,43 +1,33 @@
-from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Type, Union
+from enum import Enum
 
 
-from .basetypes import BaseResponse, Command, Context, Protocol, Response
+class Protocol(Enum):
+    UNKNOWN = -1
+    """Unknown protocol"""
 
-
-class BaseProtocol(ABC):
-    _registry: Dict[Protocol, Type["BaseProtocol"]] = {}
-    _protocol_attributes: Dict[Protocol, Dict] = {}
-
-    extra_init_sequence: List[Union[Command, Callable]]
-
-    def __init__(self) -> None: ...
-
-    @abstractmethod
-    def parse_response(self, base_response: BaseResponse, context: Context) -> Response: ...
-
-    @classmethod
-    def register(cls, protocols: Dict[Protocol, Dict[str, Any]]) -> None:
-        """Register a subclass with its supported protocols."""
-        for protocol, attr in protocols.items():
-            cls._registry[protocol] = cls
-            cls._protocol_attributes[protocol] = attr
-    
-    @classmethod
-    def get_handler(cls, protocol: Protocol) -> "BaseProtocol":
-        """Retrieve the appropriate protocol class or fallback to ProtocolUnknown."""
-        return cls._registry.get(protocol, ProtocolUnknown)()
-
-    @classmethod
-    def get_protocol_attributes(cls, protocol: Protocol) -> Dict[str, Any]:
-        return cls._protocol_attributes.get(protocol, {})
-
-
-class ProtocolUnknown(BaseProtocol): 
-    """Fallback protocol class for unknown or unsupported protocols.
-
-    In such cases, basic serial communication might still be possible,
-    but full message parsing could be limited.
-    """
-    def parse_response(self, base_response: BaseResponse, context: Context) -> Response:
-        raise NotImplementedError
+    AUTO = 0x00
+    """Automatically determine the protocol"""
+    SAE_J1850_PWM = 0x01
+    """SAE J1850 PWM (41.6 kbaud)"""
+    SAE_J1850_VPW = 0x02
+    """SAE J1850 VPW (10.4 kbaud)"""
+    ISO_9141_2 = 0x03
+    """ISO 9141-2 (5 baud init, 10.4 kbaud)"""
+    ISO_14230_4_KWP = 0x04
+    """ISO 14230-4 KWP (5 baud init, 10.4 kbaud)"""
+    ISO_14230_4_KWP_FAST = 0x05
+    """ISO 14230-4 KWP (fast init, 10.4 kbaud)"""
+    ISO_15765_4_CAN = 0x06
+    """ISO 15765-4 CAN (11 bit ID, 500 kbaud)"""
+    ISO_15765_4_CAN_B = 0x07
+    """ISO 15765-4 CAN (29 bit ID, 500 kbaud)"""
+    ISO_15765_4_CAN_C = 0x08
+    """ISO 15765-4 CAN (11 bit ID, 250 kbaud)"""
+    ISO_15765_4_CAN_D = 0x09
+    """ISO 15765-4 CAN (29 bit ID, 250 kbaud)"""
+    SAE_J1939_CAN = 0x0A
+    """SAE J1939 CAN (29 bit ID, 250* kbaud), default settings (user adjustable)"""
+    USER1_CAN = 0x0B
+    """USER1 CAN (11* bit ID, 125* kbaud), default settings (user adjustable)"""
+    USER2_CAN = 0x0C
+    """USER2 CAN (11* bit ID, 50* kbaud), default settings (user adjustable)"""
