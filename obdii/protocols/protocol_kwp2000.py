@@ -1,5 +1,7 @@
-from ..basetypes import BaseResponse, Context, Protocol, Response
-from ..protocol import BaseProtocol
+from ..protocol import Protocol
+from ..response import BaseResponse, Response
+
+from .protocol_base import BaseProtocol
 
 
 class ProtocolKWP2000(BaseProtocol):
@@ -8,7 +10,7 @@ class ProtocolKWP2000(BaseProtocol):
     - [0x04] ISO 14230-4 KWP (5 baud init, 10.4 Kbaud)
     - [0x05] ISO 14230-4 KWP (fast init, 10.4 Kbaud)
     """
-    def parse_response(self, base_response: BaseResponse, context: Context) -> Response:
+    def parse_response(self, base_response: BaseResponse) -> Response:
         raise NotImplementedError
 
 

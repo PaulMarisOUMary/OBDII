@@ -1,13 +1,17 @@
 from logging import Formatter, Handler, getLogger, INFO
 from re import IGNORECASE, search as research
 from types import TracebackType
-from serial import Serial, SerialException # type: ignore
 from typing import Callable, List, Optional, Union
 
-from .basetypes import BaseResponse, Command, Context, Protocol, Response
+from serial import Serial, SerialException # type: ignore
+
+from .command import Command
 from .modes import ModeAT
-from .protocol import BaseProtocol
+from .protocol import Protocol
+from .protocols.protocol_base import BaseProtocol
+from .response import BaseResponse, Context, Response
 from .utils import bytes_to_string, debug_baseresponse, filter_bytes, setup_logging
+
 
 _log = getLogger(__name__)
 
@@ -120,7 +124,7 @@ class Connection():
             directly to the :class:`serial.Serial` constructor.
         """
         overridable_attributes = ["port", "baudrate", "timeout", "write_timeout"]
-        for key in set(kwargs.keys()):
+        for key in kwargs.keys():
             if key in overridable_attributes:
                 setattr(self, key, kwargs.pop(key))
                 _log.debug(f"Overriding connection attribute '{key}' with '{getattr(self, key)}' from kwargs.")
@@ -299,7 +303,7 @@ class Connection():
         _log.debug(f"<<< Read:\n{debug_baseresponse(base_response)}")
 
         try:
-            return self.protocol_handler.parse_response(base_response, context)
+            return self.protocol_handler.parse_response(base_response)
         except NotImplementedError:
             if self.init_completed:
                 _log.warning(f"Unsupported Protocol used: {self.protocol.name}")

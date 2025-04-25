@@ -4,7 +4,7 @@ from re import escape, fullmatch, sub
 from sys import platform
 from typing import Any, Optional, Tuple
 
-from .basetypes import BaseResponse
+from .response import BaseResponse
 
 
 def split_by_byte(raw: bytes) -> Tuple[bytes, ...]:

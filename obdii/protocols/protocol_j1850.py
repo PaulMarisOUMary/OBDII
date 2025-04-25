@@ -1,5 +1,7 @@
-from ..basetypes import BaseResponse, Context, Protocol, Response
-from ..protocol import BaseProtocol
+from ..protocol import Protocol
+from ..response import BaseResponse, Response
+
+from .protocol_base import BaseProtocol
 
 
 class ProtocolJ1850(BaseProtocol):
@@ -7,7 +9,7 @@ class ProtocolJ1850(BaseProtocol):
     - [0x01] SAE J1850 PWM (41.6 Kbaud)
     - [0x02] SAE J1850 VPW (10.4 Kbaud)
     """
-    def parse_response(self, base_response: BaseResponse, context: Context) -> Response:
+    def parse_response(self, base_response: BaseResponse) -> Response:
         raise NotImplementedError
 
 
