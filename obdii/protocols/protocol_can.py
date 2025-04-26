@@ -1,6 +1,7 @@
 from logging import getLogger
 from typing import List, Tuple
 
+from ..basetypes import MISSING
 from ..errors import BaseResponseError
 from ..mode import Mode
 from ..protocol import Protocol
@@ -78,7 +79,7 @@ class ProtocolCAN(BaseProtocol):
                     _log.warning(f"Unexpected response code 0x{response_code:02X} for command {command} (expected response code 0x{0x40 + command.mode.value:02X})")
 
                 parsed_data.append(data)
-            if command.formula:
+            if not command.formula is MISSING:
                 try:
                     value = command.formula(parsed_data)
                 except Exception as e:

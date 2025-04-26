@@ -29,13 +29,13 @@ class Response(BaseResponse):
     value: Optional[Any] = None
 
     @property
-    def min_values(self) -> Optional[OneOrMany[Real]]:
+    def min_values(self) -> OneOrMany[Real]:
         return self.context.command.min_values
     
     @property
-    def max_values(self) -> Optional[OneOrMany[Real]]:
+    def max_values(self) -> OneOrMany[Real]:
         return self.context.command.max_values
     
     @property
-    def units(self) -> Optional[OneOrMany[str]]:
+    def units(self) -> OneOrMany[str]:
         return self.context.command.units

@@ -33,17 +33,17 @@ class Command():
             The number of bytes expected in the response.
         name: :class:`str`
             The name of the command.
-        description: Optional[:class:`str`]
+        description: :class:`str`
             A description of the command.
-        min_values: Optional[Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]]
+        min_values: Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]
             The minimum valid values for the command's parameters.
-        max_values: Optional[Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]]
+        max_values: Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]
             The maximum valid values for the command's parameters.
-        units: Optional[Union[:class:`str`, List[:class:`str`]]]
+        units: Union[:class:`str`, List[:class:`str`]]
             The units for the command's response.
-        formula: Optional[:class:`Callable`]
+        formula: :class:`Callable`
             A formula for transforming the response value.
-        command_args: Optional[Dict[:class:`str`, Any]]
+        command_args: Dict[:class:`str`, Any]
             A dictionary containing the argument names and their expected types for formatting the command.
         """
         self.mode = mode

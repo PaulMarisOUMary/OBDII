@@ -19,7 +19,6 @@ def arg_command_factory():
             min_values=0,
             max_values=255,
             units='V',
-            formula=None,
             command_args=cmd_args,
         )
     return _create_command

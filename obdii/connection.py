@@ -55,9 +55,9 @@ class Connection():
         early_return: :class:`bool`
             If set to true, the ELM327 will return immediately after sending the specified number of responses specified in the command (n_bytes). Works only with ELM327 v1.3 and later.
         
-        log_handler: Optional[:class:`logging.Handler`]
+        log_handler: :class:`logging.Handler`
             Custom log handler for the logger.
-        log_formatter: Optional[:class:`logging.Formatter`]
+        log_formatter: :class:`logging.Formatter`
             Formatter to use with the given log handler.
         log_level: :class:`int`
             Logging level for the logger.
@@ -170,7 +170,7 @@ class Connection():
         return self.serial_conn is not None and self.serial_conn.is_open
 
 
-    def _auto_protocol(self, protocol: Optional[Protocol] = None) -> None:
+    def _auto_protocol(self, protocol: Protocol = MISSING) -> None:
         """Sets the protocol for communication."""
         protocol = protocol or self.protocol
         unwanted_protocols = [Protocol.AUTO, Protocol.UNKNOWN]

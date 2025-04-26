@@ -5,7 +5,7 @@ from typing import Set, Type, Optional
 
 
 class BaseResponseError(Exception):
-    _registry: Set[Type["BaseResponseError"]] = set()
+    _registry: Set[Type[BaseResponseError]] = set()
 
     pattern: Optional[bytes] = None
     regex_pattern: Optional[Pattern] = None
