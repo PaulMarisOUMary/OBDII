@@ -1,9 +1,9 @@
 
 from copy import deepcopy
 from re import findall
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict, Union
 
-from .basetypes import OneOrMany, Real
+from .basetypes import MISSING, OneOrMany, Real
 from .mode import Mode
 
 
@@ -13,12 +13,12 @@ class Command():
             pid: Union[int, str],
             n_bytes: int,
             name: str,
-            description: Optional[str] = None,
-            min_values: Optional[OneOrMany[Real]] = None,
-            max_values: Optional[OneOrMany[Real]] = None,
-            units: Optional[OneOrMany[str]] = None,
-            formula: Optional[Callable] = None,
-            command_args: Optional[Dict[str, Any]] = None,
+            description: str = MISSING,
+            min_values: OneOrMany[Real] = MISSING,
+            max_values: OneOrMany[Real] = MISSING,
+            units: OneOrMany[str] = MISSING,
+            formula: Callable = MISSING,
+            command_args: Dict[str, Any] = MISSING,
         ) -> None:
         """
         Initializes a Command instance with the given parameters.
@@ -82,50 +82,47 @@ class Command():
         TypeError
             If the argument type does not match the expected type.
         """
-        expected_args = len(self.command_args)
+        if not self.command_args:
+            raise ValueError(f"Command '{self}' should not be parametrized, as no arguments have been described.")
 
-        if not expected_args:
-            raise ValueError(f"Command '{self.__repr__()}' should not be parametrized, as no arguments has been described")
+        if len(args) != len(self.command_args):
+            raise ValueError(f"Expected {len(self.command_args)} arguments, got {len(args)}.")
 
-        received_args = len(args)
-        if expected_args != received_args:
-            raise ValueError(f"{self.__repr__()} expects {expected_args} argument(s), but got {received_args}")
-
-        actual_placeholders = set(findall(r"{(\w+)}", str(self.pid)))
+        placeholders = set(findall(r"{(\w+)}", str(self.pid)))
         expected_placeholders = set(self.command_args.keys())
 
-        if actual_placeholders != expected_placeholders:
-            missing = expected_placeholders - actual_placeholders
-            extra = actual_placeholders - expected_placeholders
-            raise ValueError(f"PID format mismatch. Missing placeholders: {missing}. Extra placeholders: {extra}")
-        
-        fmt_command = deepcopy(self)
+        if placeholders != expected_placeholders:
+            missing = expected_placeholders - placeholders
+            extra = placeholders - expected_placeholders
+            raise ValueError(f"PID format mismatch. Missing placeholders: {missing}. Extra placeholders: {extra}.")
+
         combined_args = {}
-        try:
-            for (arg_name, arg_type), value in zip(self.command_args.items(), args):
-                if checks:
-                    if not isinstance(value, arg_type):
-                        raise TypeError(f"Argument '{arg_name}' must be of type {arg_type}, but got {type(value).__name__}")
+        for (arg_name, arg_type), value in zip(self.command_args.items(), args):
+            if checks:
+                if not isinstance(value, arg_type):
+                    raise TypeError(f"Expected argument '{arg_name}' to be of type {arg_type.__name__}, got {type(value).__name__}.")
 
-                    arg_len = len(arg_name)
-                    if isinstance(value, int):
-                        if value < 0:
-                            raise ValueError(f"Argument '{arg_name}' cannot be negative (got {value}).")
-                        formatted_value = f"{value:0{arg_len}X}"
+                expected_len = len(arg_name)
 
-                        if len(formatted_value) > arg_len:
-                            raise ValueError(f"Formatted value '{formatted_value}' exceeds expected length {len(arg_name)} for argument '{arg_name}'")
-                        value = formatted_value
+                if isinstance(value, int):
+                    if value < 0:
+                        raise ValueError(f"Argument '{arg_name}' cannot be negative.")
+                    value = f"{value:0{expected_len}X}"
+                    if len(value) != expected_len:
+                        raise ValueError(f"Argument '{arg_name}' must be {expected_len} characters long after formatting, got {len(value)}.")
 
-                    elif isinstance(value, str) and len(value) != arg_len:
-                        raise ValueError(f"Argument '{arg_name}' should have length {arg_len}, but got {len(value)}")
+                elif isinstance(value, str):
+                    if len(value) != expected_len:
+                        raise ValueError(f"Argument '{arg_name}' must be {expected_len} characters long, got {len(value)}.")
 
-                combined_args[arg_name] = value
+                else:
+                    raise TypeError(f"Argument '{arg_name}' must be of type int or str, got {type(value).__name__}.")
 
-            fmt_command.is_formatted = True
-            fmt_command.pid = str(self.pid).format(**combined_args)
-        except Exception as e:
-            raise e
+            combined_args[arg_name] = value
+
+        fmt_command = deepcopy(self)
+        fmt_command.is_formatted = True
+        fmt_command.pid = str(self.pid).format(**combined_args)
 
         return fmt_command
 
@@ -167,11 +164,11 @@ class Command():
 
         mode = self.mode.value
         pid = self.pid
-
         return_digit = ''
         if early_return and self.n_bytes and self.mode != Mode.AT:
             data_bytes = 7
-            n_lines = self.n_bytes // data_bytes + (1 if self.n_bytes % data_bytes != 0 else 0)
+
+            n_lines = (self.n_bytes + (data_bytes - 1)) // data_bytes
             if 0 < n_lines < 16:
                 return_digit = f" {n_lines:X}"
 
@@ -180,4 +177,6 @@ class Command():
         if isinstance(pid, int):
             pid = f"{pid:02X}"
 
-        return f"{mode} {pid}{return_digit}\r".encode()
+        query = f"{mode} {pid}{return_digit}\r"
+
+        return query.encode()
