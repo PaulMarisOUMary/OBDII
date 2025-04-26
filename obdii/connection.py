@@ -5,6 +5,7 @@ from typing import Callable, List, Optional, Union
 
 from serial import Serial, SerialException # type: ignore
 
+from .basetypes import MISSING
 from .command import Command
 from .modes import ModeAT
 from .protocol import Protocol
@@ -27,8 +28,8 @@ class Connection():
                     smart_query: bool = False,
                     early_return: bool = False,
                     *,
-                    log_handler: Optional[Handler] = None,
-                    log_formatter: Optional[Formatter] = None,
+                    log_handler: Handler = MISSING,
+                    log_formatter: Formatter = MISSING,
                     log_level: int = INFO,
                     log_root: bool = False,
                 ) -> None:
@@ -124,7 +125,7 @@ class Connection():
             directly to the :class:`serial.Serial` constructor.
         """
         overridable_attributes = ["port", "baudrate", "timeout", "write_timeout"]
-        for key in kwargs.keys():
+        for key in set(kwargs.keys()):
             if key in overridable_attributes:
                 setattr(self, key, kwargs.pop(key))
                 _log.debug(f"Overriding connection attribute '{key}' with '{getattr(self, key)}' from kwargs.")
