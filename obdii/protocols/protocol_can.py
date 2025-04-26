@@ -79,7 +79,7 @@ class ProtocolCAN(BaseProtocol):
                     _log.warning(f"Unexpected response code 0x{response_code:02X} for command {command} (expected response code 0x{0x40 + command.mode.value:02X})")
 
                 parsed_data.append(data)
-            if not command.formula is MISSING:
+            if command.formula:
                 try:
                     value = command.formula(parsed_data)
                 except Exception as e:

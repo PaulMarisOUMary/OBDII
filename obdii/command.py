@@ -1,7 +1,7 @@
 
 from copy import deepcopy
 from re import findall
-from typing import Any, Callable, Dict, Union
+from typing import Any, Callable, Dict, Optional, Union
 
 from .basetypes import MISSING, OneOrMany, Real
 from .mode import Mode
@@ -14,11 +14,11 @@ class Command():
             n_bytes: int,
             name: str,
             description: str = MISSING,
-            min_values: OneOrMany[Real] = MISSING,
-            max_values: OneOrMany[Real] = MISSING,
-            units: OneOrMany[str] = MISSING,
-            formula: Callable = MISSING,
-            command_args: Dict[str, Any] = MISSING,
+            min_values: Optional[OneOrMany[Real]] = MISSING,
+            max_values: Optional[OneOrMany[Real]] = MISSING,
+            units: Optional[OneOrMany[str]] = MISSING,
+            formula: Optional[Callable] = MISSING,
+            command_args: Optional[Dict[str, Any]] = MISSING,
         ) -> None:
         """
         Initializes a Command instance with the given parameters.
@@ -35,15 +35,15 @@ class Command():
             The name of the command.
         description: :class:`str`
             A description of the command.
-        min_values: Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]
+        min_values: Optional[Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]]
             The minimum valid values for the command's parameters.
-        max_values: Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]
+        max_values: Optional[Union[:class:`int`, :class:`float`, List[Union[:class:`int`, :class:`float`]]]]
             The maximum valid values for the command's parameters.
-        units: Union[:class:`str`, List[:class:`str`]]
+        units: Optional[Union[:class:`str`, List[:class:`str`]]]
             The units for the command's response.
-        formula: :class:`Callable`
+        formula: Optional[:class:`Callable`]
             A formula for transforming the response value.
-        command_args: Dict[:class:`str`, Any]
+        command_args: Optional[Dict[:class:`str`, Any]]
             A dictionary containing the argument names and their expected types for formatting the command.
         """
         self.mode = mode
