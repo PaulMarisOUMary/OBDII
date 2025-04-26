@@ -1,6 +1,6 @@
 from typing import List
 
-from .basetypes import BytesRows
+from ..basetypes import BytesRows
 
 
 class SupportedPIDS():
@@ -17,5 +17,3 @@ class SupportedPIDS():
         ]
 
         return supported_pids
-
-

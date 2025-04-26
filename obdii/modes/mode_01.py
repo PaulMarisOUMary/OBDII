@@ -3,9 +3,9 @@ from functools import partial
 from .group_commands import GroupCommands
 
 from ..command import Command
-from ..formula import Formula, MultiFormula
 from ..mode import Mode
-from ..parser import SupportedPIDS
+from ..parsers.formula import Formula, MultiFormula
+from ..parsers.pids import SupportedPIDS
 
 
 M = Mode.REQUEST

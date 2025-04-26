@@ -4,7 +4,7 @@ from .group_commands import GroupCommands
 
 from ..command import Command
 from ..mode import Mode
-from ..parser import SupportedPIDS
+from ..parsers.pids import SupportedPIDS
 
 
 M = Mode.VEHICLE_INFO

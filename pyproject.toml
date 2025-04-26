@@ -54,6 +54,7 @@ docs = [
 packages = [
     "obdii",
     "obdii.modes",
+    "obdii.parsers",
     "obdii.protocols",
 ]
 include-package-data = true
@@ -68,6 +69,7 @@ local_scheme = "no-local-version"
 include = [
     "obdii",
     "obdii/modes",
+    "obdii/parsers",
     "obdii/protocols",
 ]
 exclude = [

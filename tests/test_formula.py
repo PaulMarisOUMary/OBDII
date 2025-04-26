@@ -2,7 +2,7 @@ import pytest
 
 from ast import parse
 
-from obdii.formula import Formula, MultiFormula, SafeEvaluator
+from obdii.parsers.formula import Formula, MultiFormula, SafeEvaluator
 
 
 @pytest.mark.parametrize(
