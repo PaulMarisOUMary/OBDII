@@ -1,13 +1,17 @@
 from functools import partial
 
-from ..basetypes import BaseMode, Command, Mode
+from .group_commands import GroupCommands
+
+from ..command import Command
+from ..mode import Mode
+
 
 M = Mode.AT
 C = partial(Command, M, min_values=None, max_values=None, units=None)
 
 # ELM327.pdf | AT Command Summary | Page 8 - 9
 
-class ModeAT(BaseMode):
+class ModeAT(GroupCommands):
     """AT Commands"""
 
     # General Commands

@@ -1,13 +1,18 @@
 from logging import Formatter, Handler, getLogger, INFO
 from re import IGNORECASE, search as research
 from types import TracebackType
-from serial import Serial, SerialException # type: ignore
 from typing import Callable, List, Optional, Union
 
-from .basetypes import BaseResponse, Command, Context, Protocol, Response
+from serial import Serial, SerialException # type: ignore
+
+from .basetypes import MISSING
+from .command import Command
 from .modes import ModeAT
-from .protocol import BaseProtocol
+from .protocol import Protocol
+from .protocols.protocol_base import BaseProtocol
+from .response import BaseResponse, Context, Response
 from .utils import bytes_to_string, debug_baseresponse, filter_bytes, setup_logging
+
 
 _log = getLogger(__name__)
 
@@ -23,8 +28,8 @@ class Connection():
                     smart_query: bool = False,
                     early_return: bool = False,
                     *,
-                    log_handler: Optional[Handler] = None,
-                    log_formatter: Optional[Formatter] = None,
+                    log_handler: Handler = MISSING,
+                    log_formatter: Formatter = MISSING,
                     log_level: int = INFO,
                     log_root: bool = False,
                 ) -> None:
@@ -50,9 +55,9 @@ class Connection():
         early_return: :class:`bool`
             If set to true, the ELM327 will return immediately after sending the specified number of responses specified in the command (n_bytes). Works only with ELM327 v1.3 and later.
         
-        log_handler: Optional[:class:`logging.Handler`]
+        log_handler: :class:`logging.Handler`
             Custom log handler for the logger.
-        log_formatter: Optional[:class:`logging.Formatter`]
+        log_formatter: :class:`logging.Formatter`
             Formatter to use with the given log handler.
         log_level: :class:`int`
             Logging level for the logger.
@@ -165,7 +170,7 @@ class Connection():
         return self.serial_conn is not None and self.serial_conn.is_open
 
 
-    def _auto_protocol(self, protocol: Optional[Protocol] = None) -> None:
+    def _auto_protocol(self, protocol: Protocol = MISSING) -> None:
         """Sets the protocol for communication."""
         protocol = protocol or self.protocol
         unwanted_protocols = [Protocol.AUTO, Protocol.UNKNOWN]
@@ -299,7 +304,7 @@ class Connection():
         _log.debug(f"<<< Read:\n{debug_baseresponse(base_response)}")
 
         try:
-            return self.protocol_handler.parse_response(base_response, context)
+            return self.protocol_handler.parse_response(base_response)
         except NotImplementedError:
             if self.init_completed:
                 _log.warning(f"Unsupported Protocol used: {self.protocol.name}")

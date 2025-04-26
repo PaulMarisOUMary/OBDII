@@ -1,10 +1,14 @@
 from logging import getLogger
 from typing import List, Tuple
 
-from ..basetypes import BaseResponse, Context, Mode, Protocol, Response
+from ..basetypes import MISSING
 from ..errors import BaseResponseError
-from ..protocol import BaseProtocol
+from ..mode import Mode
+from ..protocol import Protocol
+from ..response import BaseResponse, Response
 from ..utils import bytes_to_string, filter_bytes, is_bytes_hexadecimal, split_by_byte
+
+from .protocol_base import BaseProtocol
 
 
 _log = getLogger(__name__)
@@ -20,7 +24,8 @@ class ProtocolCAN(BaseProtocol):
     - [0x0B] USER1 CAN (11 bit ID, 125 Kbaud)
     - [0x0C] USER2 CAN (11 bit ID, 50 Kbaud)
     """
-    def parse_response(self, base_response: BaseResponse, context: Context) -> Response:
+    def parse_response(self, base_response: BaseResponse) -> Response:
+        context = base_response.context
         command = context.command
         if command.mode == Mode.AT: # AT Commands
             status = None

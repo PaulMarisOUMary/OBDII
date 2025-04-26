@@ -2,7 +2,8 @@ import pytest
 
 from typing import Any, Dict
 
-from obdii.basetypes import Command, Mode
+from obdii.command import Command
+from obdii.mode import Mode
 
 
 @pytest.fixture

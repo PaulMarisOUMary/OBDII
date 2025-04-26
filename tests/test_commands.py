@@ -1,7 +1,7 @@
 import pytest
 
-from obdii.commands import Commands
 from obdii.modes import Mode01, Mode02, Mode03, Mode04, Mode09
+from obdii.modes.group_modes import GroupModes
 
 
 @pytest.mark.parametrize(
@@ -18,7 +18,7 @@ from obdii.modes import Mode01, Mode02, Mode03, Mode04, Mode09
     ]
 )
 def test_commands_getitem_int(key, expected):
-    commands = Commands()
+    commands = GroupModes()
 
     if isinstance(expected, type) and issubclass(expected, Exception):
         with pytest.raises(expected):
@@ -38,7 +38,7 @@ def test_commands_getitem_int(key, expected):
     ]
 )
 def test_commands_getitem_str(key, expected):
-    commands = Commands()
+    commands = GroupModes()
 
     if isinstance(expected, type) and issubclass(expected, Exception):
         with pytest.raises(expected):
@@ -58,7 +58,7 @@ def test_commands_getitem_str(key, expected):
     ]
 )
 def test_commands_getitem_int_int(key_1, key_2, expected):
-    commands = Commands()
+    commands = GroupModes()
 
     if isinstance(expected, type) and issubclass(expected, Exception):
         with pytest.raises(expected):

@@ -1,7 +1,11 @@
 from functools import partial
 
-from ..basetypes import BaseMode, Command, Mode
-from ..parser import SupportedPIDS
+from .group_commands import GroupCommands
+
+from ..command import Command
+from ..mode import Mode
+from ..parsers.pids import SupportedPIDS
+
 
 M = Mode.VEHICLE_INFO
 C = partial(Command, M)
@@ -9,7 +13,7 @@ SP = SupportedPIDS
 
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_09_-_Request_vehicle_information
 
-class Mode09(BaseMode):
+class Mode09(GroupCommands):
     """Request Vehicle Information"""
 
     SUPPORTED_PIDS_9 = C(0x00, 0x04, "SUPPORTED_PIDS_9", "Service 9 supported PIDs [$01 to $20]", None, None, None, SP(0x01))

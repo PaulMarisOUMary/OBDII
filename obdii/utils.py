@@ -2,9 +2,10 @@ from logging import Handler, Formatter, DEBUG, INFO, WARNING, ERROR, CRITICAL, S
 from os import environ
 from re import escape, fullmatch, sub
 from sys import platform
-from typing import Any, Optional, Tuple
+from typing import Any, Tuple
 
-from .basetypes import BaseResponse
+from .basetypes import MISSING
+from .response import BaseResponse
 
 
 def split_by_byte(raw: bytes) -> Tuple[bytes, ...]:
@@ -33,19 +34,19 @@ def debug_baseresponse(base_response: BaseResponse) -> str:
 
 
 def setup_logging(
-    handler: Optional[Handler] = None,
-    formatter: Optional[Formatter] = None,
-    level: Optional[int] = None,
+    handler: Handler = MISSING,
+    formatter: Formatter = MISSING,
+    level: int = MISSING,
     root: bool = True,
 ) -> None:
     """A helper function to setup logging."""
-    if not level:
+    if level is MISSING:
         level = INFO
 
-    if not handler:
+    if handler is MISSING:
         handler = StreamHandler()
 
-    if not formatter:
+    if formatter is MISSING:
         if isinstance(handler, StreamHandler) and _stream_supports_colour(handler.stream):
             formatter = _ColorFormatter()
         else:

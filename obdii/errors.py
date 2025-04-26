@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from re import compile, Pattern
 from typing import Set, Type, Optional
 
 
 class BaseResponseError(Exception):
-    _registry: Set[Type["BaseResponseError"]] = set()
+    _registry: Set[Type[BaseResponseError]] = set()
 
     pattern: Optional[bytes] = None
     regex_pattern: Optional[Pattern] = None
@@ -20,7 +22,7 @@ class BaseResponseError(Exception):
         BaseResponseError._registry.add(cls)
 
     @classmethod
-    def detect(cls, response: bytes) -> Optional["BaseResponseError"]:
+    def detect(cls, response: bytes) -> Optional[BaseResponseError]:
         """Detect an error in a response and return the corresponding error instance."""
         for err in cls._registry:
             if err.pattern and err.pattern in response:

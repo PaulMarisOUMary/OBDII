@@ -2,7 +2,9 @@ from ast import (
     Add, Sub, Mult, Div, FloorDiv, Mod, Pow, BitXor, UAdd, USub, parse, NodeVisitor, Expr, BinOp, UnaryOp, Name, Constant
 )
 from typing import List, Any, NoReturn
-from operator import add, sub, mul, truediv, floordiv, mod, pow as opow, xor
+from operator import add, sub, mul, truediv, floordiv, mod, pow, xor
+
+from ..basetypes import BytesRows
 
 
 class SafeEvaluator(NodeVisitor):
@@ -12,7 +14,7 @@ class SafeEvaluator(NodeVisitor):
         Add: add, Sub: sub,
         Mult: mul, Div: truediv,
         FloorDiv: floordiv, Mod: mod,
-        Pow: opow, BitXor: xor
+        Pow: pow, BitXor: xor
     }
 
     def __init__(self, variables):
@@ -51,7 +53,7 @@ class Formula():
 
         self.parsed_expr = parse(self.expression, mode="eval")
 
-    def __call__(self, parsed_data: List[List[str]]) -> Any:
+    def __call__(self, parsed_data: BytesRows) -> Any:
         """Evaluate the formula."""
         if not parsed_data or not parsed_data[0]:
             raise ValueError("Invalid parsed_data: must contain at least one non-empty list.")
@@ -72,6 +74,6 @@ class MultiFormula():
         """Initialize multiple Formula objects from a list of expressions."""
         self.formulas = [Formula(expr) for expr in expressions]
 
-    def __call__(self, parsed_data: List[List[str]]) -> List[Any]:
+    def __call__(self, parsed_data: BytesRows) -> List[Any]:
         """Evaluate all stored formulas on the given parsed_data."""
         return [formula(parsed_data) for formula in self.formulas]
