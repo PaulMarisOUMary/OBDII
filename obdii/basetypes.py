@@ -11,11 +11,11 @@ class SingletonMeta(type):
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
 
-class _MissingSentinel:
+class _MissingSentinel(metaclass=SingletonMeta):
     __slots__ = ()
 
     def __eq__(self, other: Any) -> bool:
-        return False
+        return isinstance(other, _MissingSentinel)
 
     def __bool__(self) -> bool:
         return False
