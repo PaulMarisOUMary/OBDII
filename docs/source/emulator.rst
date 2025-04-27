@@ -1,31 +1,42 @@
-.. title:: Emulator
+.. title:: Emulating a Vehicle
 
-Simulated Vehicle Environment
-=============================
+.. meta::
+    :description: Using an emulator with py-obdii.
+    :keywords: py-obdii, py-obd2, obdii, obd2, development, emulator
+    :robots: index, follow
 
-Let's be honest, developing OBDII tools directly from your car isn't the most practical setup. For convenience (and comfort), we use a vehicle emulator during development. It lets you simulate real car responses from your desk, so you can test and build features without needing to be plugged into an actual vehicle every time.
+.. _emulator:
+
+Emulating a Vehicle
+===================
+
+Let's be honest, developing OBDII tools directly from your car isn't the most practical setup.
+For convenience (and comfort), we use a vehicle emulator during development.
+It simulates real car responses at your desk, allowing you to test and build features without constantly connecting to a real vehicle.
 
 This is especially handy when you're iterating quickly, writing tests, or just don't want to sit in the driveway with a laptop balanced on your knees.
 
 .. card:: Prerequisites
 
-    To simulate a vehicle without needing a real car, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_, a third-party tool included automatically when you install the library with the `dev` extra:
+    To simulate a vehicle, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_, a third-party tool included automatically when you install the library with the `dev` extra:
 
     .. code-block:: bash
 
         pip install py-obdii[dev]
 
-    This emulator simulates a vehicle's responses and can be connected to just like a real car through a virtual serial port.
+    The emulator simulates a vehicle's responses and can be connected to just like a real car through a virtual serial port.
 
 .. tab-set::
+    :sync-group: os
 
     .. tab-item:: Linux
+        :sync: linux
     
         Run and use the emulator on Linux.
 
         #. Install the library with development dependencies
 
-        #. Start the ELM327 Emulator.
+        #. Start the ELM327 Emulator
 
             .. code-block:: bash
 
@@ -43,14 +54,15 @@ This is especially handy when you're iterating quickly, writing tests, or just d
                     # Your code here
 
     .. tab-item:: Windows
+        :sync: windows
 
         To run and use the emulator on Windows, you will need to create virtual serial ports.
 
         #. Install the library with development dependencies
 
-        #. Use a kernel-mode virtual serial port driver like `com0com <https://com0com.sourceforge.net>`_ to create virtual COM ports.
+        #. Install a kernel-mode virtual serial port driver like `com0com <https://com0com.sourceforge.net>`_
 
-        #. Create a virtual COM port pair (e.g., COM5 ↔ COM6). These act like a physical cable between two serial devices.
+        #. Create a virtual COM port pair (e.g., COM5 ↔ COM6)
 
         #. Start the ELM327 Emulator on one end of the virtual connection (e.g., COM6):
 

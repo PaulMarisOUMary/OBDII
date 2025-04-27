@@ -1,5 +1,10 @@
 .. title:: Installation Guide
 
+.. meta::
+    :description: Installation instructions for py-obdii.
+    :keywords: py-obdii, py-obd2, obdii, obd2, installation, setup, requirements, virtual environment, dependencies, extras
+    :robots: index, follow
+
 .. _installation:
 
 Installation
@@ -23,8 +28,10 @@ Virtual Environment
 A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is always recommended to avoid conflicts with other packages or libraries.
 
 .. tab-set::
+    :sync-group: os
 
     .. tab-item:: Linux
+        :sync: linux
 
         .. code-block:: bash
 
@@ -32,6 +39,7 @@ A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is always
             source .venv/bin/activate
 
     .. tab-item:: Windows
+        :sync: windows
 
         .. code-block::
 
@@ -45,7 +53,7 @@ Installing the Library
 
 You can install the library from multiple sources. Choose the option that best fits your needs.
 
-From PyPI :bdg-success-line:`recommended`
+From PyPI :bdg-success-line:`Recommended`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The latest stable version can be installed from PyPI:

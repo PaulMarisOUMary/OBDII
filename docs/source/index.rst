@@ -2,7 +2,8 @@
 
 .. meta::
    :description: A modern, easy to use, Python ≥3.8 library for interacting with OBDII devices.
-   :twitter:description: A modern, easy to use, Python ≥3.8 library for interacting with OBDII devices.
+   :keywords: py-obdii, py-obd2, obdii, obd2
+   :robots: index, follow
 
 .. include:: ../../.github/README.rst
    :parser: rst
@@ -13,6 +14,8 @@
    :caption: Getting Started:
 
    installation
+   quickstart
+   connection
 
 .. toctree::
    :hidden:
