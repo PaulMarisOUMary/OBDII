@@ -9,7 +9,21 @@
 
 .. toctree::
    :hidden:
-   :caption: Contents:
+   :titlesonly:
+   :caption: Getting Started:
+
+   installation
+
+.. toctree::
+   :hidden:
+   :titlesonly:
+   :caption: Guides:
 
    emulator
+
+.. toctree::
+   :hidden:
+   :titlesonly:
+   :caption: API Reference:
+
    api
