@@ -20,7 +20,7 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
     To simulate a vehicle, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_, a third-party tool included automatically when you install the library with the `dev` extra:
 
-    .. code-block:: bash
+    .. code-block:: console
 
         pip install py-obdii[dev]
 
@@ -38,15 +38,17 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
         #. Start the ELM327 Emulator
 
-            .. code-block:: bash
+            .. code-block:: console
 
-                python -m elm -s car --baudrate 38400
+                $ python -m elm -s car --baudrate 38400
             
             The emulator will display the virtual port (e.g., /dev/pts/1) to use for connection.
 
         #. Connect your Python code to the emulator (e.g., /dev/pts/1):
 
             .. code-block:: python
+                :caption: main.py
+                :linenos:
 
                 from obdii import Connection
 
@@ -66,7 +68,7 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
         #. Start the ELM327 Emulator on one end of the virtual connection (e.g., COM6):
 
-            .. code-block:: bash
+            .. code-block:: console
 
                 python -m elm -p COM6 -s car --baudrate 38400
 
@@ -75,6 +77,8 @@ This is especially handy when you're iterating quickly, writing tests, or just d
         #. Connect your Python code to the other end of the virtual pair (e.g., COM5):
 
             .. code-block:: python
+                :caption: main.py
+                :linenos:
 
                 from obdii import Connection
 

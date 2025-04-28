@@ -1,7 +1,7 @@
-.. title:: API
+.. title:: Core API
 
-Library API Reference
-=====================
+Core
+====
 
 .. automodule:: obdii
     :members:

@@ -74,11 +74,11 @@ theme_options = ThemeOptions(
     show_prev_next=True,
     show_scrolltop=True,
     awesome_external_links=True,
-    main_nav_links = {
-        "Home": "https://py-obdii.readthedocs.io/en/latest",
-        "Emulator": "https://py-obdii.readthedocs.io/en/latest/emulator.html",
-        "API": "https://py-obdii.readthedocs.io/en/latest/api.html",
-    },
+    # main_nav_links = {
+    #     "Home": "https://py-obdii.readthedocs.io/en/latest",
+    #     "Emulator": "https://py-obdii.readthedocs.io/en/latest/emulator.html",
+    #     "API": "https://py-obdii.readthedocs.io/en/latest/api.html",
+    # },
     extra_header_link_icons={
         "repository on GitHub": {
             "link": repo_url,

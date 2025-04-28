@@ -19,10 +19,13 @@ Minimal Example
 ---------------
 
 .. code-block:: python
+    :caption: main.py
+    :linenos:
+    :emphasize-lines: 3
 
     from obdii import at_commands, commands, Connection
 
-    conn = Connection("PORT") # Replace "PORT"
+    conn = Connection("PORT")
 
     response = conn.query(commands.VEHICLE_SPEED)
     print(f"Vehicle Speed: {response.value} {response.units}")

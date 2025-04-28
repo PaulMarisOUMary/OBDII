@@ -27,6 +27,6 @@
 .. toctree::
    :hidden:
    :titlesonly:
-   :caption: API Reference:
+   :caption: API:
 
-   api
+   api/index

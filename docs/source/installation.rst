@@ -33,15 +33,15 @@ A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is always
     .. tab-item:: Linux
         :sync: linux
 
-        .. code-block:: bash
+        .. code-block:: console
 
-            python3 -m venv .venv
-            source .venv/bin/activate
+            $ python3 -m venv .venv
+            $ source .venv/bin/activate
 
     .. tab-item:: Windows
         :sync: windows
 
-        .. code-block::
+        .. code-block:: console
 
             py -3 -m venv .venv
             .venv\Scripts\activate
@@ -58,7 +58,7 @@ From PyPI :bdg-success-line:`Recommended`
 
 The latest stable version can be installed from PyPI:
 
-.. code-block:: bash
+.. code-block:: console
 
     pip install py-obdii
 
@@ -67,7 +67,7 @@ From GitHub
 
 Install the latest development version directly from GitHub:
 
-.. code-block:: bash
+.. code-block:: console
 
     pip install git+https://github.com/PaulMarisOUMary/OBDII@main
 
@@ -76,7 +76,7 @@ From Source
 
 Alternatively, you can install the library directly from the source: 
 
-.. code-block:: bash
+.. code-block:: console
 
     git clone https://github.com/PaulMarisOUMary/OBDII
     cd OBDII
@@ -87,7 +87,7 @@ From TestPyPI
 
 To try a pre-release or a test version, install from TestPyPI:
 
-.. code-block:: bash
+.. code-block:: console
 
     pip install -i https://test.pypi.org/simple py-obdii
 
@@ -108,7 +108,7 @@ Available extras:
 
         Installs the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_ library and dependencies for development.
 
-        .. code-block:: bash
+        .. code-block:: console
 
             pip install py-obdii[dev]
     
@@ -116,7 +116,7 @@ Available extras:
 
         Required if you want to run unit tests or integration tests locally.
 
-        .. code-block:: bash
+        .. code-block:: console
 
             pip install py-obdii[test]
     
@@ -124,7 +124,7 @@ Available extras:
 
         Useful if you plan to build the documentation with Sphinx or contribute to the docs.
 
-        .. code-block:: bash
+        .. code-block:: console
 
             pip install py-obdii[docs]
     
@@ -132,6 +132,6 @@ Available extras:
 
         Installs all extras at once.
 
-        .. code-block:: bash
+        .. code-block:: console
     
             pip install py-obdii[dev,test,docs]

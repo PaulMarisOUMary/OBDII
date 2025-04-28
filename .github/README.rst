@@ -20,7 +20,7 @@ Python 3.8 or higher is required.
 
 A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is recommended to install the library.
 
-.. code-block:: bash
+.. code-block:: console
 
     # Linux/macOS
     python3 -m venv .venv
@@ -33,14 +33,14 @@ A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is recomm
 Install from PyPI
 ^^^^^^^^^^^^^^^^^
 
-.. code-block:: bash
+.. code-block:: console
 
     pip install py-obdii
 
 Install the development version
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: bash
+.. code-block:: console
 
     # From Github
     pip install git+https://github.com/PaulMarisOUMary/OBDII@main[dev,test]
@@ -86,13 +86,13 @@ Setting Up the ELM327-Emulator
 
 1. **Install the library with "dev" extra options**:
 
-    .. code-block:: bash
+    .. code-block:: console
 
         pip install py-obdii[dev]
 
 2. **Start the ELM327-Emulator**:
 
-    .. code-block:: bash
+    .. code-block:: console
 
         python -m elm -p "REPLACE_WITH_PORT" -s car --baudrate 38400
 
@@ -127,13 +127,13 @@ This library uses `pytest <https://docs.pytest.org/>`_ for testing. To run the t
 
 1. **Install the library with "test" extra options**:
 
-    .. code-block:: bash
+    .. code-block:: console
 
         pip install py-obdii[test]
 
 2. **Run tests**:
 
-    .. code-block:: bash
+    .. code-block:: console
 
         pytest
 

@@ -27,15 +27,15 @@ Connecting via USB
 
         - To identify the USB serial port, run:
 
-            .. code-block:: bash
+            .. code-block:: console
 
-                dmesg | grep tty
+                $ dmesg | grep tty
 
         - You can also list available USB serial devices with:
 
-            .. code-block:: bash
+            .. code-block:: console
 
-                ls /dev/ttyUSB*
+                $ ls /dev/ttyUSB*
 
         Multiple ports may appear in the output of these commands, the serial port to use for the connection will be one of them.
 
@@ -57,13 +57,13 @@ Connecting via Bluetooth
 
         #. Open the Bluetooth control terminal:
 
-            .. code-block:: bash
+            .. code-block:: console
 
-                bluetoothctl
+                $ bluetoothctl
 
         #. Power on Bluetooth, and pair with the adapter:
 
-            .. code-block::
+            .. code-block:: console
 
                 power on
                 agent on
@@ -75,9 +75,9 @@ Connecting via Bluetooth
 
         #. Bind the RFCOMM port:
 
-            .. code-block::
+            .. code-block:: console
 
-                rfcomm bind /dev/rfcomm0 00:00:00:00:00:00
+                $ rfcomm bind /dev/rfcomm0 00:00:00:00:00:00
         
         #. The connection is now available at ``/dev/rfcomm0``. Use this port for connecting.
         
