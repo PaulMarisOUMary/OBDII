@@ -8,12 +8,33 @@ description = "A Python library for interacting with OBDII."
 readme = { file = ".github/README.rst", content-type = "text/x-rst" }
 authors = [{ name = "PaulMarisOUMary" }]
 license = { file = "LICENSE" }
+keywords = [
+    "obd",
+    "obdii",
+    "obd2",
+    "py-obdii",
+    "py-obd2",
+    "python obd",
+    "ELM327",
+    "automotive",
+    "torque",
+    "car",
+    "vehicle",
+    "diagnostics",
+    "car diagnostics",
+    "engine data",
+    "car data",
+    "vehicle data",
+    "can bus",
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -31,6 +52,7 @@ requires-python = ">=3.8"
 dynamic = ["version", "dependencies"]
 
 [project.urls]
+Home = "https://github.com/PaulMarisOUMary/OBDII"
 Repository = "https://github.com/PaulMarisOUMary/OBDII"
 Documentation = "https://py-obdii.readthedocs.io"
 Issues = "https://github.com/PaulMarisOUMary/OBDII/issues"
