@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Generator, Union
 
 from ..command import Command
 
@@ -23,6 +23,12 @@ class GroupCommands():
             return False
         
         return vars(self) == vars(value)
+
+    def __iter__(self) -> Generator[Command, None, None]:
+        for attr_name in dir(self):
+            attr = getattr(self, attr_name)
+            if isinstance(attr, Command):
+                yield attr
     
     def has_command(self, command: Union[Command, str]) -> bool:
         if isinstance(command, Command):

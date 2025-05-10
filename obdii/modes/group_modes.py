@@ -1,4 +1,4 @@
-from typing import Union, overload
+from typing import Generator, Union, overload
 
 from .basetypes import MODE_REGISTRY, Modes, ModesType
 from .group_commands import GroupCommands
@@ -9,6 +9,11 @@ from ..command import Command
 class GroupModes(Modes):
     def __init__(self):
         self.modes = MODE_REGISTRY
+    
+    def __iter__(self) -> Generator[Command, None, None]:
+        for mode in self.modes.values():
+            for command in mode:
+                yield command
 
     @overload
     def __getitem__(self, key: str) -> Command: ...
