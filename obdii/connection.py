@@ -19,12 +19,9 @@ from .utils import bytes_to_string, debug_responsebase, filter_bytes, setup_logg
 _log = getLogger(__name__)
 
 
-AllowedTransport = Union[str, Tuple[str, Union[str, int]], TransportBase]
-
-
 class Connection():
     def __init__(self, 
-                    transport: AllowedTransport,
+                    transport: Union[str, Tuple[str, Union[str, int]], TransportBase],
                     protocol: Protocol = Protocol.AUTO,
                     auto_connect: bool = True,
                     smart_query: bool = False,
@@ -41,8 +38,10 @@ class Connection():
 
         Parameters
         ----------
-        transport: :class:`AllowedTransport`
-            The serial port (e.g., "COM5", "/dev/ttyUSB0", "/dev/rfcomm0").
+        transport: Union[:class:`str`, Tuple[:class:`str`, Union[:class:`str`, :class:`int`]], :class:`obdii.transports.transport_base.TransportBase`]
+            Can be represented as a string for serial ports (e.g., "COM5", "/dev/ttyUSB0", "/dev/rfcomm0"),
+            or as a tuple for network transports (e.g., ("<hostname>", <port>)),
+            or as an instance of a subclass of :class:`obdii.transports.transport_base.TransportBase`.
         protocol: :class:`Protocol`
             The protocol to use for communication.
         auto_connect: :class:`bool`
@@ -111,7 +110,7 @@ class Connection():
             self.connect(**kwargs)
     
 
-    def _resolve_transport(self, transport: AllowedTransport, **kwargs) -> TransportBase:
+    def _resolve_transport(self, transport: Union[str, Tuple[str, Union[str, int]], TransportBase], **kwargs) -> TransportBase:
         if isinstance(transport, str):
             return TransportPort(port=transport, **kwargs)
         elif isinstance(transport, tuple) \

@@ -9,3 +9,4 @@ Library API References
     core
     modes
     protocols
+    transports
