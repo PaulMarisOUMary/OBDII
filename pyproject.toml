@@ -78,6 +78,7 @@ packages = [
     "obdii.modes",
     "obdii.parsers",
     "obdii.protocols",
+    "obdii.transports",
 ]
 include-package-data = true
 

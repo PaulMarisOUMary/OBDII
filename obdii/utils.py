@@ -2,7 +2,7 @@ from logging import Handler, Formatter, DEBUG, INFO, WARNING, ERROR, CRITICAL, S
 from os import environ
 from re import escape, fullmatch, sub
 from sys import platform
-from typing import Any, Tuple
+from typing import Any, Dict, Tuple
 
 from .basetypes import MISSING
 from .response import ResponseBase
@@ -31,6 +31,16 @@ def bytes_to_string(raw: bytes) -> str:
 
 def debug_responsebase(response_base: ResponseBase) -> str:
     return '\n'.join(f"[{bytes_to_string(line)}]" for line in response_base.messages[:-1]) + '\n'
+
+
+def override_class_attributes(cls: object, attributes: Dict[str, Any], pop: bool = False, **kwargs) -> None:
+    """Override class attributes from kwargs."""
+    for key, value in attributes.items():
+        setattr(
+            cls, 
+            key, 
+            kwargs.get(key, value) if not pop else kwargs.pop(key, getattr(cls, key, value))
+                )
 
 
 def setup_logging(

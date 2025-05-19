@@ -27,7 +27,7 @@ max_runtime = 15
 csv_file = "obd_data.csv"
 
 with Connection(
-        port=port,
+        port,
         protocol = Protocol.ISO_15765_4_CAN,
         auto_connect = False,
         early_return = True,

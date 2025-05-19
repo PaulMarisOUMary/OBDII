@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Type, Union
+from typing import Any, Dict, Type
 
-from ..command import Command
 from ..protocol import Protocol
 from ..response import ResponseBase, Response
 
@@ -11,8 +10,6 @@ from ..response import ResponseBase, Response
 class ProtocolBase(ABC):
     _registry: Dict[Protocol, Type[ProtocolBase]] = {}
     _protocol_attributes: Dict[Protocol, Dict] = {}
-
-    extra_init_sequence: List[Union[Command, Callable]]
 
     def __init__(self) -> None: ...
 
