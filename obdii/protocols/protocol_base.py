@@ -5,11 +5,11 @@ from typing import Any, Callable, Dict, List, Type, Union
 
 from ..command import Command
 from ..protocol import Protocol
-from ..response import BaseResponse, Response
+from ..response import ResponseBase, Response
 
 
-class BaseProtocol(ABC):
-    _registry: Dict[Protocol, Type[BaseProtocol]] = {}
+class ProtocolBase(ABC):
+    _registry: Dict[Protocol, Type[ProtocolBase]] = {}
     _protocol_attributes: Dict[Protocol, Dict] = {}
 
     extra_init_sequence: List[Union[Command, Callable]]
@@ -17,7 +17,7 @@ class BaseProtocol(ABC):
     def __init__(self) -> None: ...
 
     @abstractmethod
-    def parse_response(self, base_response: BaseResponse) -> Response: ...
+    def parse_response(self, response_base: ResponseBase) -> Response: ...
 
     @classmethod
     def register(cls, protocols: Dict[Protocol, Dict[str, Any]]) -> None:
@@ -27,7 +27,7 @@ class BaseProtocol(ABC):
             cls._protocol_attributes[protocol] = attr
 
     @classmethod
-    def get_handler(cls, protocol: Protocol) -> BaseProtocol:
+    def get_handler(cls, protocol: Protocol) -> ProtocolBase:
         """Retrieve the appropriate protocol class or fallback to ProtocolUnknown."""
         return cls._registry.get(protocol, ProtocolUnknown)()
 
@@ -36,11 +36,11 @@ class BaseProtocol(ABC):
         return cls._protocol_attributes.get(protocol, {})
 
 
-class ProtocolUnknown(BaseProtocol): 
+class ProtocolUnknown(ProtocolBase): 
     """Fallback protocol class for unknown or unsupported protocols.
 
     In such cases, basic serial communication might still be possible,
     but full message parsing could be limited.
     """
-    def parse_response(self, base_response: BaseResponse) -> Response:
+    def parse_response(self, response_base: ResponseBase) -> Response:
         raise NotImplementedError

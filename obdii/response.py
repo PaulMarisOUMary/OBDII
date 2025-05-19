@@ -15,7 +15,7 @@ class Context():
 
 
 @dataclass
-class BaseResponse():
+class ResponseBase():
     context: Context
     raw: bytes
     messages: List[bytes]
@@ -23,7 +23,7 @@ class BaseResponse():
 
 
 @dataclass
-class Response(BaseResponse):
+class Response(ResponseBase):
     parsed_data: Optional[BytesRows] = None
 
     value: Optional[Any] = None

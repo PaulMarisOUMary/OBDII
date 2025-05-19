@@ -9,7 +9,7 @@ from .modes import at_commands, commands
 from .protocol import Protocol
 # note: Need to import the protocols to register them
 from .protocols import ProtocolCAN, ProtocolJ1850, ProtocolKWP2000
-from .response import BaseResponse, Context, Response
+from .response import ResponseBase, Context, Response
 
 
 __title__ = "obdii"
@@ -27,13 +27,13 @@ __path__ = extend_path(__path__, __name__)
 __all__ = [
     "at_commands",
     "commands",
-    "BaseResponse",
     "Command",
     "Connection",
     "Context",
     "Mode",
     "Protocol",
     "Response",
+    "ResponseBase",
 ]
 
 getLogger(__name__).addHandler(NullHandler())

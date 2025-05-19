@@ -1,20 +1,19 @@
 from logging import getLogger
 from typing import List, Tuple
 
-from ..basetypes import MISSING
-from ..errors import BaseResponseError
+from ..errors import ResponseBaseError
 from ..mode import Mode
 from ..protocol import Protocol
-from ..response import BaseResponse, Response
+from ..response import ResponseBase, Response
 from ..utils import bytes_to_string, filter_bytes, is_bytes_hexadecimal, split_by_byte
 
-from .protocol_base import BaseProtocol
+from .protocol_base import ProtocolBase
 
 
 _log = getLogger(__name__)
 
 
-class ProtocolCAN(BaseProtocol):
+class ProtocolCAN(ProtocolBase):
     """Supported Protocols:
     - [0x06] ISO 15765-4 CAN (11 bit ID, 500 Kbaud)
     - [0x07] ISO 15765-4 CAN (29 bit ID, 500 Kbaud)
@@ -24,23 +23,23 @@ class ProtocolCAN(BaseProtocol):
     - [0x0B] USER1 CAN (11 bit ID, 125 Kbaud)
     - [0x0C] USER2 CAN (11 bit ID, 50 Kbaud)
     """
-    def parse_response(self, base_response: BaseResponse) -> Response:
-        context = base_response.context
+    def parse_response(self, response_base: ResponseBase) -> Response:
+        context = response_base.context
         command = context.command
         if command.mode == Mode.AT: # AT Commands
             status = None
-            if len(base_response.messages[:-1]) == 1:
-                status = bytes_to_string(base_response.messages[0])
+            if len(response_base.messages[:-1]) == 1:
+                status = bytes_to_string(response_base.messages[0])
 
-            return Response(**vars(base_response), value=status)
+            return Response(**vars(response_base), value=status)
         else: # OBD Commands
             value = None
             parsed_data: List[Tuple[bytes, ...]] = list()
-            for raw_line in base_response.messages[:-1]: # Skip the last line (prompt character)
+            for raw_line in response_base.messages[:-1]: # Skip the last line (prompt character)
                 line = filter_bytes(raw_line, b' ')
 
                 if not is_bytes_hexadecimal(line):
-                    is_error = BaseResponseError.detect(raw_line)
+                    is_error = ResponseBaseError.detect(raw_line)
                     if not is_error:
                         continue
                     _log.error(is_error.message)
@@ -86,7 +85,7 @@ class ProtocolCAN(BaseProtocol):
                     _log.error(f"Unexpected error during formula execution: {e}", exc_info=True)
                     value = None
 
-            return Response(**vars(base_response), parsed_data=parsed_data, value=value)
+            return Response(**vars(response_base), parsed_data=parsed_data, value=value)
 
 
 ProtocolCAN.register({

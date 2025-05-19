@@ -1,7 +1,7 @@
 import pytest
 
 from obdii.errors import (
-    BaseResponseError, 
+    ResponseBaseError, 
     InvalidCommandError, BufferFullError, BusBusyError, BusError, 
     CanError, InvalidDataError, InvalidLineError, DeviceInternalError, SignalFeedbackError, 
     MissingDataError, CanDataError, StoppedError, ProtocolConnectionError,
@@ -37,7 +37,7 @@ from obdii.errors import (
     ]
 )
 def test_error_detection(response, expected_error):
-    error = BaseResponseError.detect(response)
+    error = ResponseBaseError.detect(response)
     if expected_error is None:
         assert error is None, f"Expected no error but got {error}"
     else:

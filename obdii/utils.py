@@ -5,7 +5,7 @@ from sys import platform
 from typing import Any, Tuple
 
 from .basetypes import MISSING
-from .response import BaseResponse
+from .response import ResponseBase
 
 
 def split_by_byte(raw: bytes) -> Tuple[bytes, ...]:
@@ -29,8 +29,8 @@ def bytes_to_string(raw: bytes) -> str:
     return raw.decode(errors="ignore").strip()
 
 
-def debug_baseresponse(base_response: BaseResponse) -> str:
-    return '\n'.join(f"[{bytes_to_string(line)}]" for line in base_response.messages[:-1]) + '\n'
+def debug_responsebase(response_base: ResponseBase) -> str:
+    return '\n'.join(f"[{bytes_to_string(line)}]" for line in response_base.messages[:-1]) + '\n'
 
 
 def setup_logging(
