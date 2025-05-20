@@ -3,8 +3,6 @@ from re import IGNORECASE, search as research
 from types import TracebackType
 from typing import Callable, List, Optional, Tuple, Union
 
-from serial import Serial, SerialException # type: ignore
-
 from .basetypes import MISSING
 from .command import Command
 from .modes import ModeAT
@@ -69,7 +67,6 @@ class Connection():
         self.smart_query = smart_query
         self.early_return = early_return
 
-        self.serial_conn: Optional[Serial] = None
         self.protocol_handler = ProtocolBase.get_handler(Protocol.UNKNOWN)
         self.supported_protocols: List[Protocol] = []
         self.last_command: Optional[Command] = None
@@ -111,6 +108,7 @@ class Connection():
     
 
     def _resolve_transport(self, transport: Union[str, Tuple[str, Union[str, int]], TransportBase], **kwargs) -> TransportBase:
+        """Resolves a user-supplied transport input into a concrete TransportBase instance."""
         if isinstance(transport, str):
             return TransportPort(port=transport, **kwargs)
         elif isinstance(transport, tuple) \
@@ -126,20 +124,20 @@ class Connection():
 
     def connect(self, **kwargs) -> None:
         """
-        Establish the serial connection and run initialization sequence.
+        Establishes a connection to the device using the configured transport and runs the initialization sequence.
+
         Parameters
         ----------
-        **kwargs: :class:`dict`
-            Additional keyword arguments to pass to the transport's connect method.
+        **kwargs
+            Additional parameters forwarded to the transport's `connect()` method.
         """
-
         _log.info(f"Attempting to connect to {repr(self.transport)}.")
         try:
             self.transport.connect(**kwargs)
             self._initialize_connection()
             self.init_completed = True
             _log.info(f"Successfully connected to {repr(self.transport)}.")
-        except SerialException as e:
+        except Exception as e:
             self.transport.close()
             _log.error(f"Failed to connect to {repr(self.transport)}: {e}")
             raise ConnectionError(f"Failed to connect: {e}")
@@ -157,7 +155,8 @@ class Connection():
 
     def is_connected(self) -> bool:
         """
-        Check if the serial connection is open.
+        Checks if the transport connection is open.
+
         Returns
         -------
         :class:`bool`
@@ -230,10 +229,12 @@ class Connection():
     def query(self, command: Command) -> Response:
         """
         Send a command and wait for the response.
+
         Parameters
         ----------
         command: :class:`Command`
             Command to send.
+
         Returns
         -------
         :class:`Response`
@@ -255,11 +256,13 @@ class Connection():
 
     def wait_for_response(self, context: Context) -> Response:
         """
-        Wait for and parse a response from the adapter.
+        Wait for a raw response from the transport and parses it using the protocol handler.
+
         Parameters
         ----------
         context: :class:`Context`
             Context to use for parsing.
+
         Returns
         -------
         :class:`Response`
@@ -286,7 +289,9 @@ class Connection():
 
 
     def close(self) -> None:
-        """Close the serial connection if not already done."""
+        """
+        Closes the transport connection.
+        """
         self.transport.close()
         _log.info("Connection closed.")
     
@@ -294,6 +299,7 @@ class Connection():
     def __enter__(self):
         """
         Support usage as a context manager.
+
         Returns
         -------
         :class:`Connection`
