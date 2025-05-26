@@ -39,6 +39,20 @@ Connecting via USB
 
         Multiple ports may appear in the output of these commands, the serial port to use for the connection will be one of them.
 
+        .. dropdown:: Connection example
+            :open:
+            :chevron: down-up
+            :icon: quote
+
+            .. code-block:: python
+                :caption: main.py
+                :linenos:
+                :emphasize-lines: 3
+
+                from obdii import Connection
+
+                conn = Connection("/dev/ttyUSB0")
+
     .. tab-item:: Windows
         :sync: windows
 
@@ -78,11 +92,25 @@ Connecting via Bluetooth
             .. code-block:: console
 
                 $ rfcomm bind /dev/rfcomm0 00:00:00:00:00:00
+            
+            .. note::
+                Replace ``00:00:00:00:00:00`` with the MAC address of the adapter, which should appear after running ``scan on``.
         
         #. The connection is now available at ``/dev/rfcomm0``. Use this port for connecting.
-        
-        .. note::
-            Replace ``00:00:00:00:00:00`` with the MAC address of the adapter, which should appear after running ``scan on``.
+
+        .. dropdown:: Connection example
+            :open:
+            :chevron: down-up
+            :icon: quote
+
+            .. code-block:: python
+                :caption: main.py
+                :linenos:
+                :emphasize-lines: 3
+
+                from obdii import Connection
+
+                conn = Connection("/dev/rfcomm0")
 
     .. tab-item:: Windows
         :sync: windows
@@ -100,7 +128,36 @@ Connecting via WiFi
     .. tab-item:: Linux
         :sync: linux
 
-        |contribute-button|
+        #. Turn on the WiFi adapter and connect to its WiFi network.
+
+        #. Common default IP address and port combinations:
+            .. table::
+                :widths: 33 33 33
+                :align: left
+
+                =================  ========== ===============
+                Address            Port       Device
+                =================  ========== ===============
+                ``192.168.0.10``   ``35000``  Generic
+                ``192.168.1.10``   ``35000``  Clones
+                =================  ========== ===============
+
+            .. note::
+                These values may vary depending on the adapter. Refer to the adapter's documentation for the correct IP address and port.
+        
+        .. dropdown:: Connection example
+            :open:
+            :chevron: down-up
+            :icon: quote
+
+            .. code-block:: python
+                :caption: main.py
+                :linenos:
+                :emphasize-lines: 3
+
+                from obdii import Connection
+
+                conn = Connection(("192.168.0.10", 35000))
 
     .. tab-item:: Windows
         :sync: windows

@@ -2,14 +2,14 @@ OBDII
 =====
 
 .. image:: https://img.shields.io/pypi/v/py-obdii?label=pypi&logo=pypi&logoColor=white&link=https%3A%2F%2Fpypi.org%2Fproject%2Fpy-obdii
-    :target: https://pypi.org/project/py-obdii/
+    :target: https://pypi.org/project/py-obdii
     :alt: PyPI version
 .. image:: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FPaulMarisOUMary%2FOBDII%2Fmain%2Fpyproject.toml&logo=python&logoColor=white&label=python
-    :target: https://pypi.org/project/py-obdii/
+    :target: https://pypi.org/project/py-obdii
     :alt: Python Version from PEP 621 TOML
 .. image:: https://img.shields.io/github/actions/workflow/status/PaulMarisOUMary/OBDII/ci-pytest.yml?branch=main&label=pytest&logoColor=white&logo=pytest
-    :target: https://pypi.org/project/py-obdii/
-    :alt: PyTest
+    :target: https://github.com/PaulMarisOUMary/OBDII/actions/workflows/ci-pytest.yml
+    :alt: PyTest CI status
 
 A modern, easy to use, Python ≥3.8 library for interacting with OBDII devices.
 
@@ -20,15 +20,19 @@ Python 3.8 or higher is required.
 
 A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is recommended to install the library.
 
-.. code-block:: console
+#. Linux/macOS
 
-    # Linux/macOS
-    python3 -m venv .venv
-    source .venv/bin/activate
+    .. code-block:: console
 
-    # Windows
-    py -3 -m venv .venv
-    .venv\Scripts\activate
+        python3 -m venv .venv
+        source .venv/bin/activate
+
+#. Windows
+
+    .. code-block:: console
+
+        py -3 -m venv .venv
+        .venv\Scripts\activate
 
 Install from PyPI
 ^^^^^^^^^^^^^^^^^
@@ -40,18 +44,25 @@ Install from PyPI
 Install the development version
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: console
+#. From Github
 
-    # From Github
-    pip install git+https://github.com/PaulMarisOUMary/OBDII@main[dev,test]
+    .. code-block:: console
 
-    # From local source
-    git clone https://github.com/PaulMarisOUMary/OBDII
-    cd OBDII
-    pip install .[dev,test]
+        pip install git+https://github.com/PaulMarisOUMary/OBDII@main[dev,test]
 
-    # From test.pypi.org
-    pip install -i https://test.pypi.org/simple/ py-obdii
+#.  From local source
+
+    .. code-block:: console
+
+        git clone https://github.com/PaulMarisOUMary/OBDII
+        cd OBDII
+        pip install .[dev,test]
+
+#. From test.pypi.org
+
+    .. code-block:: console
+
+        pip install -i https://test.pypi.org/simple/ py-obdii
 
 Usage Example
 -------------
@@ -84,32 +95,32 @@ To streamline the development process, you can use the `ELM327-Emulator <https:/
 Setting Up the ELM327-Emulator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. **Install the library with "dev" extra options**:
+#. **Install the library with "dev" extra options**:
 
     .. code-block:: console
 
         pip install py-obdii[dev]
 
-2. **Start the ELM327-Emulator**:
+#. **Start the ELM327-Emulator**:
 
     .. code-block:: console
 
         python -m elm -p "REPLACE_WITH_PORT" -s car --baudrate 38400
 
-.. note::
+    .. note::
 
-    Replace ``REPLACE_WITH_PORT`` with the serial port of your choice
+        Replace ``REPLACE_WITH_PORT`` with the serial port of your choice
 
 Use Virtual Ports on Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For Windows users, you can use `com0com <https://com0com.sourceforge.net>`_ to create virtual serial ports and connect the ELM327-Emulator to your Python code.
 
-1. **Install com0com** and create two virtual serial ports, (e.g. ``COM5`` and ``COM6``).
+#. **Install com0com** and create two virtual serial ports, (e.g. ``COM5`` and ``COM6``).
 
-2. In the **ELM327-Emulator**, set the port to ``COM6``.
+#. In the **ELM327-Emulator**, set the port to ``COM6``.
 
-3. In your **Python code**, set the connection port to ``COM5``.
+#. In your **Python code**, set the connection port to ``COM5``.
 
 Contributing & Development
 --------------------------
@@ -125,13 +136,13 @@ Testing the Library with Pytest
 
 This library uses `pytest <https://docs.pytest.org/>`_ for testing. To run the tests, you need to install the library with the ``[test]`` extra option.
 
-1. **Install the library with "test" extra options**:
+#. **Install the library with "test" extra options**:
 
     .. code-block:: console
 
         pip install py-obdii[test]
 
-2. **Run tests**:
+#. **Run tests**:
 
     .. code-block:: console
 
