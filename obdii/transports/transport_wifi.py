@@ -45,7 +45,7 @@ class TransportWifi(TransportBase):
 
         self.socket_conn = socket(AF_INET, SOCK_STREAM)
         self.socket_conn.settimeout(self.timeout)
-        self.socket_conn.connect((self.address, self.port))
+        self.socket_conn.connect((self.address, int(self.port)))
 
     def close(self) -> None:
         if self.socket_conn:
@@ -58,7 +58,22 @@ class TransportWifi(TransportBase):
             raise RuntimeError("Socket is not connected.")
         self.socket_conn.sendall(query)
 
-    def read_bytes(self, size: int = 32) -> bytes:
+    def read_bytes(self, size: int = -1, expected_seq: bytes = b'>') -> bytes:
         if not self.socket_conn:
             raise RuntimeError("Socket is not connected.")
-        return self.socket_conn.recv(size)
+
+        buffer = bytearray()
+        while True:
+            chunk = self.socket_conn.recv(1)
+            if not chunk:
+                raise RuntimeError("Socket connection closed.")
+            
+            buffer += chunk
+
+            if chunk == expected_seq:
+                break
+
+            if size > 0 and len(buffer) >= size:
+                break
+
+        return bytes(buffer)
