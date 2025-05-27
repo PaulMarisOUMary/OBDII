@@ -11,6 +11,10 @@ jobs:
     name: Build distribution 📦
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write      # IMPORTANT: mandatory for trusted publishing
+      attestations: write  # IMPORTANT: mandatory for SLSA provenance generation
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,6 +31,11 @@ jobs:
 
       - name: Build a binary wheel and a source tarball
         run: python3 -m build
+
+      - name: Generate SLSA provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/*
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
@@ -84,13 +93,11 @@ jobs:
         gh release create
         "$GITHUB_REF_NAME"
         --repo "$GITHUB_REPOSITORY"
-        --notes ""
+        --fail-on-no-commits
+        --generate-notes
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
-      # Upload to GitHub Release using the `gh` CLI.
-      # `dist/` contains the built packages, and the
-      # sigstore-produced signatures and certificates.
       run: >-
         gh release upload
         "$GITHUB_REF_NAME" dist/**
