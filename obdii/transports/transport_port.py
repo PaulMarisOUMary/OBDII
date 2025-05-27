@@ -62,7 +62,7 @@ class TransportPort(TransportBase):
         self.serial_conn.write(query)
         self.serial_conn.flush()
 
-    def read_bytes(self, size: int = 4096, expected_seq: bytes = b'>') -> bytes:
+    def read_bytes(self, expected_seq: bytes = b'>', size: int = 4096) -> bytes:
         if not self.serial_conn or not self.serial_conn.is_open:
             raise RuntimeError("Serial port is not connected.")
         return self.serial_conn.read_until(expected=expected_seq, size=size)

@@ -15,6 +15,10 @@ class TransportWifi(TransportBase):
             "timeout": 5.0,
         }
 
+        self.address: str
+        self.port: Union[str, int]
+        self.timeout: float
+
         self.socket_conn: Optional[socket] = None
 
         override_class_attributes(self, self.overridable_attributes, **kwargs)
@@ -22,10 +26,7 @@ class TransportWifi(TransportBase):
         if self.address is MISSING or self.port is MISSING:
             raise ValueError("Both address and port must be specified for TransportWifi.")
 
-        self.address: str
-        self.port: Union[str, int]
-        self.timeout: float
-    
+
     def __repr__(self) -> str:
         return f"<TransportWifi {self.address}:{self.port}>"
 
@@ -58,10 +59,11 @@ class TransportWifi(TransportBase):
             raise RuntimeError("Socket is not connected.")
         self.socket_conn.sendall(query)
 
-    def read_bytes(self, size: int = -1, expected_seq: bytes = b'>') -> bytes:
+    def read_bytes(self, expected_seq: bytes = b'>', size: int = MISSING) -> bytes:
         if not self.socket_conn:
             raise RuntimeError("Socket is not connected.")
 
+        lenterm = len(expected_seq)
         buffer = bytearray()
         while True:
             chunk = self.socket_conn.recv(1)
@@ -70,10 +72,10 @@ class TransportWifi(TransportBase):
             
             buffer += chunk
 
-            if chunk == expected_seq:
+            if buffer[-lenterm:] == expected_seq:
                 break
 
-            if size > 0 and len(buffer) >= size:
+            if size is not MISSING and len(buffer) >= size:
                 break
 
         return bytes(buffer)
