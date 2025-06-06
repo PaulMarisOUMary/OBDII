@@ -9,7 +9,7 @@ from ..mode import Mode
 M = Mode.AT
 C = partial(Command, M, min_values=None, max_values=None, units=None)
 
-# ELM327.pdf | AT Command Summary | Page 8 - 9
+# ELM327.pdf (DSL) | AT Command Summary | Page 11 - 12
 
 class ModeAT(GroupCommands):
     """AT Commands"""
