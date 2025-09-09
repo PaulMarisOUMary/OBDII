@@ -1,0 +1,68 @@
+name: Feature Request
+title: "[feat] "
+description: Suggest a new feature or enhancement for this library
+labels: feature request
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement!  
+        Please complete the sections below to help us understand your idea.  
+        Clear and detailed requests are more likely to be considered.
+  - type: input
+    attributes:
+      label: Summary
+      description: A short, descriptive summary of your feature request
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Area of Impact
+      description: What part of the project does this request affect?
+      multiple: false
+      options:
+        - Core library
+        - Protocol support
+        - Transport layer
+        - Parsing responses
+        - Command support
+        - Documentation
+        - Development workflow
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Problem Description
+      description: |
+        What problem does this feature solve?  
+        Why is it needed, and what becomes easier or possible when this is implemented?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed Solution
+      description: |
+        What is your ideal solution?  
+        Describe how the feature should work or behave.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Alternatives Considered
+      description: Describe any current workarounds or alternative solutions you've tried
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      description: Please confirm you've done the following before submitting
+      options:
+        - label: I have searched the open issues to avoid duplicates.
+          required: true
+        - label: I have explained the problem this feature would solve.
+          required: true
+        - label: I have described my proposed solution clearly.
+          required: true
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: Add any other information that may be helpful (screenshots, references, pictures, etc.)
