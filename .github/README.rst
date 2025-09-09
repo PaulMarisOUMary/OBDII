@@ -35,7 +35,7 @@ Windows
 .. code-block:: console
 
     py -3 -m venv .venv
-        .venv\Scripts\activate
+    .venv\Scripts\activate
 
 Install from PyPI
 ^^^^^^^^^^^^^^^^^
@@ -94,7 +94,7 @@ You can find more detailed examples and usage scenarios in the `examples folder 
 Emulator Support
 ----------------
 
-To streamline the development process, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_ library. This allows you to simulate an OBDII connection without needing a physical device.
+To streamline the development process, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_ library. This allows you to simulate an OBDII connection on your machine without needing a physical OBDII device.
 
 Setting Up the ELM327-Emulator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
