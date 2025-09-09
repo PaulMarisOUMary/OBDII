@@ -18,20 +18,23 @@ Installing
 
 Python 3.8 or higher is required.
 
-A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is recommended to install the library.
+A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is recommended.
 
-#. Linux/macOS
+Create a virtual environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    .. code-block:: console
+Linux/macOS
 
-        python3 -m venv .venv
-        source .venv/bin/activate
+.. code-block:: console
 
-#. Windows
+    python3 -m venv .venv
+    source .venv/bin/activate
 
-    .. code-block:: console
+Windows
 
-        py -3 -m venv .venv
+.. code-block:: console
+
+    py -3 -m venv .venv
         .venv\Scripts\activate
 
 Install from PyPI
@@ -44,25 +47,26 @@ Install from PyPI
 Install the development version
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-#. From Github
+From Github:
 
-    .. code-block:: console
+.. code-block:: console
 
-        pip install git+https://github.com/PaulMarisOUMary/OBDII@main[dev,test]
+    pip install git+https://github.com/PaulMarisOUMary/OBDII@main[dev,test]
 
-#.  From local source
+From local source:
 
-    .. code-block:: console
+.. code-block:: console
 
-        git clone https://github.com/PaulMarisOUMary/OBDII
-        cd OBDII
-        pip install .[dev,test]
+    git clone https://github.com/PaulMarisOUMary/OBDII
+    cd OBDII
+    pip install .[dev,test]
 
-#. From test.pypi.org
+From TestPyPI:
 
-    .. code-block:: console
+.. code-block:: console
 
-        pip install -i https://test.pypi.org/simple/ py-obdii
+    pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple py-obdii[dev,test]
+
 
 Usage Example
 -------------
@@ -87,8 +91,8 @@ Usage Example
 
 You can find more detailed examples and usage scenarios in the `examples folder <https://github.com/PaulMarisOUMary/OBDII/tree/main/examples>`_ of this repository.
 
-Using the Library Without a Physical Device
--------------------------------------------
+Emulator Support
+----------------
 
 To streamline the development process, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_ library. This allows you to simulate an OBDII connection without needing a physical device.
 
@@ -114,7 +118,7 @@ Setting Up the ELM327-Emulator
 Use Virtual Ports on Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For Windows users, you can use `com0com <https://com0com.sourceforge.net>`_ to create virtual serial ports and connect the ELM327-Emulator to your Python code.
+Windows users, can use `com0com <https://com0com.sourceforge.net>`_ to create virtual serial ports and connect the ELM327-Emulator to your Python code.
 
 #. **Install com0com** and create two virtual serial ports, (e.g. ``COM5`` and ``COM6``).
 
@@ -122,36 +126,10 @@ For Windows users, you can use `com0com <https://com0com.sourceforge.net>`_ to c
 
 #. In your **Python code**, set the connection port to ``COM5``.
 
-Contributing & Development
---------------------------
-
-The development of this library follows the `ELM327 PDF </docs/ELM327.PDF>`_ provided by Elm Electronics, with the goal of implementing most features and commands as outlined, starting from page 6 of the document.
-
-This library aims to deliver robust error handling, comprehensive logging, complete type hinting support, and follow best practices to create a reliable tool.
-
-Please, feel free to contribute and share your feedback !
-
-Testing the Library with Pytest
--------------------------------
-
-This library uses `pytest <https://docs.pytest.org/>`_ for testing. To run the tests, you need to install the library with the ``[test]`` extra option.
-
-#. **Install the library with "test" extra options**:
-
-    .. code-block:: console
-
-        pip install py-obdii[test]
-
-#. **Run tests**:
-
-    .. code-block:: console
-
-        pytest
-
 Support & Contact
 -----------------
 
-For questions or support, open an issue or start a discussion on GitHub.
+For questions start a discussion on Github, for support open an issue.
 Your feedback and questions are greatly appreciated and will help improve this project !
 
 - `Open an Issue <https://github.com/PaulMarisOUMary/OBDII/issues>`_
