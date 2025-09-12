@@ -60,9 +60,39 @@ class Command():
         self.command_args = command_args or {}
         self.is_formatted = False
 
+    def _validate_placeholders(self) -> None:
+        placeholders = set(findall(r"{(\w+)}", str(self.pid)))
+        expected_placeholders = set(self.command_args.keys())
+
+        if placeholders != expected_placeholders:
+            missing = expected_placeholders - placeholders
+            extra = placeholders - expected_placeholders
+            raise ValueError(f"PID format mismatch. Missing placeholders: {missing}. Extra placeholders: {extra}.")
+    
+    def _format_arg(self, arg_name: str, arg_type: type, value: Union[str, int]) -> str:
+        if not isinstance(value, arg_type):
+            raise TypeError(f"Expected argument '{arg_name}' of type {arg_type.__name__}, got {type(value).__name__}.")
+
+        expected_len = len(arg_name)
+
+        if isinstance(value, int):
+            if value < 0:
+                raise ValueError(f"Argument '{arg_name}' cannot be negative.")
+            formatted = f"{value:0{expected_len}X}"
+        elif isinstance(value, str):
+            formatted = value
+        else:
+            raise TypeError(f"Argument '{arg_name}' must be of type int or str, got {type(value).__name__}.")
+
+        if len(formatted) != expected_len:
+            raise ValueError(f"Argument '{arg_name}' must be {expected_len} characters long after formatting, got {len(formatted)}.")
+
+        return formatted
+
+
     def __call__(self, *args: Any, checks: bool = True) -> Command:
         """
-        Formats the command with the provided arguments and checks for validity.
+        Formats the command with the provided positional arguments and checks for validity.
 
         Parameters
         ----------
@@ -89,37 +119,14 @@ class Command():
         if len(args) != len(self.command_args):
             raise ValueError(f"Expected {len(self.command_args)} arguments, got {len(args)}.")
 
-        placeholders = set(findall(r"{(\w+)}", str(self.pid)))
-        expected_placeholders = set(self.command_args.keys())
+        self._validate_placeholders()
 
-        if placeholders != expected_placeholders:
-            missing = expected_placeholders - placeholders
-            extra = placeholders - expected_placeholders
-            raise ValueError(f"PID format mismatch. Missing placeholders: {missing}. Extra placeholders: {extra}.")
-
-        combined_args = {}
-        for (arg_name, arg_type), value in zip(self.command_args.items(), args):
-            if checks:
-                if not isinstance(value, arg_type):
-                    raise TypeError(f"Expected argument '{arg_name}' to be of type {arg_type.__name__}, got {type(value).__name__}.")
-
-                expected_len = len(arg_name)
-
-                if isinstance(value, int):
-                    if value < 0:
-                        raise ValueError(f"Argument '{arg_name}' cannot be negative.")
-                    value = f"{value:0{expected_len}X}"
-                    if len(value) != expected_len:
-                        raise ValueError(f"Argument '{arg_name}' must be {expected_len} characters long after formatting, got {len(value)}.")
-
-                elif isinstance(value, str):
-                    if len(value) != expected_len:
-                        raise ValueError(f"Argument '{arg_name}' must be {expected_len} characters long, got {len(value)}.")
-
-                else:
-                    raise TypeError(f"Argument '{arg_name}' must be of type int or str, got {type(value).__name__}.")
-
-            combined_args[arg_name] = value
+        combined_args = {
+            arg_name: (
+                self._format_arg(arg_name, arg_type, value) if checks else value
+            )
+            for (arg_name, arg_type), value in zip(self.command_args.items(), args)
+        }
 
         fmt_command = deepcopy(self)
         fmt_command.is_formatted = True
@@ -138,6 +145,19 @@ class Command():
     
     def __hash__(self) -> int:
         return hash((self.mode, self.pid, self.name))
+
+    def _return_digit(self, early_return: bool) -> str:
+        """Return hex digit for expected response lines (early-return ELM327 DSL, page 34)."""
+        if not (early_return and self.n_bytes and self.mode != Mode.AT):
+            return ''
+        
+        data_bytes = 7
+        n_lines = (self.n_bytes + (data_bytes - 1)) // data_bytes
+        
+        return f" {n_lines:X}" if 0 < n_lines < 16 else ''
+    
+    def _format_to_hex(self, value: Union[int, str]) -> str:
+        return f"{value:02X}" if isinstance(value, int) else str(value)
 
     def build(self, early_return: bool = False) -> bytes:
         """
@@ -163,20 +183,9 @@ class Command():
         if self.command_args and not self.is_formatted:
             raise ValueError(f"Command has unset arguments for '{self.pid}': {self.command_args}")
 
-        mode = self.mode.value
-        pid = self.pid
-        return_digit = ''
-        if early_return and self.n_bytes and self.mode != Mode.AT:
-            data_bytes = 7
-
-            n_lines = (self.n_bytes + (data_bytes - 1)) // data_bytes
-            if 0 < n_lines < 16:
-                return_digit = f" {n_lines:X}"
-
-        if isinstance(mode, int):
-            mode = f"{mode:02X}"
-        if isinstance(pid, int):
-            pid = f"{pid:02X}"
+        mode = self._format_to_hex(self.mode.value)
+        pid = self._format_to_hex(self.pid)
+        return_digit = self._return_digit(early_return)
 
         query = f"{mode} {pid}{return_digit}\r"
 

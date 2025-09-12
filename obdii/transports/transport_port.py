@@ -1,6 +1,6 @@
 from typing import Optional
 
-from serial import Serial # type: ignore
+from serial import Serial
 
 from .transport_base import TransportBase
 

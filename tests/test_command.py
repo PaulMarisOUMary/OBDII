@@ -51,7 +51,7 @@ def test_command_correct_arguments(arg_command_factory, pid, command_args, argum
 
     called_command = command(*arguments)
 
-    assert called_command.is_formatted == True
+    assert called_command.is_formatted
     assert called_command.pid == expected_pid
     assert called_command.pid != command.pid
 
