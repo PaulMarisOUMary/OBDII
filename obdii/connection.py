@@ -11,7 +11,8 @@ from .protocols.protocol_base import ProtocolBase
 from .response import Context, Response, ResponseBase
 from .transports.transport_base import TransportBase
 from .transports import TransportPort, TransportWifi
-from .utils import bytes_to_string, debug_responsebase, filter_bytes, setup_logging
+from .utils.bits import bytes_to_string, filter_bytes
+from .utils.helper import debug_responsebase, setup_logging
 
 
 _log = getLogger(__name__)

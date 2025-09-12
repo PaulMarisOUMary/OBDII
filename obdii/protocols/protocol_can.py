@@ -5,7 +5,7 @@ from ..errors import ResponseBaseError
 from ..mode import Mode
 from ..protocol import Protocol
 from ..response import ResponseBase, Response
-from ..utils import bytes_to_string, filter_bytes, is_bytes_hexadecimal, split_by_byte
+from ..utils.bits import bytes_to_string, filter_bytes, is_bytes_hex, split_hex_bytes
 
 from .protocol_base import ProtocolBase
 
@@ -38,7 +38,7 @@ class ProtocolCAN(ProtocolBase):
             for raw_line in response_base.messages[:-1]: # Skip the last line (prompt character)
                 line = filter_bytes(raw_line, b' ')
 
-                if not is_bytes_hexadecimal(line):
+                if not is_bytes_hex(line):
                     is_error = ResponseBaseError.detect(raw_line)
                     if not is_error:
                         continue
@@ -49,7 +49,7 @@ class ProtocolCAN(ProtocolBase):
                 if not "header_length" in attr:
                     raise AttributeError(f"Missing required attribute 'header_length' in protocol attributes for protocol {context.protocol}")
 
-                components = split_by_byte(line)
+                components = split_hex_bytes(line)
 
                 if attr["header_length"] == 11: # Normalize to 29 bits (32 with hex)
                     components = (b"00",) * 2 + components

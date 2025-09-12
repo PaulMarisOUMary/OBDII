@@ -29,6 +29,7 @@ keywords = [
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
+    "Framework :: Pytest",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
@@ -72,15 +73,12 @@ docs = [
     "sphinx-design",
 ]
 
-[tool.setuptools]
-packages = [
-    "obdii",
-    "obdii.modes",
-    "obdii.parsers",
-    "obdii.protocols",
-    "obdii.transports",
-]
-include-package-data = true
+[tool.setuptools.package-data]
+"obdii" = ["py.typed"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["obdii*"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }
@@ -90,12 +88,11 @@ local_scheme = "no-local-version"
 
 [tool.pyright]
 include = [
-    "obdii",
-    "obdii/modes",
-    "obdii/parsers",
-    "obdii/protocols",
+    "obdii/**",
 ]
 exclude = [
+    ".git",
+    ".venv",
     "**/__pycache__",
     "build",
     "dist",

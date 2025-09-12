@@ -5,7 +5,7 @@ from serial import Serial # type: ignore
 from .transport_base import TransportBase
 
 from ..basetypes import MISSING
-from ..utils import override_class_attributes
+from ..utils.helper import override_class_attributes
 
 
 class TransportPort(TransportBase):

@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 from copy import deepcopy
 from re import findall
@@ -59,7 +60,7 @@ class Command():
         self.command_args = command_args or {}
         self.is_formatted = False
 
-    def __call__(self, *args: Any, checks: bool = True) -> "Command":
+    def __call__(self, *args: Any, checks: bool = True) -> Command:
         """
         Formats the command with the provided arguments and checks for validity.
 

@@ -1,32 +1,11 @@
-from logging import Handler, Formatter, DEBUG, INFO, WARNING, ERROR, CRITICAL, StreamHandler, getLogger
+from logging import CRITICAL, DEBUG, ERROR, INFO, WARNING, Formatter, Handler, StreamHandler, getLogger
 from os import environ
-from re import escape, fullmatch, sub
 from sys import platform
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 
-from .basetypes import MISSING
-from .response import ResponseBase
-
-
-def split_by_byte(raw: bytes) -> Tuple[bytes, ...]:
-    if len(raw) % 2 != 0:
-        raw = b'0' + raw
-
-    return tuple(raw[i:i+2] for i in range(0, len(raw), 2))
-
-
-def is_bytes_hexadecimal(raw: bytes) -> bool:
-    return bool(fullmatch(b"[0-9A-Fa-f]+", raw))
-
-
-def filter_bytes(raw: bytes, *filter_bytes: bytes) -> bytes:
-    pattern = b'|'.join(escape(filter_byte) for filter_byte in filter_bytes)
-
-    return sub(pattern, b'', raw)
-
-
-def bytes_to_string(raw: bytes) -> str:
-    return raw.decode(errors="ignore").strip()
+from .bits import bytes_to_string
+from ..basetypes import MISSING
+from ..response import ResponseBase
 
 
 def debug_responsebase(response_base: ResponseBase) -> str:
