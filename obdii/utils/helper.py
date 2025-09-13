@@ -9,17 +9,24 @@ from ..response import ResponseBase
 
 
 def debug_responsebase(response_base: ResponseBase) -> str:
-    return '\n'.join(f"[{bytes_to_string(line)}]" for line in response_base.messages[:-1]) + '\n'
+    return (
+        '\n'.join(f"[{bytes_to_string(line)}]" for line in response_base.messages[:-1])
+        + '\n'
+    )
 
 
-def override_class_attributes(cls: object, attributes: Dict[str, Any], pop: bool = False, **kwargs) -> None:
+def override_class_attributes(
+    cls: object, attributes: Dict[str, Any], pop: bool = False, **kwargs
+) -> None:
     """Override class attributes from kwargs."""
     for key, value in attributes.items():
         setattr(
-            cls, 
-            key, 
-            kwargs.get(key, value) if not pop else kwargs.pop(key, getattr(cls, key, value))
-                )
+            cls,
+            key,
+            kwargs.get(key, value)
+            if not pop
+            else kwargs.pop(key, getattr(cls, key, value)),
+        )
 
 
 def setup_logging(
@@ -36,11 +43,15 @@ def setup_logging(
         handler = StreamHandler()
 
     if formatter is MISSING:
-        if isinstance(handler, StreamHandler) and _stream_supports_colour(handler.stream):
+        if isinstance(handler, StreamHandler) and _stream_supports_colour(
+            handler.stream
+        ):
             formatter = _ColorFormatter()
         else:
             dt_fmt = "%Y-%m-%d %H:%M:%S"
-            formatter = Formatter("[{asctime}] [{levelname:<8}] {name}: {message}", dt_fmt, style='{')
+            formatter = Formatter(
+                "[{asctime}] [{levelname:<8}] {name}: {message}", dt_fmt, style='{'
+            )
 
     if root:
         logger = getLogger()
@@ -52,6 +63,7 @@ def setup_logging(
     logger.setLevel(level)
     logger.addHandler(handler)
 
+
 def _stream_supports_colour(stream: Any) -> bool:
     is_a_tty = hasattr(stream, "isatty") and stream.isatty()
 
@@ -62,6 +74,7 @@ def _stream_supports_colour(stream: Any) -> bool:
         return is_a_tty
 
     return is_a_tty and "WT_SESSION" in environ
+
 
 class _ColorFormatter(Formatter):
     LEVEL_COLORS = [

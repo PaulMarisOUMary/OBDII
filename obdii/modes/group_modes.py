@@ -9,7 +9,7 @@ from ..command import Command
 class GroupModes(Modes):
     def __init__(self):
         self.modes = MODE_REGISTRY
-    
+
     def __iter__(self) -> Generator[Command, None, None]:
         for mode in self.modes.values():
             for command in mode:

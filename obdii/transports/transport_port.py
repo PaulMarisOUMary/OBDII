@@ -29,14 +29,11 @@ class TransportPort(TransportBase):
         if self.port is MISSING:
             raise ValueError("Port must be specified for TransportPort.")
 
-
     def __repr__(self) -> str:
         return f"<TransportPort {self.port} at {self.baudrate} baud>"
 
-
     def is_connected(self) -> bool:
         return self.serial_conn is not None and self.serial_conn.is_open
-
 
     def connect(self, **kwargs) -> None:
         override_class_attributes(self, self.overridable_attributes, True, **kwargs)
@@ -54,7 +51,6 @@ class TransportPort(TransportBase):
             self.serial_conn.close()
         self.serial_conn = None
 
-
     def write_bytes(self, query: bytes) -> None:
         if not self.serial_conn or not self.serial_conn.is_open:
             raise RuntimeError("Serial port is not connected.")
@@ -62,7 +58,9 @@ class TransportPort(TransportBase):
 
         written = self.serial_conn.write(query)
         if written != len(query):
-            raise IOError(f"Failed to write all bytes to serial port: expected {len(query)}, wrote {written}.")
+            raise IOError(
+                f"Failed to write all bytes to serial port: expected {len(query)}, wrote {written}."
+            )
 
         self.serial_conn.flush()
 

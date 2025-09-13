@@ -3,7 +3,7 @@ from typing import Generator, Union
 from ..command import Command
 
 
-class GroupCommands():
+class GroupCommands:
     def __getitem__(self, key) -> Command:
         if isinstance(key, int):
             for attr_name in dir(self):
@@ -16,12 +16,16 @@ class GroupCommands():
         return f"<Mode Commands: {len(self)}>"
 
     def __len__(self) -> int:
-        return sum(1 for attr_name in dir(self) if isinstance(getattr(self, attr_name), Command))
+        return sum(
+            1
+            for attr_name in dir(self)
+            if isinstance(getattr(self, attr_name), Command)
+        )
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, GroupCommands):
             return False
-        
+
         return vars(self) == vars(value)
 
     def __iter__(self) -> Generator[Command, None, None]:
@@ -29,7 +33,7 @@ class GroupCommands():
             attr = getattr(self, attr_name)
             if isinstance(attr, Command):
                 yield attr
-    
+
     def has_command(self, command: Union[Command, str]) -> bool:
         if isinstance(command, Command):
             command = command.name

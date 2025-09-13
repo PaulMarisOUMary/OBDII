@@ -24,12 +24,12 @@ class TransportWifi(TransportBase):
         override_class_attributes(self, self.overridable_attributes, **kwargs)
 
         if self.address is MISSING or self.port is MISSING:
-            raise ValueError("Both address and port must be specified for TransportWifi.")
-
+            raise ValueError(
+                "Both address and port must be specified for TransportWifi."
+            )
 
     def __repr__(self) -> str:
         return f"<TransportWifi {self.address}:{self.port}>"
-
 
     def is_connected(self) -> bool:
         if self.socket_conn is None:
@@ -39,7 +39,6 @@ class TransportWifi(TransportBase):
             return True
         except s_error:
             return False
-
 
     def connect(self, **kwargs) -> None:
         override_class_attributes(self, self.overridable_attributes, True, **kwargs)
@@ -52,7 +51,6 @@ class TransportWifi(TransportBase):
         if self.socket_conn:
             self.socket_conn.close()
         self.socket_conn = None
-
 
     def write_bytes(self, query: bytes) -> None:
         if not self.socket_conn:
@@ -69,7 +67,7 @@ class TransportWifi(TransportBase):
             chunk = self.socket_conn.recv(1)
             if not chunk:
                 raise RuntimeError("Socket connection closed.")
-            
+
             buffer += chunk
 
             if buffer[-lenterm:] == expected_seq:
