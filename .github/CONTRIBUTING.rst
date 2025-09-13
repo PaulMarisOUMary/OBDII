@@ -74,11 +74,11 @@ Getting Started
         py -3 -m venv .venv
         .venv\Scripts\activate
 
-#. Install the library with the ``[dev,test,docs]`` extra options:
+#. Install the library with the ``[dev,test,docs,sim]`` extra options:
 
     .. code-block:: console
 
-        pip install -e .[dev,test,docs]
+        pip install -e .[dev,test,docs,sim]
 
 Bug Reports
 -----------

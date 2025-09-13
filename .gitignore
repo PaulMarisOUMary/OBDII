@@ -161,3 +161,6 @@ cython_debug/
 
 # Elm log files
 elm.log**
+
+# Ruff cache
+.ruff_cache/
