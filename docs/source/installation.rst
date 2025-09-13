@@ -104,7 +104,7 @@ Available extras:
 
 .. tab-set::
 
-    ..tab-item:: dev
+    .. tab-item:: dev
 
         Installs development dependencies, including linters, formatters, and type checkers.
 
