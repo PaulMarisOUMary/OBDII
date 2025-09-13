@@ -1,4 +1,14 @@
-from logging import CRITICAL, DEBUG, ERROR, INFO, WARNING, Formatter, Handler, StreamHandler, getLogger
+from logging import (
+    CRITICAL,
+    DEBUG,
+    ERROR,
+    INFO,
+    WARNING,
+    Formatter,
+    Handler,
+    StreamHandler,
+    getLogger,
+)
 from os import environ
 from sys import platform
 from typing import Any, Dict

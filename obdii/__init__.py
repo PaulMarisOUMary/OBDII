@@ -7,9 +7,10 @@ from .connection import Connection
 from .mode import Mode
 from .modes import at_commands, commands
 from .protocol import Protocol
-# note: Need to import the protocols to register them
-from .protocols import ProtocolCAN, ProtocolJ1850, ProtocolKWP2000
 from .response import ResponseBase, Context, Response
+
+# note: Need to import protocols to register them
+from . import protocols  # noqa: F401
 
 
 __title__ = "obdii"

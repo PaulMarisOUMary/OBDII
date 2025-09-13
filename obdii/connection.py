@@ -82,19 +82,20 @@ class Connection:
         ]
         self.init_completed = False
 
+        # 0x06 to 0x09, 0x01 to 0x05, 0x0A to 0x0C
         self.protocol_preferences = [
-            Protocol.ISO_15765_4_CAN,       # 0x06
-            Protocol.ISO_15765_4_CAN_B,     # 0x07
-            Protocol.ISO_15765_4_CAN_C,     # 0x08
-            Protocol.ISO_15765_4_CAN_D,     # 0x09
-            Protocol.SAE_J1850_PWM,         # 0x01
-            Protocol.SAE_J1850_VPW,         # 0x02
-            Protocol.ISO_9141_2,            # 0x03
-            Protocol.ISO_14230_4_KWP,       # 0x04
-            Protocol.ISO_14230_4_KWP_FAST,  # 0x05 
-            Protocol.SAE_J1939_CAN,         # 0x0A
-            Protocol.USER1_CAN,             # 0x0B
-            Protocol.USER2_CAN,             # 0x0C
+            Protocol.ISO_15765_4_CAN,
+            Protocol.ISO_15765_4_CAN_B,
+            Protocol.ISO_15765_4_CAN_C,
+            Protocol.ISO_15765_4_CAN_D,
+            Protocol.SAE_J1850_PWM,
+            Protocol.SAE_J1850_VPW,
+            Protocol.ISO_9141_2,
+            Protocol.ISO_14230_4_KWP,
+            Protocol.ISO_14230_4_KWP_FAST,
+            Protocol.SAE_J1939_CAN,
+            Protocol.USER1_CAN,
+            Protocol.USER2_CAN,
         ]
 
         if log_handler or log_formatter or log_level:

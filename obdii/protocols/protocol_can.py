@@ -104,12 +104,14 @@ class ProtocolCAN(ProtocolBase):
             return Response(**vars(response_base), parsed_data=parsed_data, value=value)
 
 
-ProtocolCAN.register({
-    Protocol.ISO_15765_4_CAN:   {"header_length": 11},
-    Protocol.ISO_15765_4_CAN_B: {"header_length": 29},
-    Protocol.ISO_15765_4_CAN_C: {"header_length": 11},
-    Protocol.ISO_15765_4_CAN_D: {"header_length" :29},
-    Protocol.SAE_J1939_CAN:     {"header_length": 29},
-    Protocol.USER1_CAN:         {"header_length": 11}, # 11 bits by default, can be extended
-    Protocol.USER2_CAN:         {"header_length": 11}, # 11 bits by default, can be extended
-})
+ProtocolCAN.register(
+    {
+        Protocol.ISO_15765_4_CAN: {"header_length": 11},
+        Protocol.ISO_15765_4_CAN_B: {"header_length": 29},
+        Protocol.ISO_15765_4_CAN_C: {"header_length": 11},
+        Protocol.ISO_15765_4_CAN_D: {"header_length": 29},
+        Protocol.SAE_J1939_CAN: {"header_length": 29},
+        Protocol.USER1_CAN: {"header_length": 11},
+        Protocol.USER2_CAN: {"header_length": 11},
+    }
+)
