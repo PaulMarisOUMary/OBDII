@@ -51,7 +51,7 @@ From Github:
 
 .. code-block:: console
 
-    pip install git+https://github.com/PaulMarisOUMary/OBDII@main[dev,test]
+    pip install git+https://github.com/PaulMarisOUMary/OBDII@main[dev]
 
 From local source:
 
@@ -59,13 +59,13 @@ From local source:
 
     git clone https://github.com/PaulMarisOUMary/OBDII
     cd OBDII
-    pip install .[dev,test]
+    pip install .[dev]
 
 From TestPyPI:
 
 .. code-block:: console
 
-    pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple py-obdii[dev,test]
+    pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple py-obdii[dev]
 
 
 Usage Example
@@ -99,11 +99,11 @@ To streamline the development process, you can use the `ELM327-Emulator <https:/
 Setting Up the ELM327-Emulator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-#. **Install the library with "dev" extra options**:
+#. **Install the library with "sim" extra options**:
 
     .. code-block:: console
 
-        pip install py-obdii[dev]
+        pip install py-obdii[sim]
 
 #. **Start the ELM327-Emulator**:
 

@@ -8,19 +8,20 @@ from .basetypes import MISSING, OneOrMany, Real
 from .mode import Mode
 
 
-class Command():
-    def __init__(self, 
-            mode: Mode,
-            pid: Union[int, str],
-            n_bytes: int,
-            name: str,
-            description: str = MISSING,
-            min_values: Optional[OneOrMany[Real]] = MISSING,
-            max_values: Optional[OneOrMany[Real]] = MISSING,
-            units: Optional[OneOrMany[str]] = MISSING,
-            formula: Optional[Callable] = MISSING,
-            command_args: Optional[Dict[str, Any]] = MISSING,
-        ) -> None:
+class Command:
+    def __init__(
+        self,
+        mode: Mode,
+        pid: Union[int, str],
+        n_bytes: int,
+        name: str,
+        description: str = MISSING,
+        min_values: Optional[OneOrMany[Real]] = MISSING,
+        max_values: Optional[OneOrMany[Real]] = MISSING,
+        units: Optional[OneOrMany[str]] = MISSING,
+        formula: Optional[Callable] = MISSING,
+        command_args: Optional[Dict[str, Any]] = MISSING,
+    ) -> None:
         """
         Initializes a Command instance with the given parameters.
 
@@ -67,11 +68,15 @@ class Command():
         if placeholders != expected_placeholders:
             missing = expected_placeholders - placeholders
             extra = placeholders - expected_placeholders
-            raise ValueError(f"PID format mismatch. Missing placeholders: {missing}. Extra placeholders: {extra}.")
-    
+            raise ValueError(
+                f"PID format mismatch. Missing placeholders: {missing}. Extra placeholders: {extra}."
+            )
+
     def _format_arg(self, arg_name: str, arg_type: type, value: Union[str, int]) -> str:
         if not isinstance(value, arg_type):
-            raise TypeError(f"Expected argument '{arg_name}' of type {arg_type.__name__}, got {type(value).__name__}.")
+            raise TypeError(
+                f"Expected argument '{arg_name}' of type {arg_type.__name__}, got {type(value).__name__}."
+            )
 
         expected_len = len(arg_name)
 
@@ -82,13 +87,16 @@ class Command():
         elif isinstance(value, str):
             formatted = value
         else:
-            raise TypeError(f"Argument '{arg_name}' must be of type int or str, got {type(value).__name__}.")
+            raise TypeError(
+                f"Argument '{arg_name}' must be of type int or str, got {type(value).__name__}."
+            )
 
         if len(formatted) != expected_len:
-            raise ValueError(f"Argument '{arg_name}' must be {expected_len} characters long after formatting, got {len(formatted)}.")
+            raise ValueError(
+                f"Argument '{arg_name}' must be {expected_len} characters long after formatting, got {len(formatted)}."
+            )
 
         return formatted
-
 
     def __call__(self, *args: Any, checks: bool = True) -> Command:
         """
@@ -114,17 +122,19 @@ class Command():
             If the argument type does not match the expected type.
         """
         if not self.command_args:
-            raise ValueError(f"Command '{self}' should not be parametrized, as no arguments have been described.")
+            raise ValueError(
+                f"Command '{self}' should not be parametrized, as no arguments have been described."
+            )
 
         if len(args) != len(self.command_args):
-            raise ValueError(f"Expected {len(self.command_args)} arguments, got {len(args)}.")
+            raise ValueError(
+                f"Expected {len(self.command_args)} arguments, got {len(args)}."
+            )
 
         self._validate_placeholders()
 
         combined_args = {
-            arg_name: (
-                self._format_arg(arg_name, arg_type, value) if checks else value
-            )
+            arg_name: (self._format_arg(arg_name, arg_type, value) if checks else value)
             for (arg_name, arg_type), value in zip(self.command_args.items(), args)
         }
 
@@ -136,13 +146,13 @@ class Command():
 
     def __repr__(self) -> str:
         return f"<Command {self.mode} {self.pid if isinstance(self.pid, str) else f'{self.pid:02X}'} {self.name or 'Unnamed'} [{', '.join(self.command_args.keys())}]>"
-    
+
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, Command):
             return False
 
         return vars(self) == vars(value)
-    
+
     def __hash__(self) -> int:
         return hash((self.mode, self.pid, self.name))
 
@@ -150,12 +160,12 @@ class Command():
         """Return hex digit for expected response lines (early-return ELM327 DSL, page 34)."""
         if not (early_return and self.n_bytes and self.mode != Mode.AT):
             return ''
-        
+
         data_bytes = 7
         n_lines = (self.n_bytes + (data_bytes - 1)) // data_bytes
-        
+
         return f" {n_lines:X}" if 0 < n_lines < 16 else ''
-    
+
     def _format_to_hex(self, value: Union[int, str]) -> str:
         return f"{value:02X}" if isinstance(value, int) else str(value)
 
@@ -167,7 +177,7 @@ class Command():
         Parameters
         ----------
         early_return: :class:`bool`
-            If set to `True`, appends a hex digit representing the expected number of responses in the query. 
+            If set to `True`, appends a hex digit representing the expected number of responses in the query.
             Defaults to `False`.
 
         Returns
@@ -181,7 +191,9 @@ class Command():
             If arguments have not been set or are incorrectly formatted.
         """
         if self.command_args and not self.is_formatted:
-            raise ValueError(f"Command has unset arguments for '{self.pid}': {self.command_args}")
+            raise ValueError(
+                f"Command has unset arguments for '{self.pid}': {self.command_args}"
+            )
 
         mode = self._format_to_hex(self.mode.value)
         pid = self._format_to_hex(self.pid)

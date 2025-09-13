@@ -8,14 +8,14 @@ from .protocol import Protocol
 
 
 @dataclass
-class Context():
+class Context:
     command: Command
     protocol: Protocol
     timestamp: float = field(default_factory=time)
 
 
 @dataclass
-class ResponseBase():
+class ResponseBase:
     context: Context
     raw: bytes
     messages: List[bytes]
@@ -31,11 +31,11 @@ class Response(ResponseBase):
     @property
     def min_values(self) -> Optional[OneOrMany[Real]]:
         return self.context.command.min_values
-    
+
     @property
     def max_values(self) -> Optional[OneOrMany[Real]]:
         return self.context.command.max_values
-    
+
     @property
     def units(self) -> Optional[OneOrMany[str]]:
         return self.context.command.units

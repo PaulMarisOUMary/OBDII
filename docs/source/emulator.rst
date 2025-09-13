@@ -18,11 +18,11 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
 .. card:: Prerequisites
 
-    To simulate a vehicle, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_, a third-party tool included automatically when you install the library with the `dev` extra:
+    To simulate a vehicle, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_, a third-party tool included automatically when you install the library with the `sim` extra:
 
     .. code-block:: console
 
-        pip install py-obdii[dev]
+        pip install py-obdii[sim]
 
     The emulator simulates a vehicle's responses and can be connected to just like a real car through a virtual serial port.
 

@@ -3,6 +3,7 @@ from typing import Any, Dict, Iterable, List, Literal, Tuple, TypeVar, Union
 
 T = TypeVar('T')
 
+
 class SingletonMeta(type):
     _instances: Dict[type, object] = {}
 
@@ -10,6 +11,7 @@ class SingletonMeta(type):
         if cls not in cls._instances:
             cls._instances[cls] = super().__call__(*args, **kwargs)
         return cls._instances[cls]
+
 
 class _MissingSentinel(metaclass=SingletonMeta):
     __slots__ = ()
@@ -25,6 +27,7 @@ class _MissingSentinel(metaclass=SingletonMeta):
 
     def __repr__(self) -> Literal["..."]:
         return "..."
+
 
 MISSING: Any = _MissingSentinel()
 

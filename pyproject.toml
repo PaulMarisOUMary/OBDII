@@ -60,17 +60,20 @@ Issues = "https://github.com/PaulMarisOUMary/OBDII/issues"
 
 [project.optional-dependencies]
 test = [
-    "pytest",
-    "pytest-cov",
-    "pytest-mock",
+    "pytest>=8.3.5,<8.4",
+    "pytest-cov>=5.0.0,<6",
+    "pytest-mock>=3.14,<3.15",
 ]
 dev = [
-    "ELM327-emulator",
+    "ruff>=0.13,<1",
 ]
 docs = [
-    "sphinx",
+    "sphinx>=8.2,<9",
     "sphinxawesome-theme",
     "sphinx-design",
+]
+sim = [
+    "ELM327-emulator>=3,<4",
 ]
 
 [tool.setuptools.package-data]
@@ -104,3 +107,31 @@ typeCheckingMode = "basic"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+
+[tool.ruff]
+exclude = [
+    ".eggs",
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "__pycache__",
+    "build",
+    "dist",
+    "docs",
+]
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+ignore = ["Q"]
+
+[tool.ruff.format]
+exclude = ["obdii/modes/mode_**.py"]
+indent-style = "space"
+line-ending = "lf"
+quote-style = "preserve"

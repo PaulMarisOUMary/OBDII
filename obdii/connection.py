@@ -18,20 +18,21 @@ from .utils.helper import debug_responsebase, setup_logging
 _log = getLogger(__name__)
 
 
-class Connection():
-    def __init__(self, 
-                    transport: Union[str, Tuple[str, Union[str, int]], TransportBase],
-                    protocol: Protocol = Protocol.AUTO,
-                    auto_connect: bool = True,
-                    smart_query: bool = False,
-                    early_return: bool = False,
-                    *,
-                    log_handler: Handler = MISSING,
-                    log_formatter: Formatter = MISSING,
-                    log_level: int = INFO,
-                    log_root: bool = False,
-                    **kwargs,
-                ) -> None:
+class Connection:
+    def __init__(
+        self,
+        transport: Union[str, Tuple[str, Union[str, int]], TransportBase],
+        protocol: Protocol = Protocol.AUTO,
+        auto_connect: bool = True,
+        smart_query: bool = False,
+        early_return: bool = False,
+        *,
+        log_handler: Handler = MISSING,
+        log_formatter: Formatter = MISSING,
+        log_level: int = INFO,
+        log_root: bool = False,
+        **kwargs,
+    ) -> None:
         """
         Initialize connection settings and optionally auto-connect.
 
@@ -49,7 +50,7 @@ class Connection():
             If True, send repeat command when the same command is issued again.
         early_return: :class:`bool`
             If set to true, the ELM327 will return immediately after sending the specified number of responses specified in the command (n_bytes). Works only with ELM327 v1.3 and later.
-        
+
         log_handler: :class:`logging.Handler`
             Custom log handler for the logger.
         log_formatter: :class:`logging.Formatter`
@@ -58,7 +59,7 @@ class Connection():
             Logging level for the logger.
         log_root: :class:`bool`
             Whether to set up the root logger.
-        
+
         **kwargs: :class:`dict`
             Additional keyword arguments to pass to the transport's connect method. Only used if `auto_connect` is True.
         """
@@ -81,47 +82,47 @@ class Connection():
         ]
         self.init_completed = False
 
+        # 0x06 to 0x09, 0x01 to 0x05, 0x0A to 0x0C
         self.protocol_preferences = [
-            Protocol.ISO_15765_4_CAN,       # 0x06
-            Protocol.ISO_15765_4_CAN_B,     # 0x07
-            Protocol.ISO_15765_4_CAN_C,     # 0x08
-            Protocol.ISO_15765_4_CAN_D,     # 0x09
-            Protocol.SAE_J1850_PWM,         # 0x01
-            Protocol.SAE_J1850_VPW,         # 0x02
-            Protocol.ISO_9141_2,            # 0x03
-            Protocol.ISO_14230_4_KWP,       # 0x04
-            Protocol.ISO_14230_4_KWP_FAST,  # 0x05 
-            Protocol.SAE_J1939_CAN,         # 0x0A
-            Protocol.USER1_CAN,             # 0x0B
-            Protocol.USER2_CAN,             # 0x0C
+            Protocol.ISO_15765_4_CAN,
+            Protocol.ISO_15765_4_CAN_B,
+            Protocol.ISO_15765_4_CAN_C,
+            Protocol.ISO_15765_4_CAN_D,
+            Protocol.SAE_J1850_PWM,
+            Protocol.SAE_J1850_VPW,
+            Protocol.ISO_9141_2,
+            Protocol.ISO_14230_4_KWP,
+            Protocol.ISO_14230_4_KWP_FAST,
+            Protocol.SAE_J1939_CAN,
+            Protocol.USER1_CAN,
+            Protocol.USER2_CAN,
         ]
 
         if log_handler or log_formatter or log_level:
-            setup_logging(
-                log_handler,
-                log_formatter,
-                log_level,
-                log_root
-            )
+            setup_logging(log_handler, log_formatter, log_level, log_root)
 
         if auto_connect:
             self.connect(**kwargs)
-    
 
-    def _resolve_transport(self, transport: Union[str, Tuple[str, Union[str, int]], TransportBase], **kwargs) -> TransportBase:
+    def _resolve_transport(
+        self,
+        transport: Union[str, Tuple[str, Union[str, int]], TransportBase],
+        **kwargs,
+    ) -> TransportBase:
         """Resolves a user-supplied transport input into a concrete TransportBase instance."""
         if isinstance(transport, str):
             return TransportPort(port=transport, **kwargs)
-        elif isinstance(transport, tuple) \
-            and len(transport) == 2 \
-            and isinstance(transport[0], str) \
-            and isinstance(transport[1], (str, int)):
+        elif (
+            isinstance(transport, tuple)
+            and len(transport) == 2
+            and isinstance(transport[0], str)
+            and isinstance(transport[1], (str, int))
+        ):
             return TransportWifi(address=transport[0], port=transport[1], **kwargs)
         elif isinstance(transport, TransportBase):
             return transport
         else:
             raise TypeError(f"Invalid transport type: {type(transport)}.")
-
 
     def connect(self, **kwargs) -> None:
         """
@@ -165,7 +166,6 @@ class Connection():
         """
         return self.transport.is_connected()
 
-
     def _auto_protocol(self, protocol: Protocol = MISSING) -> None:
         """Sets the protocol for communication."""
         protocol = protocol or self.protocol
@@ -178,8 +178,13 @@ class Connection():
             supported_protocols = self.supported_protocols
 
             if supported_protocols:
-                priority_dict = {protocol: idx for idx, protocol in enumerate(self.protocol_preferences)}
-                supported_protocols.sort(key=lambda p: priority_dict.get(p, len(self.protocol_preferences)))
+                priority_dict = {
+                    protocol: idx
+                    for idx, protocol in enumerate(self.protocol_preferences)
+                }
+                supported_protocols.sort(
+                    key=lambda p: priority_dict.get(p, len(self.protocol_preferences))
+                )
 
                 protocol_number = self._set_protocol_to(supported_protocols[0])
             else:
@@ -212,7 +217,7 @@ class Connection():
             protocol_number = self._set_protocol_to(protocol)
             if protocol_number == protocol.value:
                 supported_protocols.append(protocol)
-        
+
         if not supported_protocols:
             _log.warning("No supported protocols detected.")
             supported_protocols = [Protocol.UNKNOWN]
@@ -225,7 +230,6 @@ class Connection():
         if match:
             return int(match.group(1), 16)
         return -1
-
 
     def query(self, command: Command) -> Response:
         """
@@ -240,7 +244,7 @@ class Connection():
         -------
         :class:`Response`
             Parsed response from the adapter.
-        """      
+        """
         if self.smart_query and self.last_command and command == self.last_command:
             query = ModeAT.REPEAT.build()
         else:
@@ -271,11 +275,7 @@ class Connection():
         """
         raw = self.transport.read_bytes()
 
-        messages = [
-            line
-            for line in raw.splitlines()
-            if line
-        ]
+        messages = [line for line in raw.splitlines() if line]
 
         response_base = ResponseBase(context, raw, messages)
 
@@ -288,14 +288,12 @@ class Connection():
                 _log.warning(f"Unsupported Protocol used: {self.protocol.name}")
             return Response(**vars(response_base))
 
-
     def close(self) -> None:
         """
         Closes the transport connection.
         """
         self.transport.close()
         _log.info("Connection closed.")
-    
 
     def __enter__(self):
         """
@@ -308,7 +306,12 @@ class Connection():
         """
         return self
 
-    def __exit__(self, exc_type: Optional[BaseException], exc_value: Optional[BaseException], traceback: Optional[TracebackType]) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[BaseException],
+        exc_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         """
         Close the connection when exiting the context.
         """

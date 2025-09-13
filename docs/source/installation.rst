@@ -89,7 +89,7 @@ To try a pre-release or a test version, install from TestPyPI:
 
 .. code-block:: console
 
-    pip install -i https://test.pypi.org/simple py-obdii
+    pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple py-obdii
 
 .. _extras:
 
@@ -106,12 +106,12 @@ Available extras:
 
     .. tab-item:: dev
 
-        Installs the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_ library and dependencies for development.
+        Installs development dependencies, including linters, formatters, and type checkers.
 
         .. code-block:: console
 
             pip install py-obdii[dev]
-    
+
     .. tab-item:: test
 
         Required if you want to run unit tests or integration tests locally.
@@ -128,10 +128,18 @@ Available extras:
 
             pip install py-obdii[docs]
     
+    .. tab-item:: sim
+
+        Installs the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_ library and dependencies for data mocking and vehicle emulation.
+
+        .. code-block:: console
+
+            pip install py-obdii[sim]
+    
     .. tab-item:: all
 
         Installs all extras at once.
 
         .. code-block:: console
     
-            pip install py-obdii[dev,test,docs]
+            pip install py-obdii[dev,test,docs,sim]

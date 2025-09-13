@@ -27,28 +27,27 @@ max_runtime = 15
 csv_file = "obd_data.csv"
 
 with Connection(
-        port,
-        protocol = Protocol.ISO_15765_4_CAN,
-        auto_connect = False,
-        early_return = True,
-
-        log_handler = file_handler,
-        log_level = DEBUG,
-    ) as conn:
+    port,
+    protocol=Protocol.ISO_15765_4_CAN,
+    auto_connect=False,
+    early_return=True,
+    log_handler=file_handler,
+    log_level=DEBUG,
+) as conn:
     # Override the default init_sequence
     conn.init_sequence = [
         at_commands.RESET,
         at_commands.ECHO_OFF,
         at_commands.HEADERS_ON,
         at_commands.MEMORY_OFF,
-        at_commands.SET_PROTOCOL(0), # Usage of command argument(s)
-        conn._auto_protocol, # Detect and set required protocol if available
+        at_commands.SET_PROTOCOL(0),  # Usage of command argument(s)
+        conn._auto_protocol,  # Detect and set required protocol if available
     ]
 
     # Advanced use of the connect method
     conn.connect(
-        baudrate = 38400,
-        timeout = 10,
+        baudrate=38400,
+        timeout=10,
     )
 
     # Write in a csv cmds values within the max_runtime

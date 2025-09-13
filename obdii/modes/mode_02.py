@@ -9,6 +9,7 @@ from ..mode import Mode
 
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_02_-_Show_freeze_frame_data
 
+
 class Mode02(GroupCommands):
     """Freeze frame Commands"""
 
@@ -21,5 +22,6 @@ class Mode02(GroupCommands):
                 dtc_command.mode = Mode.FREEZE_FRAME
                 dtc_command.name = field
                 setattr(Mode02, field, dtc_command)
+
 
 Mode02._populate_commands()

@@ -33,11 +33,12 @@ class ProtocolBase(ABC):
         return cls._protocol_attributes.get(protocol, {})
 
 
-class ProtocolUnknown(ProtocolBase): 
+class ProtocolUnknown(ProtocolBase):
     """Fallback protocol class for unknown or unsupported protocols.
 
     In such cases, basic serial communication might still be possible,
     but full message parsing could be limited.
     """
+
     def parse_response(self, response_base: ResponseBase) -> Response:
         raise NotImplementedError
