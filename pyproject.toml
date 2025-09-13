@@ -60,9 +60,9 @@ Issues = "https://github.com/PaulMarisOUMary/OBDII/issues"
 
 [project.optional-dependencies]
 test = [
-    "pytest>=8.4,<9",
-    "pytest-cov",
-    "pytest-mock",
+    "pytest>=8.3.5,<8.4",
+    "pytest-cov>=5.0.0,<6",
+    "pytest-mock>=3.14,<3.15",
 ]
 dev = [
     "ruff>=0.13,<1",
