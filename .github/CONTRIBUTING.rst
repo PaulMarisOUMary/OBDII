@@ -80,6 +80,9 @@ Getting Started
 
         pip install -e .[dev,test,docs,sim]
 
+    The ``-e`` (editable) flag lets you modify the source code, with changes
+    taking effect immediately without reinstalling the library.
+
 Bug Reports
 -----------
 
@@ -112,10 +115,55 @@ Commit Messages
 - Group related changes into single commits.
 - Reference related issues in the description when applicable (e.g., "Fix #123").
 
+Code Formatting and Linting
+---------------------------
+
+This library uses `ruff <https://docs.astral.sh/ruff/>`_ for code formatting and linting.
+
+Install the development dependencies with:
+
+.. code-block:: console
+
+    pip install -e .[dev]
+
+To check and fix linting issues, run:
+
+#. Check for linting issues
+
+    .. code-block:: console
+
+        ruff check obdii --diff
+
+#. Automatically fix issues
+
+    .. code-block:: console
+
+        ruff check obdii --fix
+
+To format your changes, run:
+
+#. Preview formatting issues
+
+    .. code-block:: console
+    
+        ruff format obdii --diff
+
+#. Automatically format code
+
+    .. code-block:: console
+    
+        ruff format obdii --fix
+
 Testing
 -------
 
 This library uses `pytest <https://docs.pytest.org/>`_ for testing.
+
+Install the testing dependencies with:
+
+.. code-block:: console
+
+    pip install -e .[test]
 
 Tests are located in the ``tests/`` folder.
 
@@ -130,6 +178,12 @@ Project Documentation
 
 This library uses `Sphinx <https://www.sphinx-doc.org/>`_ for documentation.
 If you add or change features, please updates the documentation accordingly.
+
+Install the documentation dependencies with:
+
+.. code-block:: console
+
+    pip install -e .[docs]
 
 Sources are located in ``docs/source/``.
 
