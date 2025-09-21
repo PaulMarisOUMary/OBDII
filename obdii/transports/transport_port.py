@@ -67,4 +67,6 @@ class TransportPort(TransportBase):
     def read_bytes(self, expected_seq: bytes = b'>', size: int = MISSING) -> bytes:
         if not self.serial_conn or not self.serial_conn.is_open:
             raise RuntimeError("Serial port is not connected.")
-        return self.serial_conn.read_until(expected_seq, size if size is not MISSING else None)
+        return self.serial_conn.read_until(
+            expected_seq, size if size is not MISSING else None
+        )
