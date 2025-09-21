@@ -152,7 +152,7 @@ To format your changes, run:
 
     .. code-block:: console
     
-        ruff format obdii --fix
+        ruff format obdii
 
 Testing
 -------
