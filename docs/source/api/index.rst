@@ -10,3 +10,4 @@ Library API References
     modes
     protocols
     transports
+    utils

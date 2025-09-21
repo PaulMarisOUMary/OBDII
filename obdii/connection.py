@@ -38,10 +38,10 @@ class Connection:
 
         Parameters
         ----------
-        transport: Union[:class:`str`, Tuple[:class:`str`, Union[:class:`str`, :class:`int`]], :class:`obdii.transports.transport_base.TransportBase`]
+        transport: Union[:class:`str`, Tuple[:class:`str`, Union[:class:`str`, :class:`int`]], :class:`~obdii.transports.transport_base.TransportBase`]
             Can be represented as a string for serial ports (e.g., "COM5", "/dev/ttyUSB0", "/dev/rfcomm0"),
             or as a tuple for network transports (e.g., ("<hostname>", <port>)),
-            or as an instance of a subclass of :class:`obdii.transports.transport_base.TransportBase`.
+            or as an instance of a subclass of :class:`~obdii.transports.transport_base.TransportBase`.
         protocol: :class:`Protocol`
             The protocol to use for communication.
         auto_connect: :class:`bool`

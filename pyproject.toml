@@ -135,5 +135,5 @@ ignore = ["Q"]
 [tool.ruff.format]
 exclude = ["obdii/modes/mode_**.py"]
 indent-style = "space"
-line-ending = "lf"
+line-ending = "auto"
 quote-style = "preserve"
