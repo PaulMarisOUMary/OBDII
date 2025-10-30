@@ -23,14 +23,11 @@ Minimal Example
     :linenos:
     :emphasize-lines: 3
 
-    from obdii import at_commands, commands, Connection
+    from obdii import commands, Connection
 
-    conn = Connection("PORT")
-
-    response = conn.query(commands.VEHICLE_SPEED)
-    print(f"Vehicle Speed: {response.value} {response.units}")
-
-    conn.close()
+    with Connection("PORT") as conn:
+        response = conn.query(commands.ENGINE_SPEED)
+        print(f"Engine Speed: {response.value} {response.units}")
 
 .. note::
     Replace ``"PORT"`` with the appropriate port.
@@ -43,20 +40,18 @@ You can find more detailed examples and usage scenarios in the `repository <http
 Determining Your Port
 ---------------------
 
-Scenario 1: With a Car and OBDII Adapter
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Scenario 1: :bdg-secondary-line:`No Car` or :bdg-secondary-line:`No Adapter`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:bdg-success-line:`Car` + :bdg-success-line:`OBDII Adapter`
-
-If you're connecting to a real vehicle, you'll need to find the port your adapter is using (Bluetooth, USB, or WiFi).
-
-Refer to the :ref:`connection` page for detailed instructions.
-
-Scenario 2: Without a Car or OBDII Adapter
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-:bdg-secondary-line:`No Car` • :bdg-secondary-line:`No Adapter`
-
-You can emulate an OBDII environment using an emulator.
+If you don't have access to a car or an OBDII adapter, or simply want to develop
+without having to be in your car, you can simulate an OBDII environment using an emulator.
 
 Refer to the :ref:`emulator` page for setup instructions and usage details.
+
+Scenario 2: :bdg-success-line:`Car` and :bdg-success-line:`OBDII Adapter`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To connect to a real vehicle, make sure you have both a car and a compatible OBDII adapter.
+Next, you'll need to find the port your adapter is using (Bluetooth, USB, or WiFi).
+
+Refer to the :ref:`connection` page for detailed instructions.
