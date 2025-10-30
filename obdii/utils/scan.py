@@ -1,3 +1,6 @@
+import platform
+
+from glob import glob
 from typing import Any, Dict, List, Type
 
 from serial.tools import list_ports
@@ -65,6 +68,12 @@ def scan_transports(
 def scan_ports(return_first: bool = True, **kwargs):
     """Scan available serial ports for ELM327 compatible devices."""
     candidates = [{"port": port.device} for port in list_ports.comports()]
+
+    if platform.system() == "Linux":
+        pts_ports = [
+            {"port": port} for port in glob("/dev/pts/*") if port != "/dev/pts/ptmx"
+        ]
+        candidates.extend(pts_ports)
 
     return scan_transports(
         candidates, TransportPort, return_first=return_first, **kwargs
