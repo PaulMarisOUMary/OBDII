@@ -64,13 +64,22 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
         #. Install a kernel-mode virtual serial port driver like `com0com <https://com0com.sourceforge.net>`_
 
+            .. note::
+
+                On Windows 10 and 11, Secure Boot may block unsigned drivers.
+                So make sure you download and install the signed version of com0com.
+
+                - Files: `SourceForge Repository <https://sourceforge.net/projects/com0com/files/com0com/3.0.0.0>`_
+                - Direct Download: `com0com-3.0.0.0-i386-and-x64-signed.zip <https://sourceforge.net/projects/com0com/files/com0com/3.0.0.0/com0com-3.0.0.0-i386-and-x64-signed.zip/download>`_
+                
+
         #. Create a virtual COM port pair (e.g., COM5 ↔ COM6)
 
         #. Start the ELM327 Emulator on one end of the virtual connection (e.g., COM6):
 
             .. code-block:: console
 
-                python -m elm -p COM6 -s car --baudrate 38400
+                python -m elm -p COM5 -s car --baudrate 38400
 
             This command launches the emulator in *car simulation* mode on COM6.
 
@@ -82,5 +91,5 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
                 from obdii import Connection
 
-                with Connection("COM5", baudrate=38400) as conn:
+                with Connection("COM6", baudrate=38400) as conn:
                     # Your code here

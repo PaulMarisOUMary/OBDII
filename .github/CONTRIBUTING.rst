@@ -191,9 +191,7 @@ To build and view the documentation locally, run:
 
 .. code-block:: console
 
-    sphinx-build -b html -j auto -a -n -T --keep-going docs/source docs/build/html
-
-    python -m http.server --directory docs/build/html
+    sphinx-autobuild docs/source docs/build/html -a -n -T --keep-going
 
 -------
 

@@ -71,6 +71,7 @@ dev = [
 ]
 docs = [
     "sphinx>=8.2,<9",
+    "sphinx-autobuild",
     "sphinxawesome-theme",
     "sphinx-design",
 ]
