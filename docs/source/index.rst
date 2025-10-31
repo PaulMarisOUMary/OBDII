@@ -16,6 +16,7 @@
    installation
    quickstart
    connection
+   usage
 
 .. toctree::
    :hidden:
