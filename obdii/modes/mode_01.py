@@ -5,8 +5,8 @@ from .group_commands import GroupCommands
 from ..command import Command
 from ..mode import Mode
 from ..parsers.formula import Formula, MultiFormula
+from ..parsers.mappings import FUEL_SYSTEM_STATUS, SECONDARY_AIR_STATUS, VEHICLE_STANDARDS, FUEL_TYPE_CODING
 from ..parsers.pids import SupportedPIDS
-
 
 M = Mode.REQUEST
 C = partial(Command, M)
@@ -49,7 +49,7 @@ class Mode01(GroupCommands):
     SUPPORTED_PIDS_A = C(0x00, 0x04, "SUPPORTED_PIDS_A", "PIDs supported [$01 - $20]", None, None, None, SP(0x01))
     STATUS_DTC = C(0x01, 0x04, "STATUS_DTC", "Monitor status since DTCs cleared. (Includes MIL status, DTC count, tests)", None, None, None)
     FREEZE_DTC = C(0x02, 0x02, "FREEZE_DTC", "DTC that caused freeze frame storage.", None, None, None)
-    FUEL_STATUS = C(0x03, 0x02, "FUEL_STATUS", "Fuel system status", None, None, None)
+    FUEL_STATUS = C(0x03, 0x02, "FUEL_STATUS", "Fuel system status", None, None, None, FUEL_SYSTEM_STATUS)
     ENGINE_LOAD = C(0x04, 0x01, "ENGINE_LOAD", "Calculated engine load", 0, 100, '%', F("100/255*A"))
     ENGINE_COOLANT_TEMP = C(0x05, 0x01, "ENGINE_COOLANT_TEMP", "Engine coolant temperature", -40, 215, "°C", F("A-40"))
     SHORT_FUEL_TRIM_BANK_1 = C(0x06, 0x01, "SHORT_FUEL_TRIM_BANK_1", "Short term fuel trim (STFT)—Bank 1", -100, 99.2, '%', F("100/128*A-100"))
@@ -64,7 +64,7 @@ class Mode01(GroupCommands):
     INTAKE_AIR_TEMP = C(0x0F, 0x01, "INTAKE_AIR_TEMP", "Intake air temperature", -40, 215, "°C", F("A-40"))
     MAF_RATE = C(0x10, 0x02, "MAF_RATE", "Mass air flow sensor (MAF) air flow rate", 0, 655.35, "g/s", F("(256*A+B)/100")) 
     THROTTLE_POSITION = C(0x11, 0x01, "THROTTLE_POSITION", "Throttle position", 0, 100, '%', F("100/255*A"))
-    STATUS_SECONDARY_AIR = C(0x12, 0x01, "STATUS_SECONDARY_AIR", "Commanded secondary air status", None, None, None) 
+    STATUS_SECONDARY_AIR = C(0x12, 0x01, "STATUS_SECONDARY_AIR", "Commanded secondary air status", None, None, None, SECONDARY_AIR_STATUS) 
     OXYGEN_SENSORS_2_BANKS = C(0x13, 0x01, "OXYGEN_SENSORS_2_BANKS", "Oxygen sensors present (in 2 banks)", None, None, None) 
     OXYGEN_SENSOR_1 = C(0x14, 0x02, "OXYGEN_SENSOR_1", "Oxygen Sensor 1 A: Voltage B: Short term fuel trim", [0, -100], [1.275, 99.2], ['V', '%'], MF("A/200", "100/128*B-100"))
     OXYGEN_SENSOR_2 = C(0x15, 0x02, "OXYGEN_SENSOR_2", "Oxygen Sensor 2 A: Voltage B: Short term fuel trim", [0, -100], [1.275, 99.2], ['V', '%'], MF("A/200", "100/128*B-100"))
@@ -74,7 +74,7 @@ class Mode01(GroupCommands):
     OXYGEN_SENSOR_6 = C(0x19, 0x02, "OXYGEN_SENSOR_6", "Oxygen Sensor 6 A: Voltage B: Short term fuel trim", [0, -100], [1.275, 99.2], ['V', '%'], MF("A/200", "100/128*B-100"))
     OXYGEN_SENSOR_7 = C(0x1A, 0x02, "OXYGEN_SENSOR_7", "Oxygen Sensor 7 A: Voltage B: Short term fuel trim", [0, -100], [1.275, 99.2], ['V', '%'], MF("A/200", "100/128*B-100"))
     OXYGEN_SENSOR_8 = C(0x1B, 0x02, "OXYGEN_SENSOR_8", "Oxygen Sensor 8 A: Voltage B: Short term fuel trim", [0, -100], [1.275, 99.2], ['V', '%'], MF("A/200", "100/128*B-100"))
-    OBD_STANDARDS = C(0x1C, 0x01, "OBD_STANDARDS", "OBD standards this vehicle conforms to", 1, 250, None)
+    OBD_STANDARDS = C(0x1C, 0x01, "OBD_STANDARDS", "OBD standards this vehicle conforms to", 1, 250, None, VEHICLE_STANDARDS)
     OXYGEN_SENSORS_4_BANKS = C(0x1D, 0x01, "OXYGEN_SENSORS_4_BANKS", "Oxygen sensors present (in 4 banks)", None, None, None) 
     STATUS_AUX_INPUT = C(0x1E, 0x01, "STATUS_AUX_INPUT", "Auxiliary input status (e.g. Power Take Off)", None, None, None)
     ENGINE_RUN_TIME = C(0x1F, 0x02, "ENGINE_RUN_TIME", "Run time since engine start", 0, 65535, 's', F("256*A+B"))
@@ -129,7 +129,7 @@ class Mode01(GroupCommands):
     CLEARED_DTC_SINCE = C(0x4E, 0x02, "CLEARED_DTC_SINCE", "Time since trouble codes cleared", 0, 65535, "min", F("256*A+B"))
     MAX_FUEL_AIR_RATIO_O2_VOLT_CURR_PRESSURE = C(0x4F, 0x04, "MAX_FUEL_AIR_RATIO_O2_VOLT_CURR_PRESSURE", "Maximum value for Equiv Ratio, O2 Sensor V, O2 Sensor I, Intake Pressure", [0, 0, 0, 0], [255, 255, 255, 2550], ["ratio", 'V', "mA", "kPa"], MF('A', 'B', 'C', 'D*10'))
     MAF_MAX = C(0x50, 0x04, "MAF_MAX", "Maximum value for MAF rate", 0, 2550, "g/s", F("A*10"))
-    FUEL_TYPE = C(0x51, 0x01, "FUEL_TYPE", "Fuel Type", None, None, None)
+    FUEL_TYPE = C(0x51, 0x01, "FUEL_TYPE", "Fuel Type", None, None, None, FUEL_TYPE_CODING)
     ETHANOL_PERC = C(0x52, 0x01, "ETHANOL_PERC", "Ethanol fuel %", 0, 100, '%', F("100/255*A"))
     EVAP_PRESSURE_ABSOLUTE = C(0x53, 0x02, "EVAP_PRESSURE_ABSOLUTE", "Absolute Evap system Vapor Pressure", 0, 327.675, "kPa", F("(256*A+B)/200")) 
     EVAP_PRESSURE_ALT = C(0x54, 0x02, "EVAP_PRESSURE_ALT", "Evap system vapor pressure (alternate encoding)", -32768, 32767, "Pa")

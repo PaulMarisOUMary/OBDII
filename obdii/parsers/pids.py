@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, Iterable, List
 
 from ..basetypes import BytesRows
 
@@ -19,3 +19,31 @@ class SupportedPIDS:
         ]
 
         return supported_pids
+
+
+class EnumeratedPIDS:
+    def __init__(self, mapping: Dict) -> None:
+        self.mapping = self._extend_mapping(mapping)
+
+    def _extend_mapping(self, mapping: Dict) -> Dict:
+        extended = {}
+
+        for key, value in mapping.items():
+            if isinstance(key, Iterable) and not isinstance(key, (bytes, int, str)):
+                for k in key:
+                    extended[k] = value
+            else:
+                extended[key] = value
+
+        return extended
+
+    def __call__(self, parsed_data: BytesRows) -> List:
+        concatenated_data = sum(parsed_data, ())
+
+        mapped_values = []
+
+        for data in concatenated_data:
+            hbtd = int(data, 16)
+            mapped_values.append((hbtd, self.mapping.get(hbtd, None)))
+
+        return mapped_values

@@ -13,4 +13,5 @@ C = partial(Command, M)
 
 class Mode04(GroupCommands):
     """Clear Diagnostic Trouble Codes Command"""
+
     CLEAR_DTC = C('', 0x00, "CLEAR_DTC", "Clear trouble codes / Malfunction indicator lamp (MIL) / Check engine light", None, None, None)
