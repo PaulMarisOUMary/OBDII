@@ -26,7 +26,8 @@ class ProtocolBase(ABC):
     @classmethod
     def get_handler(cls, protocol: Protocol) -> ProtocolBase:
         """Retrieve the appropriate protocol class or fallback to ProtocolUnknown."""
-        return cls._registry.get(protocol, ProtocolUnknown)()
+        handler_cls = cls._registry.get(protocol, ProtocolUnknown)
+        return handler_cls()
 
     @classmethod
     def get_protocol_attributes(cls, protocol: Protocol) -> Dict[str, Any]:

@@ -50,7 +50,7 @@ class ProtocolCAN(ProtocolBase):
 
         components = split_hex_bytes(line)
         if header_length == self._HEADER_LENGTH_11BIT:
-            components = (b"00",) * 2 + components
+            return (b"00", b"00") + components
         return components
 
     def _validate_components(
@@ -87,7 +87,8 @@ class ProtocolCAN(ProtocolBase):
     ) -> Response:
         context = response_base.context
         command = context.command
-        parsed_data: BytesRows = list()
+        parsed_data: BytesRows = []
+        protocol = context.protocol
 
         for raw_line in messages:
             line = filter_bytes(raw_line, b' ')
@@ -99,10 +100,12 @@ class ProtocolCAN(ProtocolBase):
                     raise is_error
                 continue
 
-            components = self._normalize_components(line, context.protocol)
-            if len(components) < self._COMPONENTS_MIN_LENGTH:
+            components = self._normalize_components(line, protocol)
+            comp_len = len(components)
+
+            if comp_len < self._COMPONENTS_MIN_LENGTH:
                 _log.warning(
-                    f"Invalid line: too few components (expected at least {self._COMPONENTS_MIN_LENGTH}, got {len(components)})"
+                    f"Invalid line: too few components (expected at least {self._COMPONENTS_MIN_LENGTH}, got {comp_len})"
                 )
                 continue
 
@@ -118,7 +121,9 @@ class ProtocolCAN(ProtocolBase):
             self._validate_components(components, command, payload_length)
             parsed_data.append(data)
 
-        value = self._parsed_data_to_value(command, parsed_data)
+        value = (
+            self._parsed_data_to_value(command, parsed_data) if parsed_data else None
+        )
         return Response(**vars(response_base), parsed_data=parsed_data, value=value)
 
     def _parse_at_response(

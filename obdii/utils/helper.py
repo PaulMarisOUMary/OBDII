@@ -19,10 +19,10 @@ from ..response import ResponseBase
 
 
 def debug_responsebase(response_base: ResponseBase) -> str:
-    return (
-        '\n'.join(f"[{bytes_to_string(line)}]" for line in response_base.messages[:-1])
-        + '\n'
-    )
+    messages = response_base.messages[:-1]
+    if not messages:
+        return '\n'
+    return '\n'.join(f"[{bytes_to_string(line)}]" for line in messages) + '\n'
 
 
 def override_class_attributes(

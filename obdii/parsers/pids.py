@@ -11,7 +11,7 @@ class SupportedPIDS:
         concatenated_data = sum(parsed_data, ())
 
         binary_string = ''.join(
-            [f"{int(hex_value, 16):08b}" for hex_value in concatenated_data]
+            f"{int(hex_value, 16):08b}" for hex_value in concatenated_data
         )
 
         supported_pids = [

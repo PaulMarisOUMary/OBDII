@@ -169,7 +169,7 @@ class Connection:
     def _auto_protocol(self, protocol: Protocol = MISSING) -> None:
         """Sets the protocol for communication."""
         protocol = protocol or self.protocol
-        unwanted_protocols = [Protocol.AUTO, Protocol.UNKNOWN]
+        unwanted_protocols = {Protocol.AUTO, Protocol.UNKNOWN}
 
         protocol_number = self._set_protocol_to(protocol)
 
@@ -209,9 +209,10 @@ class Connection:
     def _get_supported_protocols(self) -> List[Protocol]:
         """Attempts to find supported protocol(s)."""
         supported_protocols = []
+        excluded_protocols = {Protocol.UNKNOWN, Protocol.AUTO}
 
         for protocol in Protocol:
-            if protocol in [Protocol.UNKNOWN, Protocol.AUTO]:
+            if protocol in excluded_protocols:
                 continue
 
             protocol_number = self._set_protocol_to(protocol)
@@ -220,7 +221,7 @@ class Connection:
 
         if not supported_protocols:
             _log.warning("No supported protocols detected.")
-            supported_protocols = [Protocol.UNKNOWN]
+            return [Protocol.UNKNOWN]
 
         return supported_protocols
 
