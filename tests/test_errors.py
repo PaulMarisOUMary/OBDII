@@ -1,16 +1,31 @@
+"""
+Unit tests for obdii.errors module.
+"""
 import pytest
 
 from obdii.errors import (
-    ResponseBaseError, 
-    InvalidCommandError, BufferFullError, BusBusyError, BusError, 
-    CanError, InvalidDataError, InvalidLineError, DeviceInternalError, SignalFeedbackError, 
-    MissingDataError, CanDataError, StoppedError, ProtocolConnectionError,
-    InactivityWarning, LowPowerWarning, LowVoltageResetWarning,
+    ResponseBaseError,
+    InvalidCommandError,
+    BufferFullError,
+    BusBusyError,
+    BusError,
+    CanError,
+    InvalidDataError,
+    InvalidLineError,
+    DeviceInternalError,
+    SignalFeedbackError,
+    MissingDataError,
+    CanDataError,
+    StoppedError,
+    ProtocolConnectionError,
+    InactivityWarning,
+    LowPowerWarning,
+    LowVoltageResetWarning,
 )
 
 
 @pytest.mark.parametrize(
-    "response, expected_error",
+    ("response", "expected_error"),
     [
         (b'?', InvalidCommandError),
         (b"BUFFER FULL", BufferFullError),
@@ -34,11 +49,33 @@ from obdii.errors import (
         (b"LV RESET", LowVoltageResetWarning),
 
         (b"NO ERROR HERE", None),
-    ]
+    ],
+    ids=[
+        "invalid_cmd",
+        "buffer_full",
+        "bus_busy",
+        "bus_error",
+        "can_error",
+        "data_error",
+        "data_error_some",
+        "invalid_line_lt",
+        "invalid_line_some_lt",
+        "device_err01",
+        "device_err99",
+        "fb_error",
+        "no_data",
+        "can_data_error",
+        "stopped",
+        "unable_connect",
+        "inactivity",
+        "low_power",
+        "low_voltage_reset",
+        "no_error",
+    ],
 )
 def test_error_detection(response, expected_error):
-    error = ResponseBaseError.detect(response)
+    result = ResponseBaseError.detect(response)
     if expected_error is None:
-        assert error is None, f"Expected no error but got {error}"
+        assert result is None, f"Expected no error but got {result}"
     else:
-        assert isinstance(error, expected_error), f"Expected {expected_error.__name__}, but got {type(error).__name__}"
+        assert isinstance(result, expected_error), f"Expected {expected_error.__name__}, but got {type(result).__name__}"
