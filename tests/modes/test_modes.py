@@ -1,7 +1,10 @@
+"""
+Unit tests for obdii.modes.mode_* modules.
+"""
 import pytest
 
+from ast import Assign, Name, parse, walk
 from inspect import getsource
-from ast import parse, walk, Assign, Name
 
 from obdii.command import Command
 from obdii.modes import ModeAT, Mode01, Mode02, Mode03, Mode04, Mode09
@@ -16,10 +19,13 @@ TEST_MODES = [
     Mode09,
 ]
 
+TEST_MODES_ids = ["AT", "01", "02", "03", "04", "09"]
+
 
 @pytest.mark.parametrize(
     "mode",
     TEST_MODES,
+    ids=TEST_MODES_ids,
 )
 def test_field_name_matches_command_name(mode):
     for field_name, field_value in vars(mode).items():
@@ -29,25 +35,28 @@ def test_field_name_matches_command_name(mode):
 @pytest.mark.parametrize(
     "mode",
     TEST_MODES,
+    ids=TEST_MODES_ids,
 )
 def test_mins_maxs_units(mode):
     for command in vars(mode).values():
-        if isinstance(command, Command):
-            min_vals = command.min_values
-            max_vals = command.max_values
-            units = command.units
+        if not isinstance(command, Command):
+            continue
 
-            if isinstance(max_vals, (list, tuple)) or isinstance(min_vals, (list, tuple)) or isinstance(units, (list, tuple)):
-                assert isinstance(max_vals, (list, tuple)), f"Expected list/tuple for max_values, got {type(max_vals)}"
-                assert isinstance(min_vals, (list, tuple)), f"Expected list/tuple for min_values, got {type(min_vals)}"
-                assert isinstance(units, (list, tuple)), f"Expected list/tuple for units, got {type(units)}"
+        min_vals = command.min_values
+        max_vals = command.max_values
+        units = command.units
 
-                # Ensure they have the same length
-                assert len(max_vals) == len(min_vals) == len(units), f"Length mismatch: max={len(max_vals)}, min={len(min_vals)}, units={len(units)}"
+        if isinstance(max_vals, (list, tuple)) or isinstance(min_vals, (list, tuple)) or isinstance(units, (list, tuple)):
+            assert isinstance(max_vals, (list, tuple))
+            assert isinstance(min_vals, (list, tuple))
+            assert isinstance(units, (list, tuple))
+            assert len(max_vals) == len(min_vals) == len(units)
+
 
 @pytest.mark.parametrize(
     "mode",
     TEST_MODES,
+    ids=TEST_MODES_ids,
 )
 def test_for_unique_fields(mode):
     source = getsource(mode)
@@ -65,3 +74,17 @@ def test_for_unique_fields(mode):
                     assignments[var_name] = True
     
     assert not duplicates, f"Duplicate field(s) defined in {mode.__name__}: {', '.join(duplicates)}"
+
+@pytest.mark.parametrize(
+    "mode",
+    TEST_MODES,
+    ids=TEST_MODES_ids,
+)
+def test_missing_formula(mode):
+    for command in vars(mode).values():
+        if (
+            isinstance(command, Command)
+            and command.mode.value == 1
+            and not command.formula
+        ):
+            print(f"Missing Formula for: {command.name}")
