@@ -1,3 +1,6 @@
+"""
+Unit tests for obdii.command module.
+"""
 import pytest
 
 from typing import Any, Dict
@@ -26,14 +29,14 @@ def arg_command_factory():
 
 
 @pytest.mark.parametrize(
-    "pid, command_args, arguments, expected_pid",
+    ("pid", "command_args", "arguments", "expected_pid"),
     [
         # Basic formatting tests
         ("TEST {h}", {'h': int}, [0], "TEST 0"),
         ("TEST {x} TEST {y}", {'x': int, 'y': int}, [0, 1], "TEST 0 TEST 1"),
         ("TEST {h}", {'h': int}, [10], "TEST A"),
         ("TEST {x} TEST {y}", {'x': int, 'y': int}, [10, 11], "TEST A TEST B"),
-        
+
         # Hexadecimal formatting tests
         ("TEST {hh}", {"hh": int}, [0], "TEST 00"),
         ("TEST {xx} TEST {yy}", {"xx": int, "yy": int}, [0, 1], "TEST 00 TEST 01"),
@@ -41,10 +44,23 @@ def arg_command_factory():
         ("TEST {xx} TEST {yy}", {"xx": int, "yy": int}, [10, 11], "TEST 0A TEST 0B"),
         ("TEST {hh}", {"hh": int}, [17], "TEST 11"),
         ("TEST {xx} TEST {yy}", {"xx": int, "yy": int}, [17, 18], "TEST 11 TEST 12"),
-        
+
         # Edge cases
         ("TEST {hh}", {"hh": int}, [255], "TEST FF"),
-    ]
+    ],
+    ids=[
+        "h-0->0",
+        "x-y-0-1->0-1",
+        "h-10->A",
+        "x-y-10-11->A-B",
+        "hh-0->00",
+        "xx-yy-0-1->00-01",
+        "hh-10->0A",
+        "xx-yy-10-11->0A-0B",
+        "hh-17->11",
+        "xx-yy-17-18->11-12",
+        "hh-255->FF",
+    ],
 )
 def test_command_correct_arguments(arg_command_factory, pid, command_args, arguments, expected_pid):
     command = arg_command_factory(pid, command_args)
@@ -57,7 +73,7 @@ def test_command_correct_arguments(arg_command_factory, pid, command_args, argum
 
 
 @pytest.mark.parametrize(
-    "pid, command_args, arguments, expected_exception",
+    ("pid", "command_args", "arguments", "expected_exception"),
     [
         # Missing arguments
         ("TEST {h}", {'h': int}, [], ValueError),
@@ -88,7 +104,27 @@ def test_command_correct_arguments(arg_command_factory, pid, command_args, argum
         ("TEST {xx}", {"xx": str}, [None], TypeError),
         ("TEST {xx}", {"xx": str}, [''], ValueError),
         ("TEST {hh}", {"hh": int}, [-1], ValueError),
-    ]
+    ],
+    ids=[
+        "missing-arg-h",
+        "missing-arg-y",
+        "too-many-args",
+        "wrong-type-str-for-int",
+        "wrong-type-int-for-str",
+        "wrong-type-float-for-str",
+        "hh-out-of-range-256",
+        "xx-value-string",
+        "xx-value-single-char",
+        "no-placeholder-int-provided",
+        "no-placeholder-two-strings",
+        "empty-cmd-no-args",
+        "placeholder-missing-schema-no-args",
+        "placeholder-missing-schema-with-arg",
+        "none-for-int",
+        "none-for-str",
+        "empty-string-for-str",
+        "negative-one-for-hh",
+    ],
 )
 def test_command_invalid_arguments(arg_command_factory, pid, command_args, arguments, expected_exception):
     command = arg_command_factory(pid, command_args)
@@ -98,29 +134,41 @@ def test_command_invalid_arguments(arg_command_factory, pid, command_args, argum
 
 
 @pytest.mark.parametrize(
-    "pid, command_args, expected_query",
+    ("pid", "command_args", "expected_bytes", "expected_exc"),
     [
         # 1. Basic Command
-        (0x01, None, b"AT 01\r"),
-        (0x01, {}, b"AT 01\r"),
-        (0x0A, None, b"AT 0A\r"),
-        (0xFF, {}, b"AT FF\r"),
-        ("01", None, b"AT 01\r"),
-        ("01", {}, b"AT 01\r"),
-        ("TEST", None, b"AT TEST\r"),
-        ("TEST", {}, b"AT TEST\r"),
+        (0x01, None, b"AT 01\r", None),
+        (0x01, {}, b"AT 01\r", None),
+        (0x0A, None, b"AT 0A\r", None),
+        (0xFF, {}, b"AT FF\r", None),
+        ("01", None, b"AT 01\r", None),
+        ("01", {}, b"AT 01\r", None),
+        ("TEST", None, b"AT TEST\r", None),
+        ("TEST", {}, b"AT TEST\r", None),
 
         # 2. Missing Arguments (and Expected Errors)
-        (0x01, {'h': int}, ValueError),
-        ("01", {'h': int}, ValueError),
-    ]
+        (0x01, {'h': int}, None, ValueError),
+        ("01", {'h': int}, None, ValueError),
+    ],
+    ids=[
+        "int-01-none",
+        "int-01-empty-dict",
+        "int-0A-none",
+        "int-FF-empty-dict",
+        "str-01-none",
+        "str-01-empty-dict",
+        "str-TEST-none",
+        "str-TEST-empty-dict",
+        "error-int-01-missing-arg",
+        "error-str-01-missing-arg",
+    ],
 )
-def test_build_function(arg_command_factory, pid, command_args, expected_query):
+def test_build_function(arg_command_factory, pid, command_args, expected_bytes, expected_exc):
     command = arg_command_factory(pid, command_args)
 
-    if isinstance(expected_query, bytes):
-        query = command.build()
-        assert query == expected_query
-    else:
-        with pytest.raises(expected_query):
+    if expected_exc is not None:
+        with pytest.raises(expected_exc):
             command.build()
+    else:
+        query = command.build()
+        assert query == expected_bytes
