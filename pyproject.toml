@@ -28,7 +28,7 @@ keywords = [
     "can bus",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Education",
     "License :: OSI Approved :: MIT License",
@@ -138,3 +138,6 @@ exclude = ["obdii/modes/mode_**.py"]
 indent-style = "space"
 line-ending = "auto"
 quote-style = "preserve"
+
+[tool.bandit.assert_used]
+skips = ['*_test.py', '*/test_*.py']
