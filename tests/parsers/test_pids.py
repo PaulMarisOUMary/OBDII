@@ -18,6 +18,7 @@ from obdii.parsers.pids import SupportedPIDS, EnumeratedPIDS
     ids=["empty", "wiki_example", "multiple_rows"],
 )
 def test_supported_pids(base_pid, parsed_data, expected):
+    """Test SupportedPIDS parses bit patterns correctly."""
     sp = SupportedPIDS(base_pid)
     result = sp(parsed_data)
     assert result == expected
@@ -54,6 +55,7 @@ def test_supported_pids(base_pid, parsed_data, expected):
     ids=["single_off", "single_on", "both_values", "sparse_keys", "extreme_keys"],
 )
 def test_enumerated_pids(mapping, parsed_data, expected):
+    """Test EnumeratedPIDS maps values to descriptions."""
     ep = EnumeratedPIDS(mapping)
     result = ep(parsed_data)
     assert result == expected

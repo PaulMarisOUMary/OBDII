@@ -9,12 +9,12 @@ from obdii.transports.transport_wifi import TransportWifi
 class TestScanTransports:
     """Test suite for scan_transports function."""
 
-    def test_successful_scan_finds_devices(self, mocker):
-        """Test successful device discovery with multiple responses."""
+    def test_finds_devices_with_valid_responses(self, mocker):
+        """Test successful device discovery with ELM327 and prompt responses."""
         mock_transport1 = mocker.Mock(spec=TransportBase)
         mock_transport1.read_bytes.return_value = b"ELM327 v1.5"
         mock_transport2 = mocker.Mock(spec=TransportBase)
-        mock_transport2.read_bytes.return_value = b">"
+        mock_transport2.read_bytes.return_value = b'>'
         
         mock_cls = mocker.Mock(side_effect=[mock_transport1, mock_transport2])
         candidates = [{"port": "COM3"}, {"port": "COM4"}]
@@ -26,7 +26,7 @@ class TestScanTransports:
         mock_transport1.write_bytes.assert_called_once()
 
     def test_return_first_stops_after_one(self, mocker):
-        """Test return_first stops scanning after first valid device."""
+        """Test return_first parameter stops scanning after first valid device."""
         mock_transport = mocker.Mock(spec=TransportBase)
         mock_transport.read_bytes.return_value = b"ELM327 v1.5"
         mock_cls = mocker.Mock(return_value=mock_transport)
