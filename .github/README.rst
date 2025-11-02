@@ -10,6 +10,9 @@ OBDII
 .. image:: https://img.shields.io/github/actions/workflow/status/PaulMarisOUMary/OBDII/ci-pytest.yml?branch=main&label=pytest&logoColor=white&logo=pytest
     :target: https://github.com/PaulMarisOUMary/OBDII/actions/workflows/ci-pytest.yml
     :alt: PyTest CI status
+.. image:: https://img.shields.io/readthedocs/py-obdii/latest?logo=readthedocs&logoColor=white&label=readthedocs&link=https%3A%2F%2Fpy-obdii.rtfd.io%2Fen%2Flatest
+    :target: https://py-obdii.rtfd.io/en/latest
+    :alt: Documentation Status (ReadTheDocs)
 
 A modern, easy to use, Python ≥3.8 library for interacting with OBDII devices.
 
