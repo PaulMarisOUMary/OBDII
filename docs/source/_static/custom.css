@@ -4,3 +4,17 @@
     right: auto !important;
     left: 2rem !important;
 }
+
+#right-sidebar {
+    max-width: calc(100vw - 2rem) !important;
+}
+
+#right-sidebar > div:first-child {
+    max-width: none !important;
+    width: max-content !important;
+    padding-right: 1rem !important;
+}
+
+.dark * {
+    scrollbar-color: #9f9f9f #2c2c2c !important;
+}
