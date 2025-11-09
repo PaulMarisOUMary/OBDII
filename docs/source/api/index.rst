@@ -1,13 +1,11 @@
 .. title:: API
 
-Library API References
-======================
-
 .. toctree::
     :maxdepth: 2
+    :titlesonly:
 
     core
-    modes
+    modes/index
     protocols
     transports
     utils
