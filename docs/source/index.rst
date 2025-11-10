@@ -1,5 +1,7 @@
 .. title:: Home
 
+.. _home:
+
 .. meta::
    :description: A modern, easy to use, Python ≥3.8 library for interacting with OBDII devices.
    :keywords: py-obdii, py-obd2, obdii, obd2
