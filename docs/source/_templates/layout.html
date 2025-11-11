@@ -11,8 +11,8 @@
             <meta property="og:image" content="{{ meta['image'] }}" />
             <meta name="twitter:image" content="{{ meta['image'] }}" />
         {% else %}
-            <meta property="og:image" content="{{ pathto('/_static/py-obdii-logo.png', 1) }}" />
-            <meta name="twitter:image" content="{{ pathto('/_static/py-obdii-logo.png', 1) }}" />
+            <meta property="og:image" content="https://py-obdii.readthedocs.io/en/latest/_static/py-obdii-logo.png" />
+            <meta name="twitter:image" content="https://py-obdii.readthedocs.io/en/latest/_static/py-obdii-logo.png" />
         {% endif %}
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="{{ meta['title'] if meta and 'title' in meta else title|e }}" />
