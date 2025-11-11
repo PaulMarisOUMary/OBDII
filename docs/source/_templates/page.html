@@ -1,0 +1,39 @@
+{% extends "!page.html" %}
+
+{% block body_after %}
+	{{ super() }}
+	<style>
+		.edit-button-container{ display:flex; justify-content:center; margin:0.75rem 0; }
+		.edit-button{
+			border:0;
+			background:transparent;
+			padding:0.25rem 0.5rem;
+			border-radius:4px;
+			font-size:0.85rem;
+			text-decoration:none;
+			color:inherit;
+			opacity:0.6;
+			display:inline-flex;
+			align-items:center;
+			gap:0.4rem;
+			}
+		.edit-button svg{ width:1rem; height:1rem; display:block; fill:currentColor; opacity:0.8; }
+		.edit-button:hover,
+		.edit-button:focus{ opacity:1; }
+		.edit-button:focus{ outline:2px solid currentColor; outline-offset:3px; }
+	</style>
+
+	{% if display_github %}
+	<div class="edit-button-container">
+		<a href="https://github.com/{{ github_user }}/{{ github_repo }}/edit/{{ github_version }}{{ conf_py_path }}{{ pagename }}.rst"
+			class="edit-button"
+			target="_blank" rel="noopener"
+			aria-label="Edit this Page on GitHub">
+			<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img">
+				<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" />
+			</svg>
+			<span>Edit this Page</span>
+		</a>
+	</div>
+	{% endif %}
+{% endblock %}
