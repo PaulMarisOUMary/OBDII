@@ -32,13 +32,22 @@ The image below shows a male OBDII connector, which is the adapter side that plu
     :scale: 50%
     :align: center
 
+.. tip::
+    Don't have hardware ? Follow the :ref:`emulator` guide.
+
 Connect your Adapter
 --------------------
 
-The library can connect to adapters via several methods, including:
+#. Plug the OBDII adapter into your vehicle's diagnostic port.
 
-- **Serial**: :ref:`USB <conn-usb>` and :ref:`Bluetooth <conn-bluetooth>`
-- **Network**: :ref:`WiFi <conn-network>` and :ref:`Ethernet <conn-network>`
+#. Turn the ignition to the "ON" position (engine does not need to start).
+
+#. Identify your adapter's connection type.
+
+    Different adapters connect in different ways:
+
+    - **Serial**: :ref:`USB <conn-usb>` and :ref:`Bluetooth <conn-bluetooth>`
+    - **Network**: :ref:`WiFi <conn-network>` and :ref:`Ethernet <conn-network>`
 
 .. _conn-usb:
 
@@ -90,7 +99,35 @@ Use this method if your adapter connects via USB cable.
     .. tab-item:: Windows
         :sync: windows
 
-        |contribute-button|
+        #. Identify the COM port:
+
+            .. code-block:: console
+
+                chgport
+
+            .. note::
+
+                You can also find the COM port in "Device Manager" under "Ports (COM & LPT)".
+
+        #. Chose the corresponding COM port (e.g., ``COM3``).
+
+        #. Use this port for connecting.
+
+            .. dropdown:: Connection example
+                :open:
+                :chevron: down-up
+                :icon: quote
+
+                .. code-block:: python
+                    :caption: main.py
+                    :linenos:
+                    :emphasize-lines: 3
+
+                    from obdii import Connection, at_commands
+
+                    with Connection("COM3") as conn:
+                        version = conn.query(at_commands.VERSION_ID)
+                        print(f"Adapter Version: {version.value}")
     
     .. tab-item:: macOS
         :sync: macos
@@ -118,24 +155,26 @@ Use this method if your adapter communicates wirelessly over Bluetooth.
 
         #. Power on Bluetooth, and pair with the adapter:
 
-            .. code-block:: console
+            .. code-block:: bash
 
-                power on
-                agent on
-                default-agent
-                scan on
-                pair 00:00:00:00:00:00
-                trust 00:00:00:00:00:00
-                exit
+                # Power on and scan
+                [bluetooth]# power on
+                [bluetooth]# agent on
+                [bluetooth]# default-agent
+                [bluetooth]# scan on
+
+                # Note the adapter's MAC address (XX:XX:XX:XX:XX:XX)
+
+                # Pair and trust the adapter
+                [bluetooth]# pair XX:XX:XX:XX:XX:XX
+                [bluetooth]# trust XX:XX:XX:XX:XX:XX
+                [bluetooth]# exit
 
         #. Bind the adapter to an RFCOMM port:
 
             .. code-block:: console
 
-                $ rfcomm bind /dev/rfcomm0 00:00:00:00:00:00
-            
-            .. note::
-                Replace ``00:00:00:00:00:00`` with the MAC address of the adapter, which should appear after running ``scan on``.
+                $ sudo rfcomm bind /dev/rfcomm0 XX:XX:XX:XX:XX:XX
         
         #. Use the ``/dev/rfcomm0`` port for connecting.
 
@@ -158,48 +197,21 @@ Use this method if your adapter communicates wirelessly over Bluetooth.
     .. tab-item:: Windows
         :sync: windows
 
-        |contribute-button|
-    
-    .. tab-item:: macOS
-        :sync: macos
+        #. Pair the adapter via Bluetooth.
 
-        |contribute-button|
+        #. Identify the COM port assigned to the adapter:
 
-.. _conn-network:
+            .. code-block:: console
 
-Connecting via Network (WiFi/Ethernet)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Use this method if your adapter connects over a network.  
-WiFi and Ethernet adapters use the same network transport.
-
-.. tab-set::
-    :sync-group: os
-
-    .. tab-item:: Linux
-        :sync: linux
-
-        #. Connect to the adapter's WiFi network or plug in via Ethernet.
-
-        #. Determine the adapter's IP address and port.
-        
-            Common default IP address and port combinations:
-
-            .. table::
-                :widths: 33 33 33
-                :align: left
-
-                =================  ========== ===============
-                Address            Port       Device
-                =================  ========== ===============
-                ``192.168.0.10``   ``35000``  Generic
-                ``192.168.1.10``   ``35000``  Clones
-                =================  ========== ===============
+                chgport
 
             .. note::
-                These values may vary depending on the adapter. Refer to the adapter's documentation for the correct IP address and port.
+
+                You can also find the COM port in "Device Manager" under "Ports (COM & LPT)".
         
-        #. Use the IP address and port for connecting.
+        #. Chose the corresponding COM port (e.g., ``COM7``).
+
+        #. Use this port for connecting.
 
             .. dropdown:: Connection example
                 :open:
@@ -213,16 +225,57 @@ WiFi and Ethernet adapters use the same network transport.
 
                     from obdii import Connection, at_commands
 
-                    with Connection(("192.168.0.10", 35000)) as conn:
+                    with Connection("COM7") as conn:
                         version = conn.query(at_commands.VERSION_ID)
                         print(f"Adapter Version: {version.value}")
-
-    .. tab-item:: Windows
-        :sync: windows
-
-        |contribute-button|
 
     .. tab-item:: macOS
         :sync: macos
 
         |contribute-button|
+
+.. _conn-network:
+
+Connecting via Network (WiFi/Ethernet)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use this method if your adapter connects over a network.  
+WiFi and Ethernet adapters use the same network transport.
+
+#. Connect to the adapter's network (WiFi or Ethernet).
+
+#. Determine its IP address and port.
+
+    Common defaults:
+
+    .. table::
+        :widths: 33 33 33
+        :align: left
+
+        =================  ========== ===============
+        Address            Port       Device
+        =================  ========== ===============
+        ``192.168.0.10``   ``35000``  Generic
+        ``192.168.1.10``   ``35000``  Clones
+        =================  ========== ===============
+
+    .. note::
+        These values may vary. Refer to the adapter's documentation for the correct IP address and port.
+
+#. Use the IP address and port for connecting.
+
+    .. dropdown:: Connection example
+        :open:
+        :chevron: down-up
+        :icon: quote
+
+        .. code-block:: python
+            :caption: main.py
+            :linenos:
+            :emphasize-lines: 3
+
+            from obdii import Connection, at_commands
+
+            with Connection(("192.168.0.10", 35000)) as conn:
+                version = conn.query(at_commands.VERSION_ID)
+                print(f"Adapter Version: {version.value}")
