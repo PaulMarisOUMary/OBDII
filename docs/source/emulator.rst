@@ -18,7 +18,7 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
 .. card:: Prerequisites
 
-    To simulate a vehicle, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_, a third-party tool included automatically when you install the library with the `sim` extra:
+    To simulate a vehicle, you can use the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_, a third-party tool included automatically when you install the library with the ``sim`` extra:
 
     .. code-block:: console
 
@@ -81,9 +81,9 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
                 python -m elm -p COM5 -s car --baudrate 38400
 
-            This command launches the emulator in *car simulation* mode on COM6.
+            This command launches the emulator in *car simulation* mode on COM5.
 
-        #. Connect your Python code to the other end of the virtual pair (e.g., COM5):
+        #. Connect your Python code to the other end of the virtual pair (e.g., COM6):
 
             .. code-block:: python
                 :caption: main.py
