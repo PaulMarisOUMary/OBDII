@@ -14,10 +14,38 @@
 Connection
 ==========
 
+This guide explains how to connect the library to different types of OBDII adapters and start communicating with your vehicle.
+
+Understanding Adapters
+----------------------
+
+An OBDII adapter is a small physical device that acts as a bridge between your vehicle's diagnostic port and your computer, Raspberry Pi, smartphone, etc..
+
+It plugs into the vehicle's OBDII diagnostic port (female connector), usually found under the dashboard or near the steering wheel, you can check online for your vehicle's exact location.
+
+It converts the car's data signals into a standard format that our library can read.
+
+The image below shows a male OBDII connector, which is the adapter side that plugs into your vehicle's diagnostic port.
+
+.. image:: assets/adapters/obdii-connector.webp
+    :alt: OBDII male connector
+    :scale: 50%
+    :align: center
+
+Connect your Adapter
+--------------------
+
+The library can connect to adapters via several methods, including:
+
+- **Serial**: :ref:`USB <conn-usb>` and :ref:`Bluetooth <conn-bluetooth>`
+- **Network**: :ref:`WiFi <conn-network>` and :ref:`Ethernet <conn-network>`
+
 .. _conn-usb:
 
 Connecting via USB
 ^^^^^^^^^^^^^^^^^^
+
+Use this method if your adapter connects via USB cable.
 
 .. tab-set::
     :sync-group: os
@@ -25,36 +53,47 @@ Connecting via USB
     .. tab-item:: Linux
         :sync: linux
 
-        - To identify the USB serial port, run:
+        #. Identify the USB serial port:
 
             .. code-block:: console
 
                 $ dmesg | grep tty
 
-        - You can also list available USB serial devices with:
+            .. note::
 
-            .. code-block:: console
+                You can also list available USB serial devices with:
 
-                $ ls /dev/ttyUSB*
+                .. code-block:: console
 
-        Multiple ports may appear in the output of these commands, the serial port to use for the connection will be one of them.
+                    $ ls /dev/ttyUSB*
 
-        .. dropdown:: Connection example
-            :open:
-            :chevron: down-up
-            :icon: quote
+        #. Chose the correct port from the output (e.g., ``/dev/ttyUSB0``).
 
-            .. code-block:: python
-                :caption: main.py
-                :linenos:
-                :emphasize-lines: 3
+        #. Use this port for connecting.
+        
+            .. dropdown:: Connection example
+                :open:
+                :chevron: down-up
+                :icon: quote
 
-                from obdii import Connection
+                .. code-block:: python
+                    :caption: main.py
+                    :linenos:
+                    :emphasize-lines: 3
 
-                conn = Connection("/dev/ttyUSB0")
+                    from obdii import Connection, at_commands
+
+                    with Connection("/dev/ttyUSB0") as conn:
+                        version = conn.query(at_commands.VERSION_ID)
+                        print(f"Adapter Version: {version.value}")
 
     .. tab-item:: Windows
         :sync: windows
+
+        |contribute-button|
+    
+    .. tab-item:: macOS
+        :sync: macos
 
         |contribute-button|
 
@@ -62,6 +101,8 @@ Connecting via USB
 
 Connecting via Bluetooth
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use this method if your adapter communicates wirelessly over Bluetooth.
 
 .. tab-set::
     :sync-group: os
@@ -87,7 +128,7 @@ Connecting via Bluetooth
                 trust 00:00:00:00:00:00
                 exit
 
-        #. Bind the RFCOMM port:
+        #. Bind the adapter to an RFCOMM port:
 
             .. code-block:: console
 
@@ -96,31 +137,41 @@ Connecting via Bluetooth
             .. note::
                 Replace ``00:00:00:00:00:00`` with the MAC address of the adapter, which should appear after running ``scan on``.
         
-        #. The connection is now available at ``/dev/rfcomm0``. Use this port for connecting.
+        #. Use the ``/dev/rfcomm0`` port for connecting.
 
-        .. dropdown:: Connection example
-            :open:
-            :chevron: down-up
-            :icon: quote
+            .. dropdown:: Connection example
+                :open:
+                :chevron: down-up
+                :icon: quote
 
-            .. code-block:: python
-                :caption: main.py
-                :linenos:
-                :emphasize-lines: 3
+                .. code-block:: python
+                    :caption: main.py
+                    :linenos:
+                    :emphasize-lines: 3
 
-                from obdii import Connection
+                    from obdii import Connection, at_commands
 
-                conn = Connection("/dev/rfcomm0")
+                    with Connection("/dev/rfcomm0") as conn:
+                        version = conn.query(at_commands.VERSION_ID)
+                        print(f"Adapter Version: {version.value}")
 
     .. tab-item:: Windows
         :sync: windows
 
         |contribute-button|
+    
+    .. tab-item:: macOS
+        :sync: macos
 
-.. _conn-wifi:
+        |contribute-button|
 
-Connecting via WiFi
-^^^^^^^^^^^^^^^^^^^
+.. _conn-network:
+
+Connecting via Network (WiFi/Ethernet)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Use this method if your adapter connects over a network.  
+WiFi and Ethernet adapters use the same network transport.
 
 .. tab-set::
     :sync-group: os
@@ -128,9 +179,12 @@ Connecting via WiFi
     .. tab-item:: Linux
         :sync: linux
 
-        #. Turn on the WiFi adapter and connect to its WiFi network.
+        #. Connect to the adapter's WiFi network or plug in via Ethernet.
 
-        #. Common default IP address and port combinations:
+        #. Determine the adapter's IP address and port.
+        
+            Common default IP address and port combinations:
+
             .. table::
                 :widths: 33 33 33
                 :align: left
@@ -145,21 +199,30 @@ Connecting via WiFi
             .. note::
                 These values may vary depending on the adapter. Refer to the adapter's documentation for the correct IP address and port.
         
-        .. dropdown:: Connection example
-            :open:
-            :chevron: down-up
-            :icon: quote
+        #. Use the IP address and port for connecting.
 
-            .. code-block:: python
-                :caption: main.py
-                :linenos:
-                :emphasize-lines: 3
+            .. dropdown:: Connection example
+                :open:
+                :chevron: down-up
+                :icon: quote
 
-                from obdii import Connection
+                .. code-block:: python
+                    :caption: main.py
+                    :linenos:
+                    :emphasize-lines: 3
 
-                conn = Connection(("192.168.0.10", 35000))
+                    from obdii import Connection, at_commands
+
+                    with Connection(("192.168.0.10", 35000)) as conn:
+                        version = conn.query(at_commands.VERSION_ID)
+                        print(f"Adapter Version: {version.value}")
 
     .. tab-item:: Windows
         :sync: windows
+
+        |contribute-button|
+
+    .. tab-item:: macOS
+        :sync: macos
 
         |contribute-button|
