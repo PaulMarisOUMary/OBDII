@@ -1,0 +1,20 @@
+{% extends "!layout.html" %}
+
+{% block extrahead %}
+    {{ super() }}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ meta['title'] if meta and 'title' in meta else title|e }}" />
+    <meta property="og:description" content="{{ meta['description'] if meta and 'description' in meta else 'OBDII Documentation' }}" />
+    <meta property="og:url" content="{{ pathto('', 1) ~ pagename ~ '.html' }}" />
+    <meta property="og:site_name" content="OBDII Docs" />
+        {% if meta and 'image' in meta %}
+            <meta property="og:image" content="{{ meta['image'] }}" />
+            <meta name="twitter:image" content="{{ meta['image'] }}" />
+        {% else %}
+            <meta property="og:image" content="https://py-obdii.readthedocs.io/en/latest/_static/py-obdii-logo.png" />
+            <meta name="twitter:image" content="https://py-obdii.readthedocs.io/en/latest/_static/py-obdii-logo.png" />
+        {% endif %}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="{{ meta['title'] if meta and 'title' in meta else title|e }}" />
+    <meta name="twitter:description" content="{{ meta['description'] if meta and 'description' in meta else 'OBDII Documentation' }}" />
+{% endblock %}

@@ -10,8 +10,19 @@
 Quickstart
 ==========
 
-This page provides a quick introduction to the library.
-It assumes you have the library installed, if not check the :ref:`installation` section.
+This page helps you get started quickly with the library.
+It assumes the library is already installed, if not check the :ref:`installation` section.
+
+Overview
+--------
+
+This library can operate in two main scenarios:
+
+#. :ref:`Simulated Environment <scenario-1>`: No car or adapter needed, ideal for development and testing.
+
+#. :ref:`Real Vehicle Connection <scenario-2>`: Connects to an actual car using an OBDII adapter.
+
+Internally, both scenarios works the same way, your code remains the same, so you can switch between scenarios seamlessly. The only difference is the port you provide when establishing the connection.
 
 .. _minimal-example:
 
@@ -31,7 +42,7 @@ Minimal Example
 
 .. note::
     Replace ``"PORT"`` with the appropriate port.
-    Refer to the :ref:`port-guide` section below.
+    See :ref:`port-guide` section below.
 
 You can find more detailed examples and usage scenarios in the `repository <https://github.com/PaulMarisOUMary/OBDII/tree/main/examples>`_.
 
@@ -40,18 +51,25 @@ You can find more detailed examples and usage scenarios in the `repository <http
 Determining Your Port
 ---------------------
 
+.. _scenario-1:
+
 Scenario 1: :bdg-secondary-line:`No Car` or :bdg-secondary-line:`No Adapter`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you don't have access to a car or an OBDII adapter, or simply want to develop
-without having to be in your car, you can simulate an OBDII environment using an emulator.
+This scenario is ideal for development, it doesn't require any physical OBDII adapter or vehicle.
 
 Refer to the :ref:`emulator` page for setup instructions and usage details.
+
+.. _scenario-2:
 
 Scenario 2: :bdg-success-line:`Car` and :bdg-success-line:`OBDII Adapter`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To connect to a real vehicle, make sure you have both a car and a compatible OBDII adapter.
-Next, you'll need to find the port your adapter is using (Bluetooth, USB, or WiFi).
+This scenario is ideal for real-world applications, it connects to an actual vehicle via a physical OBDII adapter.
 
-Refer to the :ref:`connection` page for detailed instructions.
+As mentioned, you will need:
+
+#. A vehicle with an OBDII port (most vehicles manufactured after 1996 have one).
+#. An OBDII adapter.
+
+Refer to the :ref:`connection` page for detailed instructions and more information on adapters.

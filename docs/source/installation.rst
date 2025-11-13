@@ -10,28 +10,33 @@
 Installation
 ============
 
-Welcome to the installation guide of this library !
-This document will help you set up the library on your system.
+Welcome to the installation guide for this library !
+This guide will help you set up the library on your system.
+
+Setup
+-----
+
+Prepare your environment and ensure all requirements are met before installing the library.
 
 .. _requirements:
 
 Requirements
-------------
+^^^^^^^^^^^^
 
 * Python 3.8 or higher
 
 .. _venv:
 
 Virtual Environment
--------------------
+^^^^^^^^^^^^^^^^^^^
 
-A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is always recommended to avoid conflicts with other packages or libraries.
+A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is always recommended as it keeps your projects dependencies isolated from other Python projects. This helps to avoid conflicts with other packages or libraries.
 
 .. tab-set::
     :sync-group: os
 
-    .. tab-item:: Linux
-        :sync: linux
+    .. tab-item:: Linux/macOS
+        :sync: unix
 
         .. code-block:: console
 
@@ -46,17 +51,22 @@ A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is always
             py -3 -m venv .venv
             .venv\Scripts\activate
 
+.. tip::
+    To deactivate the virtual environment later, simply run ``deactivate`` in your terminal.
+
 .. _installing:
 
-Installing the Library
-----------------------
+Install the Library
+-------------------
 
 You can install the library from multiple sources. Choose the option that best fits your needs.
+
+If unsure, you'll likely want to install it from PyPI.
 
 From PyPI :bdg-success-line:`Recommended`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The latest stable version can be installed from PyPI:
+The easiest and recommended way to install the library, as it ensures you get the latest stable release.
 
 .. code-block:: console
 
@@ -65,7 +75,7 @@ The latest stable version can be installed from PyPI:
 From GitHub
 ^^^^^^^^^^^
 
-Install the latest development version directly from GitHub:
+To get the latest features and bug fixes that haven't been released yet.
 
 .. code-block:: console
 
@@ -74,18 +84,20 @@ Install the latest development version directly from GitHub:
 From Source
 ^^^^^^^^^^^
 
-Alternatively, you can install the library directly from the source: 
+If you want to contribute to the library or modify the source code.
 
 .. code-block:: console
 
     git clone https://github.com/PaulMarisOUMary/OBDII
     cd OBDII
-    pip install .
+    pip install -e .
+
+The ``-e`` flag installs the library in editable mode to modify the source code directly (ideal for contributors).
 
 From TestPyPI
 ^^^^^^^^^^^^^
 
-To try a pre-release or a test version, install from TestPyPI:
+To test pre-release versions before they're officially published on PyPI.
 
 .. code-block:: console
 
@@ -93,16 +105,24 @@ To try a pre-release or a test version, install from TestPyPI:
 
 .. _extras:
 
-Optional Extras
----------------
+Optional Dependencies
+---------------------
 
-This library provides extra sets of dependencies for specific tasks such as development, testing, and building the documentation.
+Depending on your use case, you may want to install additional dependencies to emulate vehicles, run tests, develop the library, or build documentation.
 
-To install additional dependencies, simply add ``[extra_here]`` after the method used to install the library, as mentioned in the :ref:`installing` section.
+This is why this library provides extra sets of dependencies group for different use cases.
 
 Available extras:
 
 .. tab-set::
+
+    .. tab-item:: sim
+
+        Installs the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_ library and dependencies for data mocking and vehicle emulation.
+
+        .. code-block:: console
+
+            pip install py-obdii[sim]
 
     .. tab-item:: dev
 
@@ -114,7 +134,7 @@ Available extras:
 
     .. tab-item:: test
 
-        Required if you want to run unit tests or integration tests locally.
+        Required if you want to run unit tests or integration tests.
 
         .. code-block:: console
 
@@ -128,18 +148,30 @@ Available extras:
 
             pip install py-obdii[docs]
     
-    .. tab-item:: sim
-
-        Installs the `ELM327-Emulator <https://pypi.org/project/ELM327-emulator>`_ library and dependencies for data mocking and vehicle emulation.
-
-        .. code-block:: console
-
-            pip install py-obdii[sim]
-    
     .. tab-item:: all
 
         Installs all extras at once.
 
         .. code-block:: console
     
-            pip install py-obdii[dev,test,docs,sim]
+            pip install py-obdii[sim,dev,test,docs]
+
+Verify Installation
+-------------------
+
+After installation, you can verify that the library is installed correctly by running:
+
+.. code-block:: console
+
+    python -c "import obdii; print(obdii.__version__)"
+
+This should print the version of the library you have installed, e.g. ``0.8.0b``.
+
+Upgrade the Library
+-------------------
+
+To upgrade to the latest version of the library, use:
+
+.. code-block:: console
+
+    pip install --upgrade py-obdii

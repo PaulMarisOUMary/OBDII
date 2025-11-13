@@ -1,5 +1,16 @@
 /* Custom CSS */
 
+aside img[src$="py-obdii-logo.svg"],
+header img[src$="py-obdii-logo.svg"] {
+    width: 2.25rem;
+}
+
+aside a span.font-bold,
+header a span.font-bold {
+    font-size: 1.25rem;
+}
+
+
 #scrolltop {
     right: auto !important;
     left: 2rem !important;
@@ -17,4 +28,64 @@
 
 .dark * {
     scrollbar-color: #9f9f9f #2c2c2c !important;
+}
+
+
+body {
+    scroll-behavior: smooth;
+}
+
+#progress-bar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 4px;
+    z-index: 9999;
+    background: transparent;
+}
+#progress-bar {
+    height: 100%;
+    width: 0;
+    background: var(--progress-bar-color, #0078d7);
+    transition: width 0.1s linear;
+}
+
+
+.edit-button-container {
+    display: flex;
+    justify-content: center;
+    margin:0.75rem 0;
+}
+
+.edit-button{
+    border: 0;
+    background: transparent;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.6;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.edit-button svg {
+    width: 1rem;
+    height: 1rem;
+    display: block;
+    fill: currentColor;
+    opacity: 0.8;
+}
+
+.edit-button:hover,
+.edit-button:focus{
+    opacity: 1;
+}
+
+.edit-button:focus{
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
 }
