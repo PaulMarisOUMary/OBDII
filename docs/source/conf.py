@@ -105,6 +105,8 @@ try:
     theme_options = ThemeOptions(
         show_prev_next=True,
         show_scrolltop=True,
+        logo_light="assets/py-obdii-logo.svg",
+        logo_dark="assets/py-obdii-logo.svg",
         awesome_external_links=True,
         extra_header_link_icons={
             "repository on GitHub": {
@@ -152,7 +154,6 @@ except ImportError:
     }
 
 html_title = "OBDII"
-# html_logo = "assets/py-obdii-logo.svg"
 html_favicon = "assets/py-obdii-logo.png"
 html_static_path = ["_static", "assets"]
 html_css_files = ["custom.css"]
