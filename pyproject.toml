@@ -59,6 +59,7 @@ Home = "https://github.com/PaulMarisOUMary/OBDII"
 Repository = "https://github.com/PaulMarisOUMary/OBDII"
 Documentation = "https://py-obdii.readthedocs.io"
 Issues = "https://github.com/PaulMarisOUMary/OBDII/issues"
+Changelog = "https://github.com/PaulMarisOUMary/OBDII/releases"
 
 [project.optional-dependencies]
 test = [
