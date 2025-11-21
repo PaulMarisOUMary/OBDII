@@ -20,7 +20,7 @@ from ast import (
 from typing import List, Any, NoReturn
 from operator import add, sub, mul, truediv, floordiv, mod, pow, xor
 
-from ..basetypes import BytesRows
+from ..basetypes import BytesRows, Real
 
 
 class SafeEvaluator(NodeVisitor):
@@ -69,14 +69,47 @@ class SafeEvaluator(NodeVisitor):
 
 
 class Formula:
+    """
+    Represents a mathematical formula based on a string expression.
+
+    Example
+    -------
+    .. code-block:: python3
+
+        # 0B (hex) | 11 (dec) -> A
+        # 40 (hex) | 64 (dec) -> B
+        parsed_data = [(b'0B', b'40')]
+
+        formula = Formula("(256*A+B)/4")
+        result = formula(parsed_data)
+        # (256 * 11 + 64)/4
+
+        >>> result
+        720.0
+    """
+
     def __init__(self, expression: str):
-        """Initialize with a formula string and extract variable names dynamically."""
+        """
+        Initialize the Formula with a given expression.
+
+        Parameters
+        ----------
+        expression: :class:`str`
+            The expression string to evaluate. Variable names are converted to uppercase.
+        """
         self.expression = expression.upper()
 
         self.parsed_expr = parse(self.expression, mode="eval")
 
-    def __call__(self, parsed_data: BytesRows) -> Any:
-        """Evaluate the formula."""
+    def __call__(self, parsed_data: BytesRows) -> Real:
+        """
+        Evaluate the formula on the given parsed_data.
+
+        Parameters
+        ----------
+        parsed_data: :class:`BytesRows`
+            The parsed data to evaluate the formula against.
+        """
         if not parsed_data or not parsed_data[0]:
             raise ValueError(
                 "Invalid parsed_data: must contain at least one non-empty list."
@@ -93,10 +126,45 @@ class Formula:
 
 
 class MultiFormula:
+    """
+    Represents multiple mathematical formulas based on string expressions.
+
+    Example
+    -------
+    .. code-block:: python3
+
+        # 8F (hex) | 143 (dec) -> A
+        # 7D (hex) | 125 (dec) -> B
+        # 95 (hex) | 149 (dec) -> C
+        # 80 (hex) | 128 (dec) -> D
+        # 6F (hex) | 111 (dec) -> E
+        parsed_data = [(b"8F", b"7D", b"95", b"80", b"6F")]
+
+        engine_torque = MultiFormula("A-125", "B-125", "C-125", "D-125", "E-125")
+        result = engine_torque(parsed_data)
+
+        >>> result
+        [18, 0, 24, 3, -14]
+    """
+
     def __init__(self, *expressions: str) -> None:
-        """Initialize multiple Formula objects from a list of expressions."""
+        """
+        Initialize formulas based on given expressions.
+
+        Parameters
+        ----------
+        *expressions: :class:`str`
+            Expression strings to evaluate. Variable names are converted to uppercase.
+        """
         self.formulas = [Formula(expr) for expr in expressions]
 
-    def __call__(self, parsed_data: BytesRows) -> List[Any]:
-        """Evaluate all stored formulas on the given parsed_data."""
+    def __call__(self, parsed_data: BytesRows) -> List[Real]:
+        """
+        Evaluate all formulas on the given parsed_data.
+
+        Parameters
+        ----------
+        parsed_data: :class:`BytesRows`
+            The parsed data to evaluate the formulas against.
+        """
         return [formula(parsed_data) for formula in self.formulas]

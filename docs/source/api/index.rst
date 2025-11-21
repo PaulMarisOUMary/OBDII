@@ -6,6 +6,7 @@
 
     core
     modes/index
+    parsers
     protocols
     transports
     utils
