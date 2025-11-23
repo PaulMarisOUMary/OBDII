@@ -1,7 +1,7 @@
 from logging import Formatter, Handler, getLogger, INFO
 from re import IGNORECASE, search as research
 from types import TracebackType
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Type, Union
 
 from .basetypes import MISSING
 from .command import Command
@@ -309,7 +309,7 @@ class Connection:
 
     def __exit__(
         self,
-        exc_type: Optional[BaseException],
+        exc_type: Optional[Type[BaseException]],
         exc_value: Optional[BaseException],
         traceback: Optional[TracebackType],
     ) -> None:

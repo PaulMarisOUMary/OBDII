@@ -4,7 +4,7 @@ from ..command import Command
 
 
 class GroupCommands:
-    def __getitem__(self, key) -> Command:
+    def __getitem__(self, key: int) -> Command:
         if isinstance(key, int):
             for attr_name in dir(self):
                 attr = getattr(self, attr_name)
