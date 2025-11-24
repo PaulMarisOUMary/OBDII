@@ -11,6 +11,17 @@ header a span.font-bold {
 }
 
 
+a > img[src*="shields.io"] {
+    display: inline-block;
+    vertical-align: bottom;
+    margin-right: 0.5rem;
+}
+
+a:has(> img[src*="shields.io"]) {
+    font-size: 0;
+}
+
+
 #scrolltop {
     right: auto !important;
     left: 2rem !important;

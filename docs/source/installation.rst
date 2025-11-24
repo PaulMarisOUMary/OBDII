@@ -94,6 +94,15 @@ If you want to contribute to the library or modify the source code.
 
 The ``-e`` flag installs the library in editable mode to modify the source code directly (ideal for contributors).
 
+From PyPI Pre-release
+^^^^^^^^^^^^^^^^^^^^^
+
+To install the official latest pre-release version (beta, alpha, release candidate) from PyPI.
+
+.. code-block:: console
+
+    pip install --upgrade --pre py-obdii
+
 From TestPyPI
 ^^^^^^^^^^^^^
 
