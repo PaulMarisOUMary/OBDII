@@ -246,17 +246,25 @@ class Connection:
         :class:`Response`
             Parsed response from the adapter.
         """
-        if self.smart_query and self.last_command and command == self.last_command:
+        effective = command
+        send_repeat = False
+
+        if self.smart_query and self.last_command:
+            if effective == ModeAT.REPEAT:
+                effective = self.last_command
+            send_repeat = effective == self.last_command
+
+        if send_repeat:
             query = ModeAT.REPEAT.build()
         else:
-            query = command.build(self.early_return)
+            query = effective.build(self.early_return)
 
-        context = Context(command, self.protocol)
+        context = Context(effective, self.protocol)
 
-        _log.debug(f">>> Send: {str(query)}")
+        _log.debug(f">>> Send: {query}")
 
         self.transport.write_bytes(query)
-        self.last_command = command
+        self.last_command = effective
 
         return self.wait_for_response(context)
 
