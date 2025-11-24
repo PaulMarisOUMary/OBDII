@@ -199,6 +199,7 @@ class Command:
         pid = self._format_to_hex(self.pid)
         return_digit = self._return_digit(early_return)
 
-        query = f"{mode} {pid}{return_digit}\r"
+        payload = f"{mode} {pid}{return_digit}".strip()
+        query = f"{payload}\r"
 
         return query.encode()
