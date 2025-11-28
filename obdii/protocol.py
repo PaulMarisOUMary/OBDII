@@ -1,6 +1,7 @@
-from enum import Enum
+from enum import Enum, unique
 
 
+@unique
 class Protocol(Enum):
     UNKNOWN = -1
     """Unknown protocol"""
