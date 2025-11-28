@@ -49,7 +49,7 @@ class Connection:
         smart_query: :class:`bool`
             If True, send repeat command when the same command is issued again.
         early_return: :class:`bool`
-            If set to true, the ELM327 will return immediately after sending the specified number of responses specified in the command (n_bytes). Works only with ELM327 v1.3 and later.
+            If set to true, the ELM327 will return immediately after sending the specified number of responses specified in the command (expected_bytes). Works only with ELM327 v1.3 and later.
 
         log_handler: :class:`logging.Handler`
             Custom log handler for the logger.

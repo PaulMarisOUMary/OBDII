@@ -4,6 +4,12 @@ from ..command import Command
 
 
 class GroupCommands:
+    def __init_subclass__(cls) -> None:
+        super().__init_subclass__()
+        for attr_name, attr_value in vars(cls).items():
+            if isinstance(attr_value, Command):
+                attr_value.name = attr_name
+
     def __getitem__(self, key: int) -> Command:
         if isinstance(key, int):
             for attr_name in dir(self):
