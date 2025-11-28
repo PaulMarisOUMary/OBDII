@@ -15,4 +15,5 @@ C = partial(Command, M)
 class Mode03(GroupCommands):
     """Get Diagnostic Trouble Codes Command"""
 
-    GET_DTC = C('', 0x00, "GET_DTC", "Request trouble codes", None, None, None)
+    GET_DTC = C('', 0x00, None, None, None)
+    """Request Diagnostic Trouble Codes (DTCs)"""
