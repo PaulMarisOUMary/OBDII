@@ -17,7 +17,7 @@ SP = SupportedPIDS
 
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_01_-_Show_current_data
 
-class Mode01(GroupCommands):
+class Mode01(GroupCommands, registry_id=0x01):
     """Request Commands - OBD Mode 01 PIDs
 
     Abbreviations:

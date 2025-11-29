@@ -13,7 +13,7 @@ SP = SupportedPIDS
 
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_09_-_Request_vehicle_information
 
-class Mode09(GroupCommands):
+class Mode09(GroupCommands, registry_id=0x09):
     """Request Vehicle Information"""
 
     SUPPORTED_PIDS_9 = C(0x00, 0x04, resolver=SP(0x01))

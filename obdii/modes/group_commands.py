@@ -1,11 +1,15 @@
-from typing import Generator, Union
+from typing import Generator, Optional, Union
 
 from ..command import Command
 
 
 class GroupCommands:
-    def __init_subclass__(cls) -> None:
-        super().__init_subclass__()
+    def __init_subclass__(cls, registry_id: Optional[int] = None, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+
+        if isinstance(registry_id, int):
+            cls._registry_id = registry_id
+
         for attr_name, attr_value in vars(cls).items():
             if isinstance(attr_value, Command):
                 attr_value.name = attr_name
@@ -34,7 +38,7 @@ class GroupCommands:
                 yield attr
 
     def __repr__(self) -> str:
-        return f"<GroupCommands {len(self)}>"
+        return f"<{type(self).__name__} {len(self)}>"
 
     def __len__(self) -> int:
         return sum(1 for _ in self)

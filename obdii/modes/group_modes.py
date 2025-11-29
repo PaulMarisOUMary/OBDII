@@ -1,6 +1,6 @@
-from typing import Generator, Union, overload
+from typing import Union, overload
 
-from .basetypes import MODE_REGISTRY, Modes, ModesType
+from .basetypes import Modes, ModesType
 from .group_commands import GroupCommands
 
 from ..command import Command
@@ -8,11 +8,10 @@ from ..command import Command
 
 class GroupModes(Modes):
     def __init__(self):
-        self.modes = MODE_REGISTRY
-
-    def __iter__(self) -> Generator[Command, None, None]:
-        for mode in self.modes.values():
-            yield from mode
+        self.modes = {}
+        for cls in Modes.mro():
+            if issubclass(cls, GroupCommands) and "_registry_id" in cls.__dict__:
+                self.modes[cls._registry_id] = cls()
 
     @overload
     def __getitem__(self, key: str) -> Command: ...

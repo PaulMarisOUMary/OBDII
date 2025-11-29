@@ -11,7 +11,7 @@ C = partial(Command, M)
 
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_04_-_Clear_Diagnostic_Trouble_Codes_and_stored_values
 
-class Mode04(GroupCommands):
+class Mode04(GroupCommands, registry_id=0x04):
     """Clear Diagnostic Trouble Codes Command"""
 
     CLEAR_DTC = C('', 0x00, None, None, None)
