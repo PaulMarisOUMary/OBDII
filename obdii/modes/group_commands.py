@@ -10,39 +10,45 @@ class GroupCommands:
             if isinstance(attr_value, Command):
                 attr_value.name = attr_name
 
-    def __getitem__(self, key: int) -> Command:
-        if isinstance(key, int):
-            for attr_name in dir(self):
-                attr = getattr(self, attr_name)
-                if isinstance(attr, Command) and attr.pid == key:
-                    return attr
-        raise KeyError(f"No command found with PID {key}")
+    def __getitem__(self, key: Union[int, str]) -> Command:
+        if isinstance(key, str):
+            key = key.upper()
+            item = getattr(self, key, None)
+            if not isinstance(item, Command):
+                raise KeyError(f"Command '{key}' not found")
+            return item
+        elif isinstance(key, int):
+            for cmd in self:
+                if cmd.pid == key:
+                    return cmd
+            raise KeyError(f"No command found with PID {key}")
+
+        raise TypeError(f"Invalid key type: {type(key)}")
+
+    def __iter__(self) -> Generator[Command, None, None]:
+        for attr_name in dir(self):
+            if attr_name.startswith('_'):
+                continue
+            attr = getattr(self, attr_name)
+            if isinstance(attr, Command):
+                yield attr
 
     def __repr__(self) -> str:
-        return f"<Mode Commands: {len(self)}>"
+        return f"<GroupCommands {len(self)}>"
 
     def __len__(self) -> int:
-        return sum(
-            1
-            for attr_name in dir(self)
-            if isinstance(getattr(self, attr_name), Command)
-        )
+        return sum(1 for _ in self)
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, GroupCommands):
             return False
 
-        return vars(self) == vars(value)
+        return set(self) == set(value)
 
-    def __iter__(self) -> Generator[Command, None, None]:
-        for attr_name in dir(self):
-            attr = getattr(self, attr_name)
-            if isinstance(attr, Command):
-                yield attr
+    def __contains__(self, item: Union[Command, str]) -> bool:
+        if isinstance(item, Command):
+            return any(item is cmd for cmd in self)
+        return isinstance(getattr(self, item.upper(), None), Command)
 
     def has_command(self, command: Union[Command, str]) -> bool:
-        if isinstance(command, Command):
-            command = command.name
-
-        command = command.upper()
-        return isinstance(getattr(self, command, None), Command)
+        return command in self

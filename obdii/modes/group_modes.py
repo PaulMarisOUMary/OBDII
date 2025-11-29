@@ -12,8 +12,7 @@ class GroupModes(Modes):
 
     def __iter__(self) -> Generator[Command, None, None]:
         for mode in self.modes.values():
-            for command in mode:
-                yield command
+            yield from mode
 
     @overload
     def __getitem__(self, key: str) -> Command: ...
@@ -22,16 +21,10 @@ class GroupModes(Modes):
     def __getitem__(self, key: int) -> ModesType: ...
 
     def __getitem__(self, key: Union[str, int]):
-        if isinstance(key, str):
-            key = key.upper()
-            item = getattr(self, key, None)
-            if not isinstance(item, Command):
-                raise KeyError(f"Command '{key}' not found")
-            return item
-        elif isinstance(key, int):
+        if isinstance(key, int):
             mode = self.modes.get(key)
             if not isinstance(mode, GroupCommands):
                 raise KeyError(f"Mode '{key}' not found")
             return mode
 
-        raise TypeError(f"Invalid key type: {type(key)}. Expected str or int.")
+        return super().__getitem__(key)
