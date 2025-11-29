@@ -15,10 +15,6 @@ class GroupCommands:
                 registry_id.value if isinstance(registry_id, Mode) else registry_id
             )
 
-        for attr_name, attr_value in vars(cls).items():
-            if isinstance(attr_value, Command):
-                attr_value.name = attr_name
-
     def __getitem__(self, key: Union[int, str]) -> Command:
         if isinstance(key, str):
             key = key.upper()

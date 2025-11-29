@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from re import Match, Pattern, compile
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 
 from .basetypes import MISSING, OneOrMany, Real
 from .mode import Mode
@@ -139,9 +139,6 @@ class Template:
 
 
 class Command:
-    name: str = "Unnamed"
-    """Set automatically by GroupCommands when instantiated to a class variable in a GroupCommands subclass. By default "Unnamed"."""
-
     def __init__(
         self,
         mode: Union[Mode, int, str],
@@ -180,6 +177,11 @@ class Command:
         self.units = units
         self.resolver = resolver
 
+        self.name = "Unnamed"
+
+    def __set_name__(self, _: Type, name: str) -> None:
+        self.name = name
+
     def __repr__(self) -> str:
         return f"<Command {self.mode} {self.pid} {self.name}>"
 
@@ -187,7 +189,7 @@ class Command:
         if not isinstance(value, Command):
             return False
 
-        return vars(self) == vars(value)
+        return self.mode == value.mode and self.pid == value.pid
 
     def __hash__(self) -> int:
         return hash((self.mode, self.pid))
