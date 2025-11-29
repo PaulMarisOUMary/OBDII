@@ -1,136 +1,112 @@
 """
-Unit tests for obdii.modes.group_modes module.
+Unit tests for obdii.modes.group_modes.GroupModes class.
 """
 import pytest
 
-from typing import Any
-
 from obdii.command import Command
-from obdii.mode import Mode
-from obdii.modes import Mode01, Mode02, Mode03, Mode04, Mode09
 from obdii.modes.group_commands import GroupCommands
 from obdii.modes.group_modes import GroupModes
+from obdii.modes import Mode01, Mode02, Mode03, Mode04, Mode09
 
 
-class FakeMode(GroupCommands):
-    pass
+@pytest.fixture
+def group_modes():
+    """Fixture that returns an instance of GroupModes."""
+    return GroupModes()
 
 
-def make_cmd(pid: int, name: str) -> Command:
-    return Command(mode=Mode.REQUEST, pid=pid, n_bytes=2, name=name)
+class TestGroupModesInitialization:
+    """Test GroupModes initialization."""
+
+    def test_modes_registry_is_loaded(self, group_modes):
+        assert group_modes.modes is not None
+        assert len(group_modes.modes) > 0
+        assert 0x01 in group_modes.modes
+        assert 0x09 in group_modes.modes
 
 
-class TestGroupModesUnit:
-    """Unit tests using mocked modes."""
+class TestGroupModesAccess:
+    """Test accessing modes and commands via __getitem__."""
 
-    def test_iter_yields_commands_from_all_modes(self, mocker):
-        mode1 = FakeMode()
-        setattr(mode1, "RPM", make_cmd(0x0C, "RPM"))
-        setattr(mode1, "SPEED", make_cmd(0x0D, "SPEED"))
-
-        mode9 = FakeMode()
-        setattr(mode9, "VIN", make_cmd(0x02, "VIN"))
-
-        mocker.patch("obdii.modes.group_modes.MODE_REGISTRY", {0x01: mode1, 0x09: mode9})
-
-        gm = GroupModes()
-        names = {cmd.name for cmd in gm}
-        assert names == {"RPM", "SPEED", "VIN"}
-
-    def test_getitem_by_str_returns_command(self):
-        gm = GroupModes()
-        rpm = make_cmd(0x0C, "RPM")
-        setattr(gm, "RPM", rpm)
-
-        assert gm["rpm"] is rpm
-        assert gm["RPM"] is rpm
-
-    def test_getitem_by_str_missing_raises_keyerror(self):
-        gm = GroupModes()
-        with pytest.raises(KeyError, match="Command 'RPM' not found"):
-            _ = gm["RPM"]
-
-    def test_getitem_by_int_returns_mode(self, mocker):
-        mode1 = FakeMode()
-        setattr(mode1, "RPM", make_cmd(0x0C, "RPM"))
-        mocker.patch("obdii.modes.group_modes.MODE_REGISTRY", {0x01: mode1})
-
-        gm = GroupModes()
-        mode = gm[0x01]
+    @pytest.mark.parametrize(
+        ("key", "expected_type"),
+        [
+            (0x01, Mode01),
+            (0x02, Mode02),
+            (0x03, Mode03),
+            (0x04, Mode04),
+            (0x09, Mode09),
+        ],
+        ids=["mode_01", "mode_02", "mode_03", "mode_04", "mode_09"]
+    )
+    def test_getitem_by_mode_id(self, group_modes, key, expected_type):
+        mode = group_modes[key]
+        assert isinstance(mode, expected_type)
         assert isinstance(mode, GroupCommands)
 
-    def test_getitem_by_int_missing_raises_keyerror(self, mocker):
-        mocker.patch("obdii.modes.group_modes.MODE_REGISTRY", {})
-        gm = GroupModes()
-        with pytest.raises(KeyError, match="Mode '1' not found"):
-            _ = gm[1]
-
-    def test_getitem_invalid_type_raises_typeerror(self):
-        gm = GroupModes()
-        bad: Any = 1.23
-        with pytest.raises(TypeError, match="Invalid key type"):
-            _ = gm.__getitem__(bad)
-
-
-class TestGroupModesIntegration:
-    """Integration tests using real Mode instances."""
-
     @pytest.mark.parametrize(
-        ("key", "mode_cls", "expected_exc"),
+        ("key", "expected_cmd_name"),
         [
-            (1, Mode01, None),
-            (2, Mode02, None),
-            (3, Mode03, None),
-            (4, Mode04, None),
-            (9, Mode09, None),
-            (0, None, KeyError),
+            ("ENGINE_LOAD", "ENGINE_LOAD"),         # Mode 01
+            ("DTC_ENGINE_LOAD", "DTC_ENGINE_LOAD"), # Mode 02
+            ("GET_DTC", "GET_DTC"),                 # Mode 03
+            ("CLEAR_DTC", "CLEAR_DTC"),             # Mode 04
+            ("VIN", "VIN"),                         # Mode 09
         ],
-        ids=["mode_01", "mode_02", "mode_03", "mode_04", "mode_09", "invalid_mode"],
+        ids=["mode01_cmd", "mode02_cmd", "mode03_cmd", "mode04_cmd", "mode09_cmd"]
     )
-    def test_getitem_by_int(self, key, mode_cls, expected_exc):
-        commands = GroupModes()
+    def test_getitem_by_command_name(self, group_modes, key, expected_cmd_name):
+        cmd = group_modes[key]
+        assert isinstance(cmd, Command)
+        assert cmd.name == expected_cmd_name
 
-        if expected_exc:
-            with pytest.raises(expected_exc):
-                _ = commands[key]
-        else:
-            result = commands[key]
-            assert result == mode_cls()
+    def test_getitem_invalid_mode_id_raises_keyerror(self, group_modes):
+        with pytest.raises(KeyError):
+            group_modes[99]
 
-    @pytest.mark.parametrize(
-        ("key", "mode_cls", "attr", "expected_exc"),
-        [
-            ("SUPPORTED_PIDS_A", Mode01, "SUPPORTED_PIDS_A", None),
-            ("", None, None, KeyError),
-        ],
-        ids=["supported_pids_a", "empty_key"],
-    )
-    def test_getitem_by_str(self, key, mode_cls, attr, expected_exc):
-        commands = GroupModes()
+    def test_getitem_invalid_command_name_raises_keyerror(self, group_modes):
+        with pytest.raises(KeyError):
+            group_modes["UNKNOWN_CMD"]
 
-        if expected_exc:
-            with pytest.raises(expected_exc):
-                _ = commands[key]
-        else:
-            expected = getattr(mode_cls(), attr)
-            result = commands[key]
-            assert result == expected
+    def test_getitem_invalid_type_raises_typeerror(self, group_modes):
+        with pytest.raises(TypeError):
+            group_modes[1.5]
 
-    @pytest.mark.parametrize(
-        ("mode_key", "pid", "mode_cls", "attr", "expected_exc"),
-        [
-            (1, 0, Mode01, "SUPPORTED_PIDS_A", None),
-            (0, 0, None, None, KeyError),
-        ],
-        ids=["mode_01_supported_pids_a", "invalid_mode_then_pid"],
-    )
-    def test_getitem_chained(self, mode_key, pid, mode_cls, attr, expected_exc):
-        commands = GroupModes()
 
-        if expected_exc:
-            with pytest.raises(expected_exc):
-                _ = commands[mode_key][pid]
-        else:
-            expected = getattr(mode_cls(), attr)
-            result = commands[mode_key][pid]
-            assert result == expected
+class TestGroupModesIteration:
+    """Test iteration over GroupModes."""
+
+    def test_iter_yields_all_commands(self, group_modes):
+        cmds = list(group_modes)
+        names = [c.name for c in cmds]
+
+        assert "ENGINE_LOAD" in names
+        assert "DTC_ENGINE_LOAD" in names
+        assert "GET_DTC" in names
+        assert "CLEAR_DTC" in names
+        assert "VIN" in names
+
+    def test_len_returns_total_count(self, group_modes):
+        total_len = len(group_modes)
+        expected_len = sum(len(mode) for mode in group_modes.modes.values())
+
+        assert total_len == expected_len
+        assert total_len > 0
+
+
+class TestGroupModesMembership:
+    """Test __contains__ and has_command."""
+
+    def test_contains_command_instance(self, group_modes):
+        cmd = group_modes["ENGINE_LOAD"]
+        assert cmd in group_modes
+        assert group_modes.has_command(cmd)
+
+    def test_contains_command_name(self, group_modes):
+        assert "ENGINE_LOAD" in group_modes
+        assert "engine_load" in group_modes
+        assert group_modes.has_command("ENGINE_LOAD")
+
+    def test_does_not_contain_unknown_name(self, group_modes):
+        assert "UNKNOWN" not in group_modes
+        assert not group_modes.has_command("UNKNOWN")

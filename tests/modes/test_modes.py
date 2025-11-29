@@ -84,7 +84,6 @@ def test_missing_formula(mode):
     for command in vars(mode).values():
         if (
             isinstance(command, Command)
-            and command.mode.value == 1
-            and not command.formula
+            and not command.resolver
         ):
             print(f"Missing Formula for: {command.name}")

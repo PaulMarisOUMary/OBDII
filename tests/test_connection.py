@@ -120,10 +120,10 @@ class TestQueryBehavior:
         conn = Connection(ft, auto_connect=False, smart_query=False, early_return=False)
         ft.connected = True
 
-        dummy_resp = Response(Context(Command(Mode.AT, "I", 0, "VERSION_ID"), Protocol.AUTO), b"OK\r>", [b"OK", b">"])
+        dummy_resp = Response(Context(Command(Mode.AT, "I", 0), Protocol.AUTO), b"OK\r>", [b"OK", b">"])
         wait_mock = mocker.patch.object(conn, "wait_for_response", return_value=dummy_resp)
 
-        cmd = Command(Mode.AT, "Z", 0, "RESET")
+        cmd = Command(Mode.AT, "Z", 0)
 
         resp = conn.query(cmd)
 
@@ -136,10 +136,10 @@ class TestQueryBehavior:
         conn = Connection(ft, auto_connect=False, smart_query=True)
         ft.connected = True
 
-        dummy_resp = Response(Context(Command(Mode.AT, "I", 0, "VERSION_ID"), Protocol.AUTO), b"OK\r>", [b"OK", b">"])
+        dummy_resp = Response(Context(Command(Mode.AT, "I", 0), Protocol.AUTO), b"OK\r>", [b"OK", b">"])
         mocker.patch.object(conn, "wait_for_response", return_value=dummy_resp)
 
-        cmd = Command(Mode.AT, "I", 0, "VERSION_ID")
+        cmd = Command(Mode.AT, "I", 0)
 
         _ = conn.query(cmd)
         # second identical call should send REPEAT
@@ -163,7 +163,7 @@ class TestWaitForResponse:
                 return Response(rb.context, rb.raw, rb.messages, parsed_data=[(b'X',)])
 
         conn.protocol_handler = DummyHandler()
-        ctx = Context(Command(Mode.AT, "I", 0, "VERSION_ID"), Protocol.AUTO)
+        ctx = Context(Command(Mode.AT, "I", 0), Protocol.AUTO)
 
         resp = conn.wait_for_response(ctx)
 
@@ -183,7 +183,7 @@ class TestWaitForResponse:
                 raise NotImplementedError()
 
         conn.protocol_handler = DummyHandler()
-        ctx = Context(Command(Mode.AT, "I", 0, "VERSION_ID"), Protocol.AUTO)
+        ctx = Context(Command(Mode.AT, "I", 0), Protocol.AUTO)
 
         resp = conn.wait_for_response(ctx)
 
