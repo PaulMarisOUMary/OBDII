@@ -12,7 +12,7 @@ t = Template
 
 # ELM327.pdf (DSL) | AT Command Summary | Page 11 - 12
 
-class ModeAT(GroupCommands):
+class ModeAT(GroupCommands, registry_id=M):
     """AT Commands"""
 
     # General Commands

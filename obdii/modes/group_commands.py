@@ -1,14 +1,19 @@
 from typing import Generator, Optional, Union
 
 from ..command import Command
+from ..mode import Mode
 
 
 class GroupCommands:
-    def __init_subclass__(cls, registry_id: Optional[int] = None, **kwargs) -> None:
+    def __init_subclass__(
+        cls, registry_id: Optional[Union[int, Mode]] = None, **kwargs
+    ) -> None:
         super().__init_subclass__(**kwargs)
 
-        if isinstance(registry_id, int):
-            cls._registry_id = registry_id
+        if registry_id is not None:
+            cls._registry_id = (
+                registry_id.value if isinstance(registry_id, Mode) else registry_id
+            )
 
         for attr_name, attr_value in vars(cls).items():
             if isinstance(attr_value, Command):

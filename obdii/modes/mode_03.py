@@ -12,7 +12,7 @@ C = partial(Command, M)
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_03_-_Show_stored_Diagnostic_Trouble_Codes_(DTCs)
 
 
-class Mode03(GroupCommands, registry_id=0x03):
+class Mode03(GroupCommands, registry_id=M):
     """Get Diagnostic Trouble Codes Command"""
 
     GET_DTC = C('', 0x00, None, None, None)

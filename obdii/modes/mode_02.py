@@ -10,7 +10,7 @@ from ..mode import Mode
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_02_-_Show_freeze_frame_data
 
 
-class Mode02(GroupCommands, registry_id=0x02):
+class Mode02(GroupCommands, registry_id=Mode.FREEZE_FRAME):
     """Freeze frame Commands"""
 
     @classmethod
