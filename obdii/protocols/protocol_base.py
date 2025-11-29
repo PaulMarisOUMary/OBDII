@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Type
+from typing import Any, Dict, Optional, Type
 
 from ..protocol import Protocol
 from ..response import ResponseBase, Response
@@ -13,8 +13,12 @@ class ProtocolBase(ABC):
 
     def __init__(self) -> None: ...
 
-    @abstractmethod
-    def parse_response(self, response_base: ResponseBase) -> Response: ...
+    def __init_subclass__(
+        cls, protocols: Optional[Dict[Protocol, Dict[str, Any]]] = None, **kwargs
+    ) -> None:
+        super().__init_subclass__(**kwargs)
+        if protocols is not None:
+            cls.register(protocols)
 
     @classmethod
     def register(cls, protocols: Dict[Protocol, Dict[str, Any]]) -> None:
@@ -32,6 +36,9 @@ class ProtocolBase(ABC):
     @classmethod
     def get_protocol_attributes(cls, protocol: Protocol) -> Dict[str, Any]:
         return cls._protocol_attributes.get(protocol, {})
+
+    @abstractmethod
+    def parse_response(self, response_base: ResponseBase) -> Response: ...
 
 
 class ProtocolUnknown(ProtocolBase):

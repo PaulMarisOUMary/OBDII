@@ -15,7 +15,18 @@ from .protocol_base import ProtocolBase
 _log = getLogger(__name__)
 
 
-class ProtocolCAN(ProtocolBase):
+CAN_PROTOCOLS = {
+    Protocol.ISO_15765_4_CAN: {"header_length": 11},
+    Protocol.ISO_15765_4_CAN_B: {"header_length": 29},
+    Protocol.ISO_15765_4_CAN_C: {"header_length": 11},
+    Protocol.ISO_15765_4_CAN_D: {"header_length": 29},
+    Protocol.SAE_J1939_CAN: {"header_length": 29},
+    Protocol.USER1_CAN: {"header_length": 11},
+    Protocol.USER2_CAN: {"header_length": 11},
+}
+
+
+class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
     """Supported Protocols:
     - [0x06] ISO 15765-4 CAN (11 bit ID, 500 Kbaud)
     - [0x07] ISO 15765-4 CAN (29 bit ID, 500 Kbaud)
@@ -141,16 +152,3 @@ class ProtocolCAN(ProtocolBase):
         if command.mode == Mode.AT:
             return self._parse_at_response(response_base, messages)
         return self._parse_obd_response(response_base, messages)
-
-
-ProtocolCAN.register(
-    {
-        Protocol.ISO_15765_4_CAN: {"header_length": 11},
-        Protocol.ISO_15765_4_CAN_B: {"header_length": 29},
-        Protocol.ISO_15765_4_CAN_C: {"header_length": 11},
-        Protocol.ISO_15765_4_CAN_D: {"header_length": 29},
-        Protocol.SAE_J1939_CAN: {"header_length": 29},
-        Protocol.USER1_CAN: {"header_length": 11},
-        Protocol.USER2_CAN: {"header_length": 11},
-    }
-)

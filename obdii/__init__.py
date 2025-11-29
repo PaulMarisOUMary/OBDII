@@ -9,9 +9,6 @@ from .modes import at_commands, commands
 from .protocol import Protocol
 from .response import ResponseBase, Context, Response
 
-# note: Need to import protocols to register them
-from . import protocols  # noqa: F401
-
 
 __title__ = "obdii"
 __author__ = "PaulMarisOUMary"
