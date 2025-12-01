@@ -134,7 +134,7 @@ class TestProtocolCANATCommands:
     """AT command response parsing."""
 
     def test_at_command_single_line_response(self):
-        cmd = Command(Mode.AT, "Z", 0)
+        cmd = Command(Mode.AT, 'Z', 0)
         ctx = Context(cmd, Protocol.ISO_15765_4_CAN)
         raw_messages = [b"ELM327 v1.5", b'>']
         rb = ResponseBase(ctx, b'\r'.join(raw_messages), raw_messages)

@@ -68,11 +68,11 @@ class Mode01(GroupCommands, registry_id=M):
     """Long term fuel trim (LTFT)—Bank 2"""
     FUEL_PRESSURE = C(0x0A, 1, 0, 765, "kPa", F("3*A"))
     """Fuel pressure (gauge pressure)"""
-    INTAKE_PRESSURE = C(0x0B, 1, 0, 255, "kPa", F("A"))
+    INTAKE_PRESSURE = C(0x0B, 1, 0, 255, "kPa", F('A'))
     """Intake manifold absolute pressure"""
     ENGINE_SPEED = C(0x0C, 2, 0, 16383.75, "rpm", F("(256*A+B)/4"))
     """Engine speed"""
-    VEHICLE_SPEED = C(0x0D, 1, 0, 255, "km/h", F("A"))
+    VEHICLE_SPEED = C(0x0D, 1, 0, 255, "km/h", F('A'))
     """Vehicle speed"""
     IGNITION_TIMING_ADVANCE = C(0x0E, 1, -64, 63.5, "° before TDC", F("A/2-64"))
     """Timing advance"""
@@ -143,13 +143,13 @@ class Mode01(GroupCommands, registry_id=M):
     """Commanded evaporative purge"""
     FUEL_LEVEL = C(0x2F, 1, 0, 100, '%', F("100/255*A"))
     """Fuel Level Input"""
-    CLEARED_DTC_WARM_UPS = C(0x30, 1, 0, 255, None, F("A"))
+    CLEARED_DTC_WARM_UPS = C(0x30, 1, 0, 255, None, F('A'))
     """Warm-ups since codes cleared"""
     CLEARED_DTC_DISTANCE = C(0x31, 2, 0, 65535, "km", F("256*A+B"))
     """Distance traveled since codes cleared"""
     EVAP_PRESSURE = C(0x32, 2, -8192, 8191.75, "Pa")
     """Evap. System Vapor Pressure"""
-    BAROMETRIC_PRESSURE = C(0x33, 1, 0, 255, "kPa", F("A"))
+    BAROMETRIC_PRESSURE = C(0x33, 1, 0, 255, "kPa", F('A'))
     """Absolute Barometric Pressure"""
     OXYGEN_SENSOR_1_LAMBDA_CURRENT = C(0x34, 4, [0, -128], [2, 128], ["ratio", "mA"], MF("2/65536*(256*A+B)", "(256*C+D)/256-128"))
     """O2 Sensor 1 Equiv. Ratio (Lambda) & Current"""
@@ -206,7 +206,7 @@ class Mode01(GroupCommands, registry_id=M):
     """Time run with MIL on"""
     CLEARED_DTC_SINCE = C(0x4E, 2, 0, 65535, "min", F("256*A+B"))
     """Time since trouble codes cleared"""
-    MAX_FUEL_AIR_RATIO_O2_VOLT_CURR_PRESSURE = C(0x4F, 4, [0, 0, 0, 0], [255, 255, 255, 2550], ["ratio", 'V', "mA", "kPa"], MF("A", "B", "C", "D*10"))
+    MAX_FUEL_AIR_RATIO_O2_VOLT_CURR_PRESSURE = C(0x4F, 4, [0, 0, 0, 0], [255, 255, 255, 2550], ["ratio", 'V', "mA", "kPa"], MF('A', 'B', 'C', "D*10"))
     """Maximum value for Equiv Ratio, O2 Sensor V, O2 Sensor I, Intake Pressure"""
     MAF_MAX = C(0x50, 4, 0, 2550, "g/s", F("A*10"))
     """Maximum value for MAF rate"""

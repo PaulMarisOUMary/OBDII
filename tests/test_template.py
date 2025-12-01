@@ -35,10 +35,10 @@ class TestTemplateInitialization:
             ("AT {cmd:str}", ["cmd"], ["str"]),
             ("AT {cmd:int}", ["cmd"], ["int"]),
             ("AT {cmd:hex}", ["cmd"], ["hex"]),
-            ("AT {a} {b} {c}", ["a", "b", "c"], [None, None, None]),
-            ("AT {a:str} {b:int} {c:hex2}", ["a", "b", "c"], ["str", "int", "hex2"]),
-            ("{a:hex2} {b:hex4} {c:hex8}", ["a", "b", "c"], ["hex2", "hex4", "hex8"]),
-            ("AT { x : int } { y } { } {}", ["x", "y"], ["int", None]),
+            ("AT {a} {b} {c}", ['a', 'b', 'c'], [None, None, None]),
+            ("AT {a:str} {b:int} {c:hex2}", ['a', 'b', 'c'], ["str", "int", "hex2"]),
+            ("{a:hex2} {b:hex4} {c:hex8}", ['a', 'b', 'c'], ["hex2", "hex4", "hex8"]),
+            ("AT { x : int } { y } { } {}", ['x', 'y'], ["int", None]),
         ],
         ids=[
             "no_placeholders",
@@ -74,7 +74,7 @@ class TestTemplateSubstitution:
             ("AT {cmd}", {"cmd": "TEST"}, "AT TEST"),
             ("AT {cmd:str}", {"cmd": 123}, "AT 123"),
             ("AT {cmd:str}", {"cmd": "TEST"}, "AT TEST"),
-            ("{a} {b} {c}", {"a": '1', "b": 2, "c": 0x03}, "1 2 3"),
+            ("{a} {b} {c}", {'a': '1', 'b': 2, 'c': 0x03}, "1 2 3"),
             ("AT {cmd:int}", {"cmd": 42}, "AT 42"),
             ("AT {cmd:int}", {"cmd": 3.14}, "AT 3"),
             ("AT {cmd:int}", {"cmd": "42"}, "AT 42"),
@@ -126,8 +126,8 @@ class TestTemplateSubstitution:
             ("AT {addr:hex4}", {"addr": 255}, "AT 00FF"),
             ("AT {addr:hex4}", {"addr": 4095}, "AT 0FFF"),
             ("AT {addr:hex4}", {"addr": 65535}, "AT FFFF"),
-            ("AT {a:hex1} {b:hex2} {c:hex4}", {"a": 5, "b": 16, "c": 256}, "AT 5 10 0100"),
-            ("{a:hex8}", {"a": 4294967295}, "FFFFFFFF"),
+            ("AT {a:hex1} {b:hex2} {c:hex4}", {'a': 5, 'b': 16, 'c': 256}, "AT 5 10 0100"),
+            ("{a:hex8}", {'a': 4294967295}, "FFFFFFFF"),
         ],
         ids=[
             "hex2_zero",
@@ -216,7 +216,7 @@ class TestTemplateCastFunction:
         match_dict, cast_fn = t._cast("int")
         assert match_dict == {}
         assert cast_fn({}, 42) == "42"
-        assert cast_fn({}, 3.14) == "3"
+        assert cast_fn({}, 3.14) == '3'
         assert cast_fn({}, "42") == "42"
 
     def test_cast_hex2(self):
@@ -238,7 +238,7 @@ class TestTemplateCastFunction:
         t = Template("{a}")
         match_dict, cast_fn = t._cast("hex")
         assert match_dict == {"width": ''}
-        assert cast_fn({"width": ''}, 15) == "F"
+        assert cast_fn({"width": ''}, 15) == 'F'
 
     def test_cast_invalid_type(self):
         t = Template("{a}")
@@ -288,7 +288,7 @@ class TestTemplateEdgeCases:
     def test_int_conversion_from_float(self):
         t = Template("{a:int}")
         result = t.substitute(a=3.99)
-        assert result == "3"
+        assert result == '3'
 
     def test_str_preserves_value(self):
         t = Template("{a:str}")
@@ -302,5 +302,5 @@ class TestTemplateEdgeCases:
 
     def test_mixed_positional_order_matters(self):
         t = Template("{first} {second} {third}")
-        result = t.substitute("A", "B", "C")
+        result = t.substitute('A', 'B', 'C')
         assert result == "A B C"

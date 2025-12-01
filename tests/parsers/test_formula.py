@@ -104,9 +104,9 @@ def test_formula_invalid_input():
         (["a + b"], [['4', '2']], [6], None),
 
         (["a + b", "c - d"], [[]], None, ValueError),
-        (["a", "b", "c", "d * 10"], [['A', 'B']], None, ValueError),
+        (['a', 'b', 'c', "d * 10"], [['A', 'B']], None, ValueError),
 
-        (["c"], [['1', '2', '3']], [3], None),
+        (['c'], [['1', '2', '3']], [3], None),
     ],
     ids=[
         "vars_123", "vars_ABC",

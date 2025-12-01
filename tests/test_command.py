@@ -99,9 +99,9 @@ class TestCommandFormatting:
             simple_command(val=42)
 
     def test_call_preserves_other_attributes(self):
-        cmd = Command(mode=Mode.AT, pid=Template("{x}"), units="V", expected_bytes=1)
+        cmd = Command(mode=Mode.AT, pid=Template("{x}"), units='V', expected_bytes=1)
         formatted = cmd(x="TEST")
-        assert formatted.units == "V"
+        assert formatted.units == 'V'
         assert formatted.expected_bytes == 1
 
 
@@ -113,7 +113,7 @@ class TestCommandBuild:
         [
             (Mode.REQUEST, 0x0C, b"01 0C\r"),
             (Mode.REQUEST, "0C", b"01 0C\r"),
-            (Mode.AT, "Z", b"AT Z\r"),
+            (Mode.AT, 'Z', b"AT Z\r"),
             (1, 12, b"01 0C\r"),  # Int mode/pid formatted to hex
         ],
         ids=["mode_request_hex", "mode_request_str", "mode_at", "int_values"]
@@ -157,7 +157,7 @@ class TestCommandBuild:
         assert result == expected
 
     def test_build_early_return_at_mode_ignored(self):
-        cmd = Command(mode=Mode.AT, pid="Z", expected_bytes=10)
+        cmd = Command(mode=Mode.AT, pid='Z', expected_bytes=10)
         # AT commands shouldn't have return digit
         assert cmd.build(early_return=True) == b"AT Z\r"
 
@@ -170,5 +170,5 @@ class TestCommandRepr:
         assert repr(simple_command) == "<Command Mode.REQUEST 12 RPM>"
 
     def test_repr_unnamed(self):
-        cmd = Command(mode=Mode.AT, pid="Z")
+        cmd = Command(mode=Mode.AT, pid='Z')
         assert repr(cmd) == "<Command Mode.AT Z Unnamed>"
