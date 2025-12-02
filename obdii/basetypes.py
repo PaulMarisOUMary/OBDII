@@ -20,7 +20,6 @@ class BaseEnum(Enum):
                 normalized = other.lstrip('0') or '0'
                 other = int(normalized, 0)
             except ValueError:
-                print(f"Could not convert string '{other}' to Mode")
                 return default
 
         if isinstance(other, int):
