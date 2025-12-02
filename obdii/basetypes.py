@@ -1,7 +1,38 @@
+from __future__ import annotations
+
+from enum import Enum
 from typing import Any, Dict, Iterable, List, Literal, Tuple, TypeVar, Union
 
 
 T = TypeVar('T')
+
+
+class BaseEnum(Enum):
+    @classmethod
+    def get_from(cls, other: Any, /, default: T = None) -> Union[BaseEnum, T]:
+        if isinstance(other, cls):
+            return other
+
+        elif isinstance(other, str):
+            if other in cls:
+                return cls(other)
+            try:
+                normalized = other.lstrip('0') or '0'
+                other = int(normalized, 0)
+            except ValueError:
+                print(f"Could not convert string '{other}' to Mode")
+                return default
+
+        if isinstance(other, int):
+            for item in cls:
+                if item.value == other:
+                    return item
+
+        return default
+
+    @classmethod
+    def has(cls, other: Any) -> bool:
+        return cls.get_from(other) is not None
 
 
 class SingletonMeta(type):
