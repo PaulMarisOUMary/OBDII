@@ -6,7 +6,7 @@ from ..mode import Mode
 
 class GroupCommands:
     def __init_subclass__(
-        cls, registry_id: Optional[Union[int, Mode]] = None, **kwargs
+        cls, /, registry_id: Optional[Union[int, Mode]] = None, **kwargs
     ) -> None:
         super().__init_subclass__(**kwargs)
 

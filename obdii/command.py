@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from re import Match, Pattern, compile
-from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Union
 
 from .basetypes import MISSING, OneOrMany, Real
 from .mode import Mode
@@ -179,7 +179,7 @@ class Command:
 
         self.name = "Unnamed"
 
-    def __set_name__(self, _: Type, name: str) -> None:
+    def __set_name__(self, _: type, name: str) -> None:
         self.name = name
 
     def __repr__(self) -> str:
