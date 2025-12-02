@@ -66,12 +66,9 @@ class ProtocolCAN(ProtocolBase):
             _log.warning(
                 f"Expected {command.expected_bytes} bytes, but received {length} bytes for command {command}"
             )
-        if command.mode in {Mode.REQUEST, Mode.REQUEST.value}:
-            if isinstance(command.mode, Mode):
-                command_mode_value = command.mode.value
-            else:
-                command_mode_value = command.mode
-            expected_code = 0x40 + int(command_mode_value)
+        resolved_mode = Mode.get_from(command.mode)
+        if resolved_mode is Mode.REQUEST:
+            expected_code = 0x40 + int(resolved_mode.value)
             if response_code != expected_code:
                 _log.warning(
                     f"Unexpected response code 0x{response_code:02X} for command {command} "
@@ -146,7 +143,8 @@ class ProtocolCAN(ProtocolBase):
         command = response_base.context.command
         messages = self._strip_prompt(response_base.messages)
 
-        if command.mode in {Mode.AT, Mode.AT.value}:
+        resolved_mode = Mode.get_from(command.mode)
+        if resolved_mode is Mode.AT:
             return self._parse_at_response(response_base, messages)
         return self._parse_obd_response(response_base, messages)
 

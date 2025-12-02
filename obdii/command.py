@@ -169,7 +169,7 @@ class Command:
         resolver: Optional[Callable]
             A resolver function for custom response handling.
         """
-        self.mode = mode
+        self.mode = Mode.get_from(mode, default=mode)
         self.pid = pid
         self.expected_bytes = expected_bytes
         self.min_values = min_values
@@ -218,7 +218,7 @@ class Command:
 
         return fmt_command
 
-    def _format_to_hex(self, value: Union[int, str, Mode]) -> str:
+    def _format_to_hex(self, value: Union[Mode, int, str]) -> str:
         if isinstance(value, Mode):
             value = value.value
         return f"{value:02X}" if isinstance(value, int) else value
@@ -229,14 +229,14 @@ class Command:
             early_return
             and self.expected_bytes
             and isinstance(self.expected_bytes, int)
-            and self.mode != Mode.AT
+            and Mode.get_from(self.mode) != Mode.AT
         ):
             return ''
 
         data_bytes = 7
         n_lines = (self.expected_bytes + (data_bytes - 1)) // data_bytes
 
-        return f" {n_lines:X}" if 0 < n_lines < 16 else ''
+        return f"{n_lines:X}" if 0 < n_lines < 16 else ''
 
     def build(self, early_return: bool = False) -> bytes:
         """
@@ -267,7 +267,7 @@ class Command:
         pid = self._format_to_hex(self.pid)
         return_digit = self._return_digit(early_return)
 
-        payload = f"{mode} {pid}{return_digit}".strip()
+        payload = f"{mode} {pid} {return_digit}".strip()
         query = f"{payload}\r"
 
         return query.encode()

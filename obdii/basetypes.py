@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Literal, Tuple, TypeVar, Union
+from typing import Any, Dict, Iterable, List, Literal, Tuple, Type, TypeVar, Union
 
 
 T = TypeVar('T')
 
 
+E = TypeVar('E', bound="BaseEnum")
+
+
 class BaseEnum(Enum):
     @classmethod
-    def get_from(cls, other: Any, /, default: T = None) -> Union[BaseEnum, T]:
+    def get_from(cls: Type[E], other: Any, /, default: T = None) -> Union[E, T]:
         if isinstance(other, cls):
             return other
 
