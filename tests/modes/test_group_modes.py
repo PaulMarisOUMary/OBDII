@@ -4,6 +4,7 @@ Unit tests for obdii.modes.group_modes.GroupModes class.
 import pytest
 
 from obdii.command import Command
+from obdii.mode import Mode
 from obdii.modes.group_commands import GroupCommands
 from obdii.modes.group_modes import GroupModes
 from obdii.modes import Mode01, Mode02, Mode03, Mode04, Mode09
@@ -21,8 +22,8 @@ class TestGroupModesInitialization:
     def test_modes_registry_is_loaded(self, group_modes):
         assert group_modes.modes is not None
         assert len(group_modes.modes) > 0
-        assert 0x01 in group_modes.modes
-        assert 0x09 in group_modes.modes
+        assert Mode.REQUEST in group_modes.modes
+        assert Mode.VEHICLE_INFO in group_modes.modes
 
 
 class TestGroupModesAccess:

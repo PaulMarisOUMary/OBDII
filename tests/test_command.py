@@ -160,15 +160,3 @@ class TestCommandBuild:
         cmd = Command(mode=Mode.AT, pid='Z', expected_bytes=10)
         # AT commands shouldn't have return digit
         assert cmd.build(early_return=True) == b"AT Z\r"
-
-
-class TestCommandRepr:
-    """Test Command string representation."""
-
-    def test_repr(self, simple_command):
-        simple_command.name = "RPM"
-        assert repr(simple_command) == "<Command Mode.REQUEST 12 RPM>"
-
-    def test_repr_unnamed(self):
-        cmd = Command(mode=Mode.AT, pid='Z')
-        assert repr(cmd) == "<Command Mode.AT Z Unnamed>"

@@ -6,14 +6,12 @@ from ..mode import Mode
 
 class GroupCommands:
     def __init_subclass__(
-        cls, /, registry_id: Optional[Union[int, Mode]] = None, **kwargs
+        cls, /, registry_id: Optional[Union[Mode, int]] = None, **kwargs
     ) -> None:
         super().__init_subclass__(**kwargs)
 
         if registry_id is not None:
-            cls._registry_id = (
-                registry_id.value if isinstance(registry_id, Mode) else registry_id
-            )
+            cls._registry_id = Mode.get_from(registry_id, default=registry_id)
 
     def __getitem__(self, key: Union[int, str]) -> Command:
         if isinstance(key, str):
