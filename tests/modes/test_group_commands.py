@@ -112,40 +112,22 @@ class TestGroupCommandsIteration:
         assert len(group_commands) == 4
 
 
-class TestGroupCommandsEquality:
-    """Test equality comparison of GroupCommands."""
-
-    def test_equality_same_class_same_content(self, group_commands):
-        other = MockCommands()
-        assert group_commands == other
-
-    def test_inequality_different_type(self, group_commands):
-        assert group_commands != "Not a GroupCommands"
-        assert group_commands != {}
-
-
 class TestGroupCommandsMembership:
     """Test __contains__ and has_command."""
 
     def test_contains_command_instance(self, group_commands):
         assert group_commands.CMD1 in group_commands
-        assert group_commands.has_command(group_commands.CMD1)
 
     def test_contains_command_name_str(self, group_commands):
         assert "CMD1" in group_commands
         assert "cmd1" in group_commands
-        assert group_commands.has_command("CMD1")
-        assert group_commands.has_command("cmd1")
 
     def test_does_not_contain_unknown_command(self, group_commands):
         unknown_cmd = Command(mode=1, pid=0x99)
         assert unknown_cmd not in group_commands
-        assert not group_commands.has_command(unknown_cmd)
 
     def test_does_not_contain_unknown_name(self, group_commands):
         assert "UNKNOWN" not in group_commands
-        assert not group_commands.has_command("UNKNOWN")
 
     def test_does_not_contain_non_command_attribute(self, group_commands):
         assert "OTHER" not in group_commands
-        assert not group_commands.has_command("OTHER")

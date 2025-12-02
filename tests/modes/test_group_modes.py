@@ -101,13 +101,10 @@ class TestGroupModesMembership:
     def test_contains_command_instance(self, group_modes):
         cmd = group_modes["ENGINE_LOAD"]
         assert cmd in group_modes
-        assert group_modes.has_command(cmd)
 
     def test_contains_command_name(self, group_modes):
         assert "ENGINE_LOAD" in group_modes
         assert "engine_load" in group_modes
-        assert group_modes.has_command("ENGINE_LOAD")
 
     def test_does_not_contain_unknown_name(self, group_modes):
         assert "UNKNOWN" not in group_modes
-        assert not group_modes.has_command("UNKNOWN")

@@ -42,16 +42,7 @@ class GroupCommands:
     def __len__(self) -> int:
         return sum(1 for _ in self)
 
-    def __eq__(self, value: object) -> bool:
-        if not isinstance(value, GroupCommands):
-            return False
-
-        return set(self) == set(value)
-
     def __contains__(self, item: Union[Command, str]) -> bool:
         if isinstance(item, Command):
             return any(item is cmd for cmd in self)
         return isinstance(getattr(self, item.upper(), None), Command)
-
-    def has_command(self, command: Union[Command, str]) -> bool:
-        return command in self
