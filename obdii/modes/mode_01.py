@@ -8,6 +8,7 @@ from ..parsers.formula import Formula, MultiFormula
 from ..parsers.mappings import FUEL_SYSTEM_STATUS, SECONDARY_AIR_STATUS, VEHICLE_STANDARDS, FUEL_TYPE_CODING
 from ..parsers.pids import SupportedPIDS
 
+
 M = Mode.REQUEST
 C = partial(Command, M)
 
