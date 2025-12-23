@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Literal, Tuple, Type, TypeVar, Union
+from typing import Any, Dict, Iterable, List, Literal, Tuple, Type, TypeVar, Union, overload
 
 
 T = TypeVar('T')
@@ -11,8 +11,16 @@ E = TypeVar('E', bound="BaseEnum")
 
 
 class BaseEnum(Enum):
+    @overload
     @classmethod
-    def get_from(cls: Type[E], other: Any, /, default: T = None) -> Union[E, T]:
+    def get_from(cls: Type[E], other: Any, /) -> Union[E, None]: ...
+
+    @overload
+    @classmethod
+    def get_from(cls: Type[E], other: Any, /, default: T) -> Union[E, T]: ...
+
+    @classmethod
+    def get_from(cls: Type[E], other: Any, /, default: Union[T, None] = None) -> Union[E, T, None]:
         if isinstance(other, cls):
             return other
 
