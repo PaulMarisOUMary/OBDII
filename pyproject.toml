@@ -68,7 +68,8 @@ test = [
     "pytest-mock>=3.14,<3.15",
 ]
 dev = [
-    "ruff>=0.13,<1",
+    "ruff>=0.14,<1",
+    "ty>=0.0.6,<1",
 ]
 docs = [
     "sphinx>=8.2,<9",
@@ -93,6 +94,10 @@ dependencies = { file = "requirements.txt" }
 [tool.setuptools_scm]
 local_scheme = "no-local-version"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
 [tool.pyright]
 include = [
     "obdii/**",
@@ -104,13 +109,10 @@ exclude = [
     "build",
     "dist",
     "docs",
+    "**/.*",
 ]
 pythonVersion = "3.8"
 typeCheckingMode = "basic"
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
 
 [tool.ruff]
 exclude = [
@@ -140,5 +142,8 @@ indent-style = "space"
 line-ending = "auto"
 quote-style = "preserve"
 
+[tool.ty.environment]
+python-platform = "all"
+
 [tool.bandit.assert_used]
-skips = ['*_test.py', '*/test_*.py']
+skips = ["*_test.py", "*/test_*.py"]
