@@ -1,3 +1,5 @@
+from typing import Final
+
 from .group_modes import GroupModes
 
 from .mode_at import ModeAT
@@ -10,8 +12,8 @@ from .mode_04 import Mode04
 from .mode_09 import Mode09
 
 
-at_commands = ModeAT()
-commands = GroupModes()
+at_commands: Final[ModeAT] = ModeAT()
+commands: Final[GroupModes] = GroupModes()
 
 __all__ = [
     "at_commands",
