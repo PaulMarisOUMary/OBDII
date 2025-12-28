@@ -1,9 +1,12 @@
 from typing import Union, Literal, overload
 
-from . import Mode01, Mode02, Mode03, Mode04, Mode09
-
 from .basetypes import Modes, ModesType
 from .group_commands import GroupCommands
+from .mode_01 import Mode01
+from .mode_02 import Mode02
+from .mode_03 import Mode03
+from .mode_04 import Mode04
+from .mode_09 import Mode09
 
 from ..command import Command
 from ..mode import Mode
