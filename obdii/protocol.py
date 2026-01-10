@@ -1,7 +1,10 @@
-from enum import Enum
+from enum import unique
+
+from .basetypes import BaseEnum
 
 
-class Protocol(Enum):
+@unique
+class Protocol(BaseEnum):
     UNKNOWN = -1
     """Unknown protocol"""
 

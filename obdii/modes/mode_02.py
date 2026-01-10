@@ -7,10 +7,12 @@ from ..command import Command
 from ..mode import Mode
 
 
+M = Mode.FREEZE_FRAME
+
 # https://en.wikipedia.org/wiki/OBD-II_PIDs#Service_02_-_Show_freeze_frame_data
 
 
-class Mode02(GroupCommands):
+class Mode02(GroupCommands, registry_id=M):
     """Freeze frame Commands"""
 
     @classmethod
@@ -19,7 +21,7 @@ class Mode02(GroupCommands):
             if isinstance(command, Command):
                 field = f"DTC_{field_name}"
                 dtc_command = deepcopy(command)
-                dtc_command.mode = Mode.FREEZE_FRAME
+                dtc_command.mode = M
                 dtc_command.name = field
                 setattr(Mode02, field, dtc_command)
 

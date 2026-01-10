@@ -44,7 +44,7 @@ def test_supported_pids(base_pid, parsed_data, expected):
         (
             {2: 'B', 3: 'C'},
             [("0F", "02")],
-            [(15, None), (2, "B")],
+            [(15, None), (2, 'B')],
         ),
         (
             {0: "Zero", 255: "Max"},

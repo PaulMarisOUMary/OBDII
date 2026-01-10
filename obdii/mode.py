@@ -1,7 +1,10 @@
-from enum import Enum
+from enum import unique
+
+from .basetypes import BaseEnum
 
 
-class Mode(Enum):
+@unique
+class Mode(BaseEnum):
     NONE = ''
     """Special mode used for the REPEAT command"""
 

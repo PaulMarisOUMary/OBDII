@@ -1,174 +1,162 @@
 """
-Unit tests for obdii.command module.
+Unit tests for obdii.command.Command class.
 """
 import pytest
 
-from typing import Any, Dict
-
-from obdii.command import Command
+from obdii.basetypes import MISSING
+from obdii.command import Command, Template
 from obdii.mode import Mode
 
 
 @pytest.fixture
-def arg_command_factory():
-    """Fixture that returns a function to create Command instances."""
-    def _create_command(pid: str, cmd_args: Dict[str, Any]) -> Command:
-        return Command(
-            mode=Mode.AT,
-            pid=pid,
-            n_bytes=0x02,
-            name="Test Command",
-            description="A command for testing",
+def simple_command():
+    """Fixture that returns a simple Command instance."""
+    return Command(mode=Mode.REQUEST, pid=0x0C, expected_bytes=2, units="rpm")
+
+
+@pytest.fixture
+def template_command():
+    """Fixture that returns a Command instance with a Template PID."""
+    return Command(mode=Mode.AT, pid=Template("SET {val:int}"), expected_bytes=0)
+
+
+class TestCommandInitialization:
+    """Test Command initialization and attribute assignment."""
+
+    def test_init_defaults(self):
+        cmd = Command(mode=Mode.REQUEST, pid=0x01)
+        assert cmd.mode == Mode.REQUEST
+        assert cmd.pid == 0x01
+        assert cmd.expected_bytes == 0
+        assert cmd.name == "Unnamed"
+        assert cmd.min_values is MISSING
+        assert cmd.max_values is MISSING
+        assert cmd.units is MISSING
+        assert cmd.resolver is MISSING
+
+    def test_init_full(self):
+        def resolver(x): return x
+
+        cmd = Command(
+            mode=Mode.REQUEST,
+            pid=0x0C,
+            expected_bytes=2,
             min_values=0,
-            max_values=255,
-            units='V',
-            formula=None,
-            command_args=cmd_args,
+            max_values=16383.75,
+            units="rpm",
+            resolver=resolver
         )
-    return _create_command
+        assert cmd.mode == Mode.REQUEST
+        assert cmd.pid == 0x0C
+        assert cmd.expected_bytes == 2
+        assert cmd.min_values == 0
+        assert cmd.max_values == 16383.75
+        assert cmd.units == "rpm"
+        assert cmd.resolver is resolver
 
 
-@pytest.mark.parametrize(
-    ("pid", "command_args", "arguments", "expected_pid"),
-    [
-        # Basic formatting tests
-        ("TEST {h}", {'h': int}, [0], "TEST 0"),
-        ("TEST {x} TEST {y}", {'x': int, 'y': int}, [0, 1], "TEST 0 TEST 1"),
-        ("TEST {h}", {'h': int}, [10], "TEST A"),
-        ("TEST {x} TEST {y}", {'x': int, 'y': int}, [10, 11], "TEST A TEST B"),
 
-        # Hexadecimal formatting tests
-        ("TEST {hh}", {"hh": int}, [0], "TEST 00"),
-        ("TEST {xx} TEST {yy}", {"xx": int, "yy": int}, [0, 1], "TEST 00 TEST 01"),
-        ("TEST {hh}", {"hh": int}, [10], "TEST 0A"),
-        ("TEST {xx} TEST {yy}", {"xx": int, "yy": int}, [10, 11], "TEST 0A TEST 0B"),
-        ("TEST {hh}", {"hh": int}, [17], "TEST 11"),
-        ("TEST {xx} TEST {yy}", {"xx": int, "yy": int}, [17, 18], "TEST 11 TEST 12"),
+class TestCommandEquality:
+    """Test Command equality and hashing."""
 
-        # Edge cases
-        ("TEST {hh}", {"hh": int}, [255], "TEST FF"),
-    ],
-    ids=[
-        "h-0->0",
-        "x-y-0-1->0-1",
-        "h-10->A",
-        "x-y-10-11->A-B",
-        "hh-0->00",
-        "xx-yy-0-1->00-01",
-        "hh-10->0A",
-        "xx-yy-10-11->0A-0B",
-        "hh-17->11",
-        "xx-yy-17-18->11-12",
-        "hh-255->FF",
-    ],
-)
-def test_command_correct_arguments(arg_command_factory, pid, command_args, arguments, expected_pid):
-    command = arg_command_factory(pid, command_args)
+    def test_equality_same_attributes(self, simple_command):
+        other = Command(mode=Mode.REQUEST, pid=0x0C, expected_bytes=2, units="rpm")
+        assert simple_command == other
 
-    called_command = command(*arguments)
+    def test_equality_different_attributes(self, simple_command):
+        other = Command(mode=Mode.REQUEST, pid=0x0D, expected_bytes=1, units="km/h")
+        assert simple_command != other
 
-    assert called_command.is_formatted
-    assert called_command.pid == expected_pid
-    assert called_command.pid != command.pid
+    def test_equality_different_type(self, simple_command):
+        assert simple_command != "Not a Command"
+
+    def test_hash_consistency(self, simple_command):
+        other = Command(mode=Mode.REQUEST, pid=0x0C, expected_bytes=2, units="rpm")
+        assert hash(simple_command) == hash(other)
+
+    def test_hash_difference(self, simple_command):
+        other = Command(mode=Mode.REQUEST, pid=0x0D)
+        assert hash(simple_command) != hash(other)
 
 
-@pytest.mark.parametrize(
-    ("pid", "command_args", "arguments", "expected_exception"),
-    [
-        # Missing arguments
-        ("TEST {h}", {'h': int}, [], ValueError),
-        ("TEST {x} TEST {y}", {'x': int, 'y': int}, [1], ValueError),
+class TestCommandFormatting:
+    """Test Command formatting via __call__."""
 
-        # Too many arguments
-        ("TEST {x}", {'x': int}, [1, 2], ValueError),
+    def test_call_formats_template_pid(self, template_command):
+        formatted_cmd = template_command(val=42)
+        assert isinstance(formatted_cmd, Command)
+        assert formatted_cmd.pid == "SET 42"
+        assert formatted_cmd.mode == template_command.mode
+        assert formatted_cmd.expected_bytes == template_command.expected_bytes
 
-        # Incorrect types
-        ("TEST {h}", {'h': int}, ["string"], TypeError),
-        ("TEST {xx}", {"xx": str}, [1], TypeError),
-        ("TEST {xx}", {"xx": str}, [1.5], TypeError),
+    def test_call_returns_new_instance(self, template_command):
+        formatted_cmd = template_command(val=42)
+        assert formatted_cmd is not template_command
+        assert template_command.pid.template == "SET {val:int}"  # Original unchanged
 
-        # Argument formatting issues
-        ("TEST {hh}", {"hh": int}, [256], ValueError),
-        ("TEST {xx}", {"xx": str}, ["string"], ValueError),
-        ("TEST {xx}", {"xx": str}, ["s"], ValueError),
+    def test_call_non_template_pid_raises_typeerror(self, simple_command):
+        with pytest.raises(TypeError, match="Cannot format command with non-template PID"):
+            simple_command(val=42)
 
-        # Missing placeholders
-        ("TEST", {'h': int}, [1], ValueError),
-        ("TEST", {"xx": str, "yy": str}, ["ii", "jj"], ValueError),
-
-        # Edge Cases
-        ("TEST", {}, [], ValueError),
-        ("TEST {h}", {}, [], ValueError),
-        ("TEST {h}", {}, [1], ValueError),
-        ("TEST {h}", {'h': int}, [None], TypeError),
-        ("TEST {xx}", {"xx": str}, [None], TypeError),
-        ("TEST {xx}", {"xx": str}, [''], ValueError),
-        ("TEST {hh}", {"hh": int}, [-1], ValueError),
-    ],
-    ids=[
-        "missing-arg-h",
-        "missing-arg-y",
-        "too-many-args",
-        "wrong-type-str-for-int",
-        "wrong-type-int-for-str",
-        "wrong-type-float-for-str",
-        "hh-out-of-range-256",
-        "xx-value-string",
-        "xx-value-single-char",
-        "no-placeholder-int-provided",
-        "no-placeholder-two-strings",
-        "empty-cmd-no-args",
-        "placeholder-missing-schema-no-args",
-        "placeholder-missing-schema-with-arg",
-        "none-for-int",
-        "none-for-str",
-        "empty-string-for-str",
-        "negative-one-for-hh",
-    ],
-)
-def test_command_invalid_arguments(arg_command_factory, pid, command_args, arguments, expected_exception):
-    command = arg_command_factory(pid, command_args)
-
-    with pytest.raises(expected_exception):
-        command(*arguments)
+    def test_call_preserves_other_attributes(self):
+        cmd = Command(mode=Mode.AT, pid=Template("{x}"), units='V', expected_bytes=1)
+        formatted = cmd(x="TEST")
+        assert formatted.units == 'V'
+        assert formatted.expected_bytes == 1
 
 
-@pytest.mark.parametrize(
-    ("pid", "command_args", "expected_bytes", "expected_exc"),
-    [
-        # 1. Basic Command
-        (0x01, None, b"AT 01\r", None),
-        (0x01, {}, b"AT 01\r", None),
-        (0x0A, None, b"AT 0A\r", None),
-        (0xFF, {}, b"AT FF\r", None),
-        ("01", None, b"AT 01\r", None),
-        ("01", {}, b"AT 01\r", None),
-        ("TEST", None, b"AT TEST\r", None),
-        ("TEST", {}, b"AT TEST\r", None),
+class TestCommandBuild:
+    """Test Command.build() method."""
 
-        # 2. Missing Arguments (and Expected Errors)
-        (0x01, {'h': int}, None, ValueError),
-        ("01", {'h': int}, None, ValueError),
-    ],
-    ids=[
-        "int-01-none",
-        "int-01-empty-dict",
-        "int-0A-none",
-        "int-FF-empty-dict",
-        "str-01-none",
-        "str-01-empty-dict",
-        "str-TEST-none",
-        "str-TEST-empty-dict",
-        "error-int-01-missing-arg",
-        "error-str-01-missing-arg",
-    ],
-)
-def test_build_function(arg_command_factory, pid, command_args, expected_bytes, expected_exc):
-    command = arg_command_factory(pid, command_args)
+    @pytest.mark.parametrize(
+        ("mode", "pid", "expected_bytes"),
+        [
+            (Mode.REQUEST, 0x0C, b"01 0C\r"),
+            (Mode.REQUEST, "0C", b"01 0C\r"),
+            (Mode.AT, 'Z', b"AT Z\r"),
+            (1, 12, b"01 0C\r"),  # Int mode/pid formatted to hex
+        ],
+        ids=["mode_request_hex", "mode_request_str", "mode_at", "int_values"]
+    )
+    def test_build_basic(self, mode, pid, expected_bytes):
+        cmd = Command(mode=mode, pid=pid)
+        assert cmd.build() == expected_bytes
 
-    if expected_exc is not None:
-        with pytest.raises(expected_exc):
-            command.build()
-    else:
-        query = command.build()
-        assert query == expected_bytes
+    def test_build_with_template_raises_valueerror(self, template_command):
+        with pytest.raises(ValueError, match="Cannot build command with unformatted PID template"):
+            template_command.build()
+
+    def test_build_formatted_template(self, template_command):
+        formatted = template_command(val=10)
+        assert formatted.build() == b"AT SET 10\r"
+
+    @pytest.mark.parametrize(
+        ("expected_bytes_val", "early_return", "expected_suffix"),
+        [
+            (None, True, b''),
+            (0, True, b''),
+            (3, False, b''),
+            (3, True, b" 1"),
+            (7, True, b" 1"),
+            (8, True, b" 2"),
+            (100, True, b" F"),
+            (255, True, b''),
+        ],
+        ids=["none_bytes", "zero_bytes", "false_flag", "3_bytes", "7_bytes", "8_bytes", "max_byte", "large_bytes"]
+    )
+    def test_build_early_return(self, expected_bytes_val, early_return, expected_suffix):
+        # Note: early_return logic in Command:
+        # if not (early_return and self.expected_bytes and isinstance(self.expected_bytes, int) and self.mode != Mode.AT): return ''
+        # n_lines = (self.expected_bytes + 6) // 7
+        # return f" {n_lines:X}" if 0 < n_lines < 16 else ''
+        
+        cmd = Command(mode=Mode.REQUEST, pid=0x01, expected_bytes=expected_bytes_val)
+        result = cmd.build(early_return=early_return)
+        
+        expected = b"01 01" + expected_suffix + b'\r'
+        assert result == expected
+
+    def test_build_early_return_at_mode_ignored(self):
+        cmd = Command(mode=Mode.AT, pid='Z', expected_bytes=10)
+        # AT commands shouldn't have return digit
+        assert cmd.build(early_return=True) == b"AT Z\r"

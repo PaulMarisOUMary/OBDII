@@ -42,7 +42,7 @@ class TestProtocolCANSingleFrame:
         ids=["11bit-single-frame", "29bit-single-frame"],
     )
     def test_single_frame_parsing(self, protocol, raw_messages, expected_data):
-        cmd = Command(Mode.REQUEST, 0x0C, 2, "ENGINE_SPEED")
+        cmd = Command(Mode.REQUEST, 0x0C, 2)
         ctx = Context(cmd, protocol)
         rb = ResponseBase(ctx, b''.join(raw_messages), raw_messages)
         handler = ProtocolCAN()
@@ -66,7 +66,7 @@ class TestProtocolCANMultiFrame:
         # Consecutive frames: 21 Z 1 2 3 4 5 6
         #                     22 7 8 9 0 1 2 3
         # etc.
-        cmd = Command(Mode.VEHICLE_INFO, 0x02, 20, "VIN")
+        cmd = Command(Mode.VEHICLE_INFO, 0x02, 20)
         ctx = Context(cmd, Protocol.ISO_15765_4_CAN)
         raw_messages = [
             b"7E8 10 14 49 02 01 57 56 57",
@@ -134,7 +134,7 @@ class TestProtocolCANATCommands:
     """AT command response parsing."""
 
     def test_at_command_single_line_response(self):
-        cmd = Command(Mode.AT, "Z", 0, "RESET")
+        cmd = Command(Mode.AT, 'Z', 0)
         ctx = Context(cmd, Protocol.ISO_15765_4_CAN)
         raw_messages = [b"ELM327 v1.5", b'>']
         rb = ResponseBase(ctx, b'\r'.join(raw_messages), raw_messages)
@@ -149,7 +149,7 @@ class TestProtocolCANErrors:
     """Error detection and handling in CAN message parsing."""
 
     def test_no_data_error_raises(self):
-        cmd = Command(Mode.REQUEST, 0x0C, 2, "ENGINE_SPEED")
+        cmd = Command(Mode.REQUEST, 0x0C, 2)
         ctx = Context(cmd, Protocol.ISO_15765_4_CAN)
         raw_messages = [b"NO DATA", b'>']
         rb = ResponseBase(ctx, b'\r'.join(raw_messages), raw_messages)
@@ -160,7 +160,7 @@ class TestProtocolCANErrors:
             handler.parse_response(rb)
 
     def test_can_error_raises(self):
-        cmd = Command(Mode.REQUEST, 0x0C, 2, "ENGINE_SPEED")
+        cmd = Command(Mode.REQUEST, 0x0C, 2)
         ctx = Context(cmd, Protocol.ISO_15765_4_CAN)
         raw_messages = [b"CAN ERROR", b'>']
         rb = ResponseBase(ctx, b'\r'.join(raw_messages), raw_messages)
@@ -176,7 +176,7 @@ class TestProtocolCANValidation:
 
     def test_validate_components_warns_on_length_mismatch(self, caplog):
         handler = ProtocolCAN()
-        cmd = Command(Mode.REQUEST, 0x0C, 2, "ENGINE_SPEED")
+        cmd = Command(Mode.REQUEST, 0x0C, 2)
         # Components with payload indicating 5 bytes but command expects 2
         components = (b'00', b'00', b'7E', b'8', b'07', b'41', b'0C', b'1A', b'F8')
 
@@ -186,7 +186,7 @@ class TestProtocolCANValidation:
 
     def test_validate_components_warns_on_wrong_response_code(self, caplog):
         handler = ProtocolCAN()
-        cmd = Command(Mode.REQUEST, 0x0C, 2, "ENGINE_SPEED")
+        cmd = Command(Mode.REQUEST, 0x0C, 2)
         # Components with wrong response code (0x42 instead of 0x41)
         components = (b'00', b'00', b'7E', b'8', b'03', b'42', b'0C', b'1A')
 

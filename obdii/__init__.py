@@ -2,7 +2,7 @@ from importlib.metadata import version, PackageNotFoundError
 from logging import NullHandler, getLogger
 from pkgutil import extend_path
 
-from .command import Command
+from .command import Command, Template
 from .connection import Connection
 from .mode import Mode
 from .modes import at_commands, commands
@@ -32,6 +32,7 @@ __all__ = [
     "Protocol",
     "Response",
     "ResponseBase",
+    "Template",
 ]
 
 getLogger(__name__).addHandler(NullHandler())

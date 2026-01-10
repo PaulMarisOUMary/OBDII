@@ -58,7 +58,7 @@ class SupportedPIDS:
         )
 
         supported_pids = [
-            self.base_pid + i for i, bit in enumerate(binary_string) if bit == "1"
+            self.base_pid + i for i, bit in enumerate(binary_string) if bit == '1'
         ]
 
         return supported_pids

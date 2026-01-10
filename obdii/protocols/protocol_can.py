@@ -69,12 +69,17 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
     ) -> None:
         response_code = int(components[self._IDX_RESPONSE_CODE], 16)
 
-        if command.n_bytes and command.n_bytes != length:
+        if command.expected_bytes and length not in (
+            command.expected_bytes
+            if isinstance(command.expected_bytes, list)
+            else [command.expected_bytes]
+        ):
             _log.warning(
-                f"Expected {command.n_bytes} bytes, but received {length} bytes for command {command}"
+                f"Expected {command.expected_bytes} bytes, but received {length} bytes for command {command}"
             )
-        if command.mode == Mode.REQUEST:
-            expected_code = 0x40 + command.mode.value
+        resolved_mode = Mode.get_from(command.mode)
+        if resolved_mode is Mode.REQUEST:
+            expected_code = 0x40 + int(resolved_mode.value)
             if response_code != expected_code:
                 _log.warning(
                     f"Unexpected response code 0x{response_code:02X} for command {command} "
@@ -83,9 +88,9 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
 
     def _parsed_data_to_value(self, command: Command, parsed_data: BytesRows) -> Any:
         value = None
-        if command.formula:
+        if command.resolver:
             try:
-                value = command.formula(parsed_data)
+                value = command.resolver(parsed_data)
             except Exception as e:
                 _log.error(
                     f"Unexpected error during formula execution: {e}", exc_info=True
@@ -149,6 +154,7 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
         command = response_base.context.command
         messages = self._strip_prompt(response_base.messages)
 
-        if command.mode == Mode.AT:
+        resolved_mode = Mode.get_from(command.mode)
+        if resolved_mode is Mode.AT:
             return self._parse_at_response(response_base, messages)
         return self._parse_obd_response(response_base, messages)
