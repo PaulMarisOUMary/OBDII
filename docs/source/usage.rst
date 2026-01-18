@@ -10,6 +10,48 @@
 Basic Usage
 ===========
 
+This page explains the main components and core concepts of the library.
+
+AT Commands
+-----------
+
+AT commands are special commands you send directly to the OBDII adapter.
+They let you configure it or retrieve information for/from the adapter.
+
+.. code-block:: python
+    :caption: main.py
+    :linenos:
+
+    from obdii import at_commands
+
+    # AT Command example, get the version ID of the adapter
+    at_commands.VERSION_ID
+
+Commands
+--------
+
+Commands are predefined instructions to request data from the vehicle, like engine speed, coolant temperature, DTC, etc.
+There are three equivalent ways of using commands.
+
+.. code-block:: python
+    :caption: main.py
+    :linenos:
+
+    from obdii import commands
+
+    # 1. Using a command directly
+    commands.ENGINE_SPEED
+
+    # 2. Using the command name
+    commands["ENGINE_SPEED"]
+
+    # 3. Using the Mode and PID
+    commands[0x01][0x0C]
+
+    # These three lines are equivalent
+    # and all return the same command object:
+    # <Command Mode.REQUEST 0C ENGINE_SPEED>
+
 Scan for devices
 ----------------
 
@@ -33,46 +75,6 @@ The :mod:`obdii.utils.scan` module makes this easy by scanning for available dev
     # Scan for devices connected via WiFi
     wifi_devices = scan_wifi()
     print("Available OBDII WiFi devices:", wifi_devices)
-
-AT Commands
------------
-
-AT commands are special commands you send directly to the OBDII adapter.
-They let you configure it or retrieve information for/from the adapter.
-
-.. code-block:: python
-    :caption: main.py
-    :linenos:
-
-    from obdii import at_commands
-
-    # AT Command example, get the version ID of the adapter
-    at_commands.VERSION_ID
-
-Commands
---------
-
-Commands are predefined instructions to request data from the vehicle, like engine speed, coolant temperature, DTC, etc.
-There are three different ways of using commands.
-
-.. code-block:: python
-    :caption: main.py
-    :linenos:
-
-    from obdii import commands
-
-    # 1. Using a command directly
-    commands.ENGINE_SPEED
-
-    # 2. Using the command name
-    commands["ENGINE_SPEED"]
-
-    # 3. Using the Mode and PID
-    commands[0x01][0x0C]
-
-    # These three lines are equivalent
-    # and all return the same command object:
-    # <Command Mode.REQUEST 0C ENGINE_SPEED []>
 
 Query data
 ----------

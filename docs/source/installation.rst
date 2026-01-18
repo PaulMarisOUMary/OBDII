@@ -110,7 +110,7 @@ To test pre-release versions before they're officially published on PyPI.
 
 .. code-block:: console
 
-    pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple py-obdii
+    pip install -i https://test.pypi.org/simple --extra-index-url https://pypi.org/simple py-obdii
 
 .. _extras:
 

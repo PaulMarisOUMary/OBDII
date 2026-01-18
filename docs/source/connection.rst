@@ -279,3 +279,64 @@ WiFi and Ethernet adapters use the same network transport.
             with Connection(("192.168.0.10", 35000)) as conn:
                 version = conn.query(at_commands.VERSION_ID)
                 print(f"Adapter Version: {version.value}")
+
+Advanced Connection
+-------------------
+
+When instantiating a :class:`obdii.Connection`, you can pass optional parameters to control how the connection is established.
+
+Protocol Selection
+^^^^^^^^^^^^^^^^^^
+
+By default, the library automatically detects supported protocols. When multiple protocols are available, the library selects the preferred one based on performance.
+
+If you specify a protocol, the library will attempt to use it. If the requested protocol is unsupported, it will fall back to the next best available option.
+
+.. code-block:: python
+    :caption: main.py
+    :linenos:
+
+    from obdii import Connection, Protocol
+
+    # Create Connection with ISO 15765-4 CAN (29 bit ID, 500 kbaud)
+
+    with Connection(
+        "COM10",
+        protocol=Protocol.ISO_15765_4_CAN_B,
+    ) as conn: ...
+
+Example output showing protocol fallback:
+
+.. code-block:: logtalk
+    :caption: output
+    :emphasize-lines: 2
+
+    2026-01-01 01:01:01 INFO     obdii.connection Attempting to connect to <TransportPort COM10 at 38400 baud>.
+    2026-01-01 01:01:01 WARNING  obdii.connection Requested protocol ISO_15765_4_CAN_B cannot be used.
+    2026-01-01 01:01:01 INFO     obdii.connection Protocol set to ISO_15765_4_CAN.
+    2026-01-01 01:01:01 INFO     obdii.connection Successfully connected to <TransportPort COM10 at 38400 baud>.
+    2026-01-01 01:01:01 INFO     obdii.connection Connection closed.
+
+Auto Connect
+^^^^^^^^^^^^
+
+``auto_connect`` automatically attempt to connect when the Connection is instantiated.
+Set it to ``False`` to disable this behavior. You will then need to call :meth:`obdii.Connection.connect` manually.
+
+Defaults to ``True``.
+
+Smart Query
+^^^^^^^^^^^
+
+``smart_query`` is a small optimization that, when set to ``True``, detects repeated commands. Instead of sending the full command again, it sends a shorter special REPEAT command, reducing bus traffic and latency.
+
+Defaults to ``False``. This may not be supported by all adapters or vehicles.
+
+Early Return
+^^^^^^^^^^^^
+
+``early_return`` is an optimization that, when set to ``True``, makes the ELM327 return immediately after receiving the expected number of responses, skipping the default timeout.
+
+This reduces latency and increases polling speed for commands with a defined ``expected_bytes`` attribute.
+
+Defaults to ``False``. Requires an ELM327 v1.3 or higher.
