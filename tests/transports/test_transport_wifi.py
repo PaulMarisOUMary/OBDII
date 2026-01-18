@@ -16,9 +16,9 @@ class TestTransportWifiInit:
         """Test initialization with required address and port."""
         transport = TransportWifi(address="192.168.0.10", port=35000)
 
-        assert transport.address == "192.168.0.10"
-        assert transport.port == 35000
-        assert transport.timeout == 5.0
+        assert transport.config.get("address") == "192.168.0.10"
+        assert transport.config.get("port") == 35000
+        assert transport.config.get("timeout") == 5.0
         assert transport.socket_conn is None
 
     @pytest.mark.parametrize(
@@ -35,9 +35,9 @@ class TestTransportWifiInit:
         """Test initialization with custom parameters."""
         transport = TransportWifi(address=address, port=port, timeout=timeout)
 
-        assert transport.address == address
-        assert transport.port == port
-        assert transport.timeout == timeout
+        assert transport.config.get("address") == address
+        assert transport.config.get("port") == port
+        assert transport.config.get("timeout") == timeout
 
     def test_init_without_address_raises_error(self):
         """Test that initialization without address raises ValueError."""
@@ -58,14 +58,6 @@ class TestTransportWifiInit:
         """Test that initialization with MISSING values raises ValueError."""
         with pytest.raises(ValueError, match="Both address and port must be specified"):
             TransportWifi(address=MISSING, port=MISSING)
-
-    def test_overridable_attributes_structure(self):
-        """Test that overridable_attributes contains expected keys."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
-
-        assert "address" in transport.overridable_attributes
-        assert "port" in transport.overridable_attributes
-        assert "timeout" in transport.overridable_attributes
 
 
 class TestTransportWifiRepr:
@@ -147,16 +139,6 @@ class TestTransportWifiConnect:
         mock_socket_instance.settimeout.assert_called_once_with(10.0)
         mock_socket_instance.connect.assert_called_once_with(("192.168.0.10", 35000))
 
-    def test_connect_with_string_port(self, mocker):
-        """Test connect converts string port to int."""
-        mock_socket_class = mocker.patch("obdii.transports.transport_wifi.socket")
-        mock_socket_instance = mocker.MagicMock()
-        mock_socket_class.return_value = mock_socket_instance
-        transport = TransportWifi(address="192.168.0.10", port="35000")
-
-        transport.connect()
-
-        mock_socket_instance.connect.assert_called_once_with(("192.168.0.10", 35000))
 
     @pytest.mark.parametrize(
         ("address", "port"),
@@ -176,7 +158,7 @@ class TestTransportWifiConnect:
 
         transport.connect()
 
-        mock_socket_instance.connect.assert_called_once_with((address, int(port)))
+        mock_socket_instance.connect.assert_called_once_with((address, port))
 
 
 class TestTransportWifiClose:

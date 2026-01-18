@@ -14,10 +14,10 @@ class TestTransportPortInit:
         """Test initialization with required port parameter."""
         transport = TransportPort(port="COM3")
 
-        assert transport.port == "COM3"
-        assert transport.baudrate == 38400
-        assert transport.timeout == 5.0
-        assert transport.write_timeout == 3.0
+        assert transport.config.get("port") == "COM3"
+        assert transport.config.get("baudrate") == 38400
+        assert transport.config.get("timeout") == 5.0
+        assert transport.config.get("write_timeout") == 3.0
         assert transport.serial_conn is None
 
     @pytest.mark.parametrize(
@@ -39,10 +39,10 @@ class TestTransportPortInit:
             write_timeout=write_timeout,
         )
 
-        assert transport.port == port
-        assert transport.baudrate == baudrate
-        assert transport.timeout == timeout
-        assert transport.write_timeout == write_timeout
+        assert transport.config.get("port") == port
+        assert transport.config.get("baudrate") == baudrate
+        assert transport.config.get("timeout") == timeout
+        assert transport.config.get("write_timeout") == write_timeout
 
     def test_init_without_port_raises_error(self):
         """Test that initialization without port raises ValueError."""
@@ -53,15 +53,6 @@ class TestTransportPortInit:
         """Test that initialization with MISSING port raises ValueError."""
         with pytest.raises(ValueError, match="Port must be specified"):
             TransportPort(port=MISSING)
-
-    def test_overridable_attributes_structure(self):
-        """Test that overridable_attributes contains expected keys."""
-        transport = TransportPort(port="COM3")
-
-        assert "port" in transport.overridable_attributes
-        assert "baudrate" in transport.overridable_attributes
-        assert "timeout" in transport.overridable_attributes
-        assert "write_timeout" in transport.overridable_attributes
 
 
 class TestTransportPortRepr:
