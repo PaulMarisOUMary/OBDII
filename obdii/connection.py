@@ -61,7 +61,7 @@ class Connection:
             Whether to set up the root logger.
 
         **kwargs: :class:`dict`
-            Additional keyword arguments to pass to the transport's connect method. Only used if `auto_connect` is True.
+            Additional keyword arguments forwarded to the transport's constructor.
         """
         self.transport = self._resolve_transport(transport, **kwargs)
 
@@ -131,7 +131,7 @@ class Connection:
         Parameters
         ----------
         **kwargs
-            Additional parameters forwarded to the transport's `connect()` method.
+            Additional keyword arguments forwarded to the transport's connect method.
         """
         _log.info(f"Attempting to connect to {repr(self.transport)}.")
         try:

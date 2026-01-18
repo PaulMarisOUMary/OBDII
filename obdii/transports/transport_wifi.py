@@ -1,35 +1,35 @@
 from socket import AF_INET, SOCK_STREAM, error as s_error, socket
-from typing import Optional, Union
+from typing import Optional, Union, Dict, Any
 
 from .transport_base import TransportBase
 
 from ..basetypes import MISSING
-from ..utils.helper import override_class_attributes
 
 
 class TransportWifi(TransportBase):
-    def __init__(self, **kwargs) -> None:
-        self.overridable_attributes = {
-            "address": MISSING,
-            "port": MISSING,
-            "timeout": 5.0,
+    def __init__(
+        self,
+        address: str = MISSING,
+        port: Union[str, int] = MISSING,
+        timeout: float = 5.0,
+        **kwargs,
+    ) -> None:
+        self.config: Dict[str, Any] = {
+            "address": address,
+            "port": port,
+            "timeout": timeout,
+            **kwargs,
         }
-
-        self.address: str
-        self.port: Union[str, int]
-        self.timeout: float
 
         self.socket_conn: Optional[socket] = None
 
-        override_class_attributes(self, self.overridable_attributes, **kwargs)
-
-        if self.address is MISSING or self.port is MISSING:
+        if address is MISSING or port is MISSING:
             raise ValueError(
                 "Both address and port must be specified for TransportWifi."
             )
 
     def __repr__(self) -> str:
-        return f"<TransportWifi {self.address}:{self.port}>"
+        return f"<TransportWifi {self.config.get('address')}:{self.config.get('port')}>"
 
     def is_connected(self) -> bool:
         if self.socket_conn is None:
@@ -41,11 +41,15 @@ class TransportWifi(TransportBase):
             return False
 
     def connect(self, **kwargs) -> None:
-        override_class_attributes(self, self.overridable_attributes, True, **kwargs)
+        self.config.update(kwargs)
+
+        timeout = self.config.get("timeout")
+        address = self.config.get("address")
+        port = self.config.get("port")
 
         self.socket_conn = socket(AF_INET, SOCK_STREAM)
-        self.socket_conn.settimeout(self.timeout)
-        self.socket_conn.connect((self.address, int(self.port)))
+        self.socket_conn.settimeout(timeout)
+        self.socket_conn.connect((address, port))
 
     def close(self) -> None:
         if self.socket_conn:

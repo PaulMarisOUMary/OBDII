@@ -1,50 +1,44 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from serial import Serial
 
 from .transport_base import TransportBase
 
 from ..basetypes import MISSING
-from ..utils.helper import override_class_attributes
 
 
 class TransportPort(TransportBase):
-    def __init__(self, **kwargs) -> None:
-        self.overridable_attributes = {
-            "port": MISSING,
-            "baudrate": 38400,
-            "timeout": 5.0,
-            "write_timeout": 3.0,
+    def __init__(
+        self,
+        port: str = MISSING,
+        baudrate: int = 38400,
+        timeout: float = 5.0,
+        write_timeout: float = 3.0,
+        **kwargs,
+    ) -> None:
+        self.config: Dict[str, Any] = {
+            "port": port,
+            "baudrate": baudrate,
+            "timeout": timeout,
+            "write_timeout": write_timeout,
+            **kwargs,
         }
-
-        self.port: str
-        self.baudrate: int
-        self.timeout: float
-        self.write_timeout: float
 
         self.serial_conn: Optional[Serial] = None
 
-        override_class_attributes(self, self.overridable_attributes, **kwargs)
-
-        if self.port is MISSING:
+        if port is MISSING:
             raise ValueError("Port must be specified for TransportPort.")
 
     def __repr__(self) -> str:
-        return f"<TransportPort {self.port} at {self.baudrate} baud>"
+        return f"<TransportPort {self.config.get('port')} at {self.config.get('baudrate')} baud>"
 
     def is_connected(self) -> bool:
         return self.serial_conn is not None and self.serial_conn.is_open
 
     def connect(self, **kwargs) -> None:
-        override_class_attributes(self, self.overridable_attributes, True, **kwargs)
+        self.config.update(kwargs)
 
-        self.serial_conn = Serial(
-            port=self.port,
-            baudrate=self.baudrate,
-            timeout=self.timeout,
-            write_timeout=self.write_timeout,
-            **kwargs,
-        )
+        self.serial_conn = Serial(**self.config)
 
     def close(self) -> None:
         if self.serial_conn and self.serial_conn.is_open:
