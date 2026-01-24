@@ -74,7 +74,7 @@ dev = [
 docs = [
     "sphinx>=8.2,<9",
     "sphinx-autobuild",
-    "sphinxawesome-theme",
+    "sphinxawesome-theme>=5.3,<6",
     "sphinx-design",
 ]
 sim = [
