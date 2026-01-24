@@ -320,7 +320,7 @@ Example output showing protocol fallback:
 Auto Connect
 ^^^^^^^^^^^^
 
-``auto_connect`` automatically attempt to connect when the Connection is instantiated.
+``auto_connect`` automatically attempts to connect when the :class:`obdii.Connection` is instantiated.
 Set it to ``False`` to disable this behavior. You will then need to call :meth:`obdii.Connection.connect` manually.
 
 Defaults to ``True``.
@@ -328,15 +328,81 @@ Defaults to ``True``.
 Smart Query
 ^^^^^^^^^^^
 
-``smart_query`` is a small optimization that, when set to ``True``, detects repeated commands. Instead of sending the full command again, it sends a shorter special REPEAT command, reducing bus traffic and latency.
+``smart_query`` is a small optimization that, when set to ``True``, detects identical consecutive commands. Instead of sending the full command again, it sends a shorter special REPEAT command, reducing bus traffic and latency.
 
 Defaults to ``False``. This may not be supported by all adapters or vehicles.
 
 Early Return
 ^^^^^^^^^^^^
 
-``early_return`` is an optimization that, when set to ``True``, makes the ELM327 return immediately after receiving the expected number of responses, skipping the default timeout.
+``early_return`` is an optimization that, when set to ``True``, makes the ELM327 respond immediately after receiving the expected number of responses, skipping the default timeout.
 
 This reduces latency and increases polling speed for commands with a defined ``expected_bytes`` attribute.
 
 Defaults to ``False``. Requires an ELM327 v1.3 or higher.
+
+Logging
+^^^^^^^
+
+This library logs errors and debug information using the standard :mod:`logging` module. When creating a :class:`obdii.Connection`, a default logging configuration is applied to the ``obdii`` logger.
+
+You can override this behavior by providing your own logging handler, formatter and level. By default, logs are configured with the :data:`logging.INFO` level and written to :data:`sys.stderr` using a colored formatter.
+
+If you want the logging configuration provided by the library to affect all loggers rather than only ``obdii``, set ``log_root=True``.
+
+.. code-block:: python
+    :caption: main.py
+    :linenos:
+
+    from obdii import Connection
+
+    from logging import DEBUG, Formatter
+    from logging.handlers import RotatingFileHandler
+
+    handler = RotatingFileHandler(
+        filename="obdii.log",
+        maxBytes=32*1024*1024,
+        backupCount=3,
+    )
+
+    formatter = Formatter(
+        "[{asctime}] [{levelname:<8}] {name}: {message}",
+        "%Y-%m-%d %H:%M:%S",
+        style='{',
+    )
+
+    with Connection(
+        "COM10",
+        log_handler=handler,
+        log_formatter=formatter,
+        log_level=DEBUG,
+        log_root=False,
+    ) as conn: ...
+
+Extra Keyword Arguments
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Extra keyword arguments passed to :class:`obdii.Connection` are forwarded to the transport type used by the connection.
+
+.. note::
+    The transport type is automatically determined from the first argument passed to :class:`obdii.Connection` (e.g., string for serial, tuple for socket).
+
+These arguments are used when :meth:`obdii.Connection.connect` is called, allowing transport-specific behavior customization, such as timeouts, baud rate, etc.
+
+Currently, the library provides two native transport types, :class:`serial.Serial` and :class:`socket.socket`.
+Refer to their respective documentation for the full list of supported parameters.
+
+A common serial configuration example is shown below:
+
+.. code-block:: python
+    :caption: main.py
+    :linenos:
+
+    from obdii import Connection
+
+    with Connection(
+        "COM10",
+        baudrate=115200,
+        timeout=1,
+        write_timeout=1,
+    ) as conn: ...
