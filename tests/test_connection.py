@@ -1,6 +1,7 @@
 """
 Unit tests for obdii.connection module.
 """
+
 import pytest
 
 from typing import List, Tuple
@@ -13,7 +14,7 @@ from obdii.protocol import Protocol
 from obdii.protocols.protocol_base import ProtocolBase
 from obdii.response import Context, Response
 from obdii.transports.transport_base import TransportBase
-from obdii.transports import TransportPort, TransportWifi
+from obdii.transports import TransportSerial, TransportSocket
 
 
 class FakeTransport(TransportBase):
@@ -46,19 +47,19 @@ class FakeTransport(TransportBase):
 
 class TestTransportResolution:
     """Tests for transport resolution in Connection."""
+
     @pytest.mark.parametrize(
         ("transport_arg", "expected_type"),
         [
-            ("COM5", TransportPort),
-            (("127.0.0.1", 35000), TransportWifi),
+            ("COM5", TransportSerial),
+            (("127.0.0.1", 35000), TransportSocket),
         ],
-        ids=["port-string->TransportPort", "tuple->TransportWifi"],
+        ids=["port-string->TransportSerial", "tuple->TransportSocket"],
     )
-    def test_resolve_transport_port_and_wifi(self, transport_arg, expected_type):
+    def test_resolve_transport_serial_and_wifi(self, transport_arg, expected_type):
         conn = Connection(transport_arg, auto_connect=False)
 
         assert isinstance(conn.transport, expected_type)
-
 
     def test_resolve_transport_instance(self):
         ft = FakeTransport()
@@ -66,7 +67,6 @@ class TestTransportResolution:
         conn = Connection(ft, auto_connect=False)
 
         assert conn.transport is ft
-
 
     def test_resolve_transport_invalid_type(self):
         bad = object()
@@ -77,6 +77,7 @@ class TestTransportResolution:
 
 class TestConnectLifecycle:
     """Connection.connect lifecycle (success and failure paths)."""
+
     def test_connect_success_calls_initialize_and_sets_flag(self, mocker):
         ft = FakeTransport()
         conn = Connection(ft, auto_connect=False)
@@ -104,6 +105,7 @@ class TestConnectLifecycle:
 
 class TestConnectionHelpers:
     """Helpers and proxies exposed by Connection (e.g., is_connected)."""
+
     def test_is_connected_proxies_transport(self):
         ft = FakeTransport()
         conn = Connection(ft, auto_connect=False)
@@ -115,13 +117,18 @@ class TestConnectionHelpers:
 
 class TestQueryBehavior:
     """Query sending semantics including smart_query repeat behavior."""
+
     def test_query_builds_and_writes_and_waits(self, mocker):
         ft = FakeTransport()
         conn = Connection(ft, auto_connect=False, smart_query=False, early_return=False)
         ft.connected = True
 
-        dummy_resp = Response(Context(Command(Mode.AT, 'I', 0), Protocol.AUTO), b"OK\r>", [b"OK", b'>'])
-        wait_mock = mocker.patch.object(conn, "wait_for_response", return_value=dummy_resp)
+        dummy_resp = Response(
+            Context(Command(Mode.AT, 'I', 0), Protocol.AUTO), b"OK\r>", [b"OK", b'>']
+        )
+        wait_mock = mocker.patch.object(
+            conn, "wait_for_response", return_value=dummy_resp
+        )
 
         cmd = Command(Mode.AT, 'Z', 0)
 
@@ -136,7 +143,9 @@ class TestQueryBehavior:
         conn = Connection(ft, auto_connect=False, smart_query=True)
         ft.connected = True
 
-        dummy_resp = Response(Context(Command(Mode.AT, 'I', 0), Protocol.AUTO), b"OK\r>", [b"OK", b'>'])
+        dummy_resp = Response(
+            Context(Command(Mode.AT, 'I', 0), Protocol.AUTO), b"OK\r>", [b"OK", b'>']
+        )
         mocker.patch.object(conn, "wait_for_response", return_value=dummy_resp)
 
         cmd = Command(Mode.AT, 'I', 0)
@@ -152,6 +161,7 @@ class TestQueryBehavior:
 
 class TestWaitForResponse:
     """Waiting for raw bytes and parsing to Response, including fallback."""
+
     def test_wait_for_response_returns_parsed(self):
         ft = FakeTransport()
         ft.connected = True
@@ -194,6 +204,7 @@ class TestWaitForResponse:
 
 class TestCloseAndContextManager:
     """close() behavior and context manager enter/exit semantics."""
+
     def test_close_calls_transport_close(self):
         ft = FakeTransport()
         conn = Connection(ft, auto_connect=False)
@@ -213,6 +224,7 @@ class TestCloseAndContextManager:
 
 class TestProtocolHelpers:
     """Protocol parsing/setting helpers and auto selection priority."""
+
     def test_parse_protocol_number_various(self):
         ft = FakeTransport()
         conn = Connection(ft, auto_connect=False)
@@ -250,7 +262,11 @@ class TestProtocolHelpers:
 
         def fake_set(proto: Protocol) -> int:
             # Support only two specific protocols
-            return proto.value if proto in (Protocol.SAE_J1850_VPW, Protocol.ISO_15765_4_CAN) else -1
+            return (
+                proto.value
+                if proto in (Protocol.SAE_J1850_VPW, Protocol.ISO_15765_4_CAN)
+                else -1
+            )
 
         mocker.patch.object(conn, "_set_protocol_to", side_effect=fake_set)
 
@@ -278,11 +294,15 @@ class TestProtocolHelpers:
         mocker.patch.object(conn, "_set_protocol_to", side_effect=fake_set)
 
         # Provide supported protocols in mixed order; connection should pick the highest priority
-        mocker.patch.object(conn, "_get_supported_protocols", return_value=[
-            Protocol.SAE_J1850_VPW,
-            Protocol.ISO_15765_4_CAN_D,
-            Protocol.ISO_14230_4_KWP,
-        ])
+        mocker.patch.object(
+            conn,
+            "_get_supported_protocols",
+            return_value=[
+                Protocol.SAE_J1850_VPW,
+                Protocol.ISO_15765_4_CAN_D,
+                Protocol.ISO_14230_4_KWP,
+            ],
+        )
 
         class DummyProto(ProtocolBase):
             def parse_response(self, response_base):

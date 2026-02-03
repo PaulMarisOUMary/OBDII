@@ -10,7 +10,7 @@ from .protocol import Protocol
 from .protocols.protocol_base import ProtocolBase
 from .response import Context, Response, ResponseBase
 from .transports.transport_base import TransportBase
-from .transports import TransportPort, TransportWifi
+from .transports import TransportSerial, TransportSocket
 from .utils.bits import bytes_to_string, filter_bytes
 from .utils.helper import debug_responsebase, setup_logging
 
@@ -111,14 +111,14 @@ class Connection:
     ) -> TransportBase:
         """Resolves a user-supplied transport input into a concrete TransportBase instance."""
         if isinstance(transport, str):
-            return TransportPort(port=transport, **kwargs)
+            return TransportSerial(port=transport, **kwargs)
         elif (
             isinstance(transport, tuple)
             and len(transport) == 2
             and isinstance(transport[0], str)
             and isinstance(transport[1], (str, int))
         ):
-            return TransportWifi(address=transport[0], port=transport[1], **kwargs)
+            return TransportSocket(address=transport[0], port=transport[1], **kwargs)
         elif isinstance(transport, TransportBase):
             return transport
         else:

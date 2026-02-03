@@ -8,8 +8,8 @@ from serial.tools import list_ports
 from ..basetypes import MISSING
 from ..modes import at_commands
 from ..transports.transport_base import TransportBase
-from ..transports.transport_port import TransportPort
-from ..transports.transport_wifi import TransportWifi
+from ..transports.transport_serial import TransportSerial
+from ..transports.transport_socket import TransportSocket
 
 
 def scan_transports(
@@ -28,7 +28,7 @@ def scan_transports(
         List of transport configuration dictionaries. For example, for serial: [{"port": "COM3"}], for WiFi: [{"address": "192.168.0.10", "port": 35000}]
     transport_cls: Type[:class:`~obdii.transports.transport_base.TransportBase`]
         Transport class to instantiate for probing
-        (e.g., :class:`~obdii.transports.transport_port.TransportPort`, :class:`~obdii.transports.transport_wifi.TransportWifi`).
+        (e.g., :class:`~obdii.transports.transport_serial.TransportSerial`, :class:`~obdii.transports.transport_socket.TransportSocket`).
     probe : :class:`bytes`
         Byte sequence to send to test the transport. Defaults to `at_commands.VERSION_ID.build()`.
     return_first : :class:`bool`
@@ -76,7 +76,7 @@ def scan_ports(return_first: bool = True, **kwargs):
         candidates.extend(pts_ports)
 
     return scan_transports(
-        candidates, TransportPort, return_first=return_first, **kwargs
+        candidates, TransportSerial, return_first=return_first, **kwargs
     )
 
 
@@ -91,5 +91,5 @@ def scan_wifi(return_first: bool = True, **kwargs):
     candidates = [{"address": addr, "port": port} for addr, port in common]
 
     return scan_transports(
-        candidates, TransportWifi, return_first=return_first, **kwargs
+        candidates, TransportSocket, return_first=return_first, **kwargs
     )

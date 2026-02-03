@@ -7,7 +7,7 @@ from .transport_base import TransportBase
 from ..basetypes import MISSING
 
 
-class TransportPort(TransportBase):
+class TransportSerial(TransportBase):
     def __init__(
         self,
         port: str = MISSING,
@@ -27,10 +27,10 @@ class TransportPort(TransportBase):
         self.serial_conn: Optional[Serial] = None
 
         if port is MISSING:
-            raise ValueError("Port must be specified for TransportPort.")
+            raise ValueError("Port must be specified for TransportSerial.")
 
     def __repr__(self) -> str:
-        return f"<TransportPort {self.config.get('port')} at {self.config.get('baudrate')} baud>"
+        return f"<TransportSerial {self.config.get('port')} at {self.config.get('baudrate')} baud>"
 
     def is_connected(self) -> bool:
         return self.serial_conn is not None and self.serial_conn.is_open

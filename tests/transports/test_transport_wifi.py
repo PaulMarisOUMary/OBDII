@@ -1,20 +1,21 @@
 """
-Unit tests for obdii.transports.transport_wifi module.
+Unit tests for obdii.transports.transport_socket module.
 """
+
 import pytest
 
 from socket import error as s_error
 
 from obdii.basetypes import MISSING
-from obdii.transports.transport_wifi import TransportWifi
+from obdii.transports.transport_socket import TransportSocket
 
 
-class TestTransportWifiInit:
-    """Test suite for TransportWifi initialization."""
+class TestTransportSocketInit:
+    """Test suite for TransportSocket initialization."""
 
     def test_init_with_required_parameters(self):
         """Test initialization with required address and port."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
 
         assert transport.config.get("address") == "192.168.0.10"
         assert transport.config.get("port") == 35000
@@ -33,7 +34,7 @@ class TestTransportWifiInit:
     )
     def test_init_with_custom_parameters(self, address, port, timeout):
         """Test initialization with custom parameters."""
-        transport = TransportWifi(address=address, port=port, timeout=timeout)
+        transport = TransportSocket(address=address, port=port, timeout=timeout)
 
         assert transport.config.get("address") == address
         assert transport.config.get("port") == port
@@ -42,26 +43,26 @@ class TestTransportWifiInit:
     def test_init_without_address_raises_error(self):
         """Test that initialization without address raises ValueError."""
         with pytest.raises(ValueError, match="Both address and port must be specified"):
-            TransportWifi(port=35000)
+            TransportSocket(port=35000)
 
     def test_init_without_port_raises_error(self):
         """Test that initialization without port raises ValueError."""
         with pytest.raises(ValueError, match="Both address and port must be specified"):
-            TransportWifi(address="192.168.0.10")
+            TransportSocket(address="192.168.0.10")
 
     def test_init_without_both_raises_error(self):
         """Test that initialization without address and port raises ValueError."""
         with pytest.raises(ValueError, match="Both address and port must be specified"):
-            TransportWifi()
+            TransportSocket()
 
     def test_init_with_missing_values_raises_error(self):
         """Test that initialization with MISSING values raises ValueError."""
         with pytest.raises(ValueError, match="Both address and port must be specified"):
-            TransportWifi(address=MISSING, port=MISSING)
+            TransportSocket(address=MISSING, port=MISSING)
 
 
-class TestTransportWifiRepr:
-    """Test suite for TransportWifi __repr__ method."""
+class TestTransportSocketRepr:
+    """Test suite for TransportSocket __repr__ method."""
 
     @pytest.mark.parametrize(
         ("address", "port", "expected_addr", "expected_port"),
@@ -74,27 +75,27 @@ class TestTransportWifiRepr:
     )
     def test_repr_format(self, address, port, expected_addr, expected_port):
         """Test __repr__ format with various configurations."""
-        transport = TransportWifi(address=address, port=port)
+        transport = TransportSocket(address=address, port=port)
         result = repr(transport)
 
-        assert "TransportWifi" in result
+        assert "TransportSocket" in result
         assert expected_addr in result
         assert expected_port in result
         assert ':' in result
 
 
-class TestTransportWifiIsConnected:
-    """Test suite for TransportWifi is_connected method."""
+class TestTransportSocketIsConnected:
+    """Test suite for TransportSocket is_connected method."""
 
     def test_not_connected_when_socket_none(self):
         """Test is_connected returns False when socket_conn is None."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
-        
+        transport = TransportSocket(address="192.168.0.10", port=35000)
+
         assert transport.is_connected() is False
 
     def test_connected_when_socket_has_peer(self, mocker):
         """Test is_connected returns True when socket has peer."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.getpeername.return_value = ("192.168.0.10", 35000)
         transport.socket_conn = mock_socket
@@ -103,7 +104,7 @@ class TestTransportWifiIsConnected:
 
     def test_not_connected_when_socket_error(self, mocker):
         """Test is_connected returns False when getpeername raises socket error."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.getpeername.side_effect = s_error("Not connected")
         transport.socket_conn = mock_socket
@@ -111,15 +112,15 @@ class TestTransportWifiIsConnected:
         assert transport.is_connected() is False
 
 
-class TestTransportWifiConnect:
-    """Test suite for TransportWifi connect method."""
+class TestTransportSocketConnect:
+    """Test suite for TransportSocket connect method."""
 
     def test_connect_creates_socket_connection(self, mocker):
         """Test connect creates a socket connection."""
-        mock_socket_class = mocker.patch("obdii.transports.transport_wifi.socket")
+        mock_socket_class = mocker.patch("obdii.transports.transport_socket.socket")
         mock_socket_instance = mocker.MagicMock()
         mock_socket_class.return_value = mock_socket_instance
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
 
         transport.connect()
 
@@ -129,16 +130,15 @@ class TestTransportWifiConnect:
 
     def test_connect_with_override_parameters(self, mocker):
         """Test connect with override parameters."""
-        mock_socket_class = mocker.patch("obdii.transports.transport_wifi.socket")
+        mock_socket_class = mocker.patch("obdii.transports.transport_socket.socket")
         mock_socket_instance = mocker.MagicMock()
         mock_socket_class.return_value = mock_socket_instance
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
 
         transport.connect(timeout=10.0)
 
         mock_socket_instance.settimeout.assert_called_once_with(10.0)
         mock_socket_instance.connect.assert_called_once_with(("192.168.0.10", 35000))
-
 
     @pytest.mark.parametrize(
         ("address", "port"),
@@ -151,22 +151,22 @@ class TestTransportWifiConnect:
     )
     def test_connect_various_addresses(self, mocker, address, port):
         """Test connect with various address and port combinations."""
-        mock_socket_class = mocker.patch("obdii.transports.transport_wifi.socket")
+        mock_socket_class = mocker.patch("obdii.transports.transport_socket.socket")
         mock_socket_instance = mocker.MagicMock()
         mock_socket_class.return_value = mock_socket_instance
-        transport = TransportWifi(address=address, port=port)
+        transport = TransportSocket(address=address, port=port)
 
         transport.connect()
 
         mock_socket_instance.connect.assert_called_once_with((address, port))
 
 
-class TestTransportWifiClose:
-    """Test suite for TransportWifi close method."""
+class TestTransportSocketClose:
+    """Test suite for TransportSocket close method."""
 
     def test_close_when_connected(self, mocker):
         """Test close when connection is open."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         transport.socket_conn = mock_socket
 
@@ -177,7 +177,7 @@ class TestTransportWifiClose:
 
     def test_close_when_not_connected(self):
         """Test close when socket_conn is None."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         transport.socket_conn = None
 
         transport.close()
@@ -185,12 +185,12 @@ class TestTransportWifiClose:
         assert transport.socket_conn is None
 
 
-class TestTransportWifiWriteBytes:
-    """Test suite for TransportWifi write_bytes method."""
+class TestTransportSocketWriteBytes:
+    """Test suite for TransportSocket write_bytes method."""
 
     def test_write_bytes_success(self, mocker):
         """Test successful write operation."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         transport.socket_conn = mock_socket
         query = b"ATZ\r"
@@ -201,7 +201,7 @@ class TestTransportWifiWriteBytes:
 
     def test_write_bytes_when_not_connected(self):
         """Test write_bytes raises RuntimeError when not connected."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         transport.socket_conn = None
 
         with pytest.raises(RuntimeError, match="Socket is not connected"):
@@ -220,7 +220,7 @@ class TestTransportWifiWriteBytes:
     )
     def test_write_bytes_various_commands(self, mocker, query):
         """Test write_bytes with various command patterns."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         transport.socket_conn = mock_socket
 
@@ -229,12 +229,12 @@ class TestTransportWifiWriteBytes:
         mock_socket.sendall.assert_called_once_with(query)
 
 
-class TestTransportWifiReadBytes:
-    """Test suite for TransportWifi read_bytes method."""
+class TestTransportSocketReadBytes:
+    """Test suite for TransportSocket read_bytes method."""
 
     def test_read_bytes_default_terminator(self, mocker):
         """Test read_bytes with default terminator '>'."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.recv.side_effect = [b'O', b'K', b'\r', b'>']
         transport.socket_conn = mock_socket
@@ -246,7 +246,7 @@ class TestTransportWifiReadBytes:
 
     def test_read_bytes_custom_terminator(self, mocker):
         """Test read_bytes with custom terminator."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.recv.side_effect = [b'O', b'K', b'\r', b'\n']
         transport.socket_conn = mock_socket
@@ -258,7 +258,7 @@ class TestTransportWifiReadBytes:
 
     def test_read_bytes_with_size_limit(self, mocker):
         """Test read_bytes with size parameter."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.recv.side_effect = [b'A', b'B', b'C']
         transport.socket_conn = mock_socket
@@ -270,7 +270,7 @@ class TestTransportWifiReadBytes:
 
     def test_read_bytes_when_not_connected(self):
         """Test read_bytes raises RuntimeError when not connected."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         transport.socket_conn = None
 
         with pytest.raises(RuntimeError, match="Socket is not connected"):
@@ -278,7 +278,7 @@ class TestTransportWifiReadBytes:
 
     def test_read_bytes_connection_closed(self, mocker):
         """Test read_bytes raises RuntimeError when connection closes."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.recv.return_value = b""
         transport.socket_conn = mock_socket
@@ -297,7 +297,7 @@ class TestTransportWifiReadBytes:
     )
     def test_read_bytes_various_terminators(self, mocker, expected_seq, recv_data):
         """Test read_bytes with various terminators."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.recv.side_effect = recv_data
         transport.socket_conn = mock_socket
@@ -309,7 +309,7 @@ class TestTransportWifiReadBytes:
 
     def test_read_bytes_multi_byte_terminator(self, mocker):
         """Test read_bytes with multi-byte terminator sequence."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.recv.side_effect = [b'T', b'E', b'S', b'T', b'>', b'>']
         transport.socket_conn = mock_socket
@@ -320,7 +320,7 @@ class TestTransportWifiReadBytes:
 
     def test_read_bytes_size_reached_before_terminator(self, mocker):
         """Test read_bytes stops at size limit before finding terminator."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.recv.side_effect = [b'A', b'B', b'C', b'D', b'E']
         transport.socket_conn = mock_socket
@@ -332,7 +332,7 @@ class TestTransportWifiReadBytes:
 
     def test_read_bytes_empty_terminator(self, mocker):
         """Test read_bytes with empty terminator."""
-        transport = TransportWifi(address="192.168.0.10", port=35000)
+        transport = TransportSocket(address="192.168.0.10", port=35000)
         mock_socket = mocker.MagicMock()
         mock_socket.recv.side_effect = [b'O', b'K']
         transport.socket_conn = mock_socket

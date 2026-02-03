@@ -1,18 +1,19 @@
 """
-Unit tests for obdii.transports.transport_port module.
+Unit tests for obdii.transports.transport_serial module.
 """
+
 import pytest
 
 from obdii.basetypes import MISSING
-from obdii.transports.transport_port import TransportPort
+from obdii.transports.transport_serial import TransportSerial
 
 
-class TestTransportPortInit:
-    """Test suite for TransportPort initialization."""
+class TestTransportSerialInit:
+    """Test suite for TransportSerial initialization."""
 
     def test_init_with_required_parameters(self):
         """Test initialization with required port parameter."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
 
         assert transport.config.get("port") == "COM3"
         assert transport.config.get("baudrate") == 38400
@@ -32,7 +33,7 @@ class TestTransportPortInit:
     )
     def test_init_with_custom_parameters(self, port, baudrate, timeout, write_timeout):
         """Test initialization with custom parameters."""
-        transport = TransportPort(
+        transport = TransportSerial(
             port=port,
             baudrate=baudrate,
             timeout=timeout,
@@ -47,16 +48,16 @@ class TestTransportPortInit:
     def test_init_without_port_raises_error(self):
         """Test that initialization without port raises ValueError."""
         with pytest.raises(ValueError, match="Port must be specified"):
-            TransportPort()
+            TransportSerial()
 
     def test_init_with_missing_port_raises_error(self):
         """Test that initialization with MISSING port raises ValueError."""
         with pytest.raises(ValueError, match="Port must be specified"):
-            TransportPort(port=MISSING)
+            TransportSerial(port=MISSING)
 
 
-class TestTransportPortRepr:
-    """Test suite for TransportPort __repr__ method."""
+class TestTransportSerialRepr:
+    """Test suite for TransportSerial __repr__ method."""
 
     @pytest.mark.parametrize(
         ("port", "baudrate", "expected_port", "expected_baud"),
@@ -69,27 +70,27 @@ class TestTransportPortRepr:
     )
     def test_repr_format(self, port, baudrate, expected_port, expected_baud):
         """Test __repr__ format with various port configurations."""
-        transport = TransportPort(port=port, baudrate=baudrate)
+        transport = TransportSerial(port=port, baudrate=baudrate)
         result = repr(transport)
 
-        assert "TransportPort" in result
+        assert "TransportSerial" in result
         assert expected_port in result
         assert expected_baud in result
         assert "baud" in result
 
 
-class TestTransportPortIsConnected:
-    """Test suite for TransportPort is_connected method."""
+class TestTransportSerialIsConnected:
+    """Test suite for TransportSerial is_connected method."""
 
     def test_not_connected_when_serial_none(self):
         """Test is_connected returns False when serial_conn is None."""
-        transport = TransportPort(port="COM3")
-        
+        transport = TransportSerial(port="COM3")
+
         assert transport.is_connected() is False
 
     def test_connected_when_serial_open(self, mocker):
         """Test is_connected returns True when serial is open."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         transport.serial_conn = mock_serial
@@ -98,7 +99,7 @@ class TestTransportPortIsConnected:
 
     def test_not_connected_when_serial_closed(self, mocker):
         """Test is_connected returns False when serial is closed."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = False
         transport.serial_conn = mock_serial
@@ -106,13 +107,13 @@ class TestTransportPortIsConnected:
         assert transport.is_connected() is False
 
 
-class TestTransportPortConnect:
-    """Test suite for TransportPort connect method."""
+class TestTransportSerialConnect:
+    """Test suite for TransportSerial connect method."""
 
     def test_connect_creates_serial_connection(self, mocker):
         """Test connect creates a Serial connection."""
-        mock_serial_class = mocker.patch("obdii.transports.transport_port.Serial")
-        transport = TransportPort(port="COM3")
+        mock_serial_class = mocker.patch("obdii.transports.transport_serial.Serial")
+        transport = TransportSerial(port="COM3")
 
         transport.connect()
 
@@ -126,8 +127,8 @@ class TestTransportPortConnect:
 
     def test_connect_creates_serial_with_defaults(self, mocker):
         """Test connect creates Serial with transport defaults."""
-        mock_serial_class = mocker.patch("obdii.transports.transport_port.Serial")
-        transport = TransportPort(port="COM3", baudrate=115200, timeout=10.0)
+        mock_serial_class = mocker.patch("obdii.transports.transport_serial.Serial")
+        transport = TransportSerial(port="COM3", baudrate=115200, timeout=10.0)
 
         transport.connect()
 
@@ -136,8 +137,8 @@ class TestTransportPortConnect:
 
     def test_connect_with_extra_kwargs(self, mocker):
         """Test connect with extra Serial parameters."""
-        mock_serial_class = mocker.patch("obdii.transports.transport_port.Serial")
-        transport = TransportPort(port="COM3")
+        mock_serial_class = mocker.patch("obdii.transports.transport_serial.Serial")
+        transport = TransportSerial(port="COM3")
 
         transport.connect(parity='N', stopbits=1)
 
@@ -146,12 +147,12 @@ class TestTransportPortConnect:
         assert call_kwargs["stopbits"] == 1
 
 
-class TestTransportPortClose:
-    """Test suite for TransportPort close method."""
+class TestTransportSerialClose:
+    """Test suite for TransportSerial close method."""
 
     def test_close_when_connected(self, mocker):
         """Test close when connection is open."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         transport.serial_conn = mock_serial
@@ -163,7 +164,7 @@ class TestTransportPortClose:
 
     def test_close_when_already_closed(self, mocker):
         """Test close when connection is already closed."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = False
         transport.serial_conn = mock_serial
@@ -175,7 +176,7 @@ class TestTransportPortClose:
 
     def test_close_when_not_connected(self):
         """Test close when serial_conn is None."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         transport.serial_conn = None
 
         transport.close()
@@ -183,12 +184,12 @@ class TestTransportPortClose:
         assert transport.serial_conn is None
 
 
-class TestTransportPortWriteBytes:
-    """Test suite for TransportPort write_bytes method."""
+class TestTransportSerialWriteBytes:
+    """Test suite for TransportSerial write_bytes method."""
 
     def test_write_bytes_success(self, mocker):
         """Test successful write operation."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         query = b"ATZ\r"
@@ -203,7 +204,7 @@ class TestTransportPortWriteBytes:
 
     def test_write_bytes_when_not_connected(self):
         """Test write_bytes raises RuntimeError when not connected."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         transport.serial_conn = None
 
         with pytest.raises(RuntimeError, match="Serial port is not connected"):
@@ -211,7 +212,7 @@ class TestTransportPortWriteBytes:
 
     def test_write_bytes_when_closed(self, mocker):
         """Test write_bytes raises RuntimeError when port is closed."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = False
         transport.serial_conn = mock_serial
@@ -221,7 +222,7 @@ class TestTransportPortWriteBytes:
 
     def test_write_bytes_partial_write(self, mocker):
         """Test write_bytes raises IOError on partial write."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         mock_serial.write.return_value = 5
@@ -244,7 +245,7 @@ class TestTransportPortWriteBytes:
     )
     def test_write_bytes_various_commands(self, mocker, query):
         """Test write_bytes with various command patterns."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         mock_serial.write.return_value = len(query)
@@ -255,12 +256,12 @@ class TestTransportPortWriteBytes:
         mock_serial.write.assert_called_once_with(query)
 
 
-class TestTransportPortReadBytes:
-    """Test suite for TransportPort read_bytes method."""
+class TestTransportSerialReadBytes:
+    """Test suite for TransportSerial read_bytes method."""
 
     def test_read_bytes_default_terminator(self, mocker):
         """Test read_bytes with default terminator '>'."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         mock_serial.read_until.return_value = b"OK\r>"
@@ -273,7 +274,7 @@ class TestTransportPortReadBytes:
 
     def test_read_bytes_custom_terminator(self, mocker):
         """Test read_bytes with custom terminator."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         mock_serial.read_until.return_value = b"OK\r\n"
@@ -286,7 +287,7 @@ class TestTransportPortReadBytes:
 
     def test_read_bytes_with_size_limit(self, mocker):
         """Test read_bytes with size parameter."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         mock_serial.read_until.return_value = b"OK"
@@ -299,7 +300,7 @@ class TestTransportPortReadBytes:
 
     def test_read_bytes_when_not_connected(self):
         """Test read_bytes raises RuntimeError when not connected."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         transport.serial_conn = None
 
         with pytest.raises(RuntimeError, match="Serial port is not connected"):
@@ -307,7 +308,7 @@ class TestTransportPortReadBytes:
 
     def test_read_bytes_when_closed(self, mocker):
         """Test read_bytes raises RuntimeError when port is closed."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = False
         transport.serial_conn = mock_serial
@@ -326,7 +327,7 @@ class TestTransportPortReadBytes:
     )
     def test_read_bytes_various_terminators(self, mocker, expected_seq, response):
         """Test read_bytes with various terminators."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         mock_serial.read_until.return_value = response
@@ -339,7 +340,7 @@ class TestTransportPortReadBytes:
 
     def test_read_bytes_multi_byte_terminator(self, mocker):
         """Test read_bytes with multi-byte terminator sequence."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         mock_serial.read_until.return_value = b"TEST>>"
@@ -352,7 +353,7 @@ class TestTransportPortReadBytes:
 
     def test_read_bytes_empty_terminator(self, mocker):
         """Test read_bytes with empty terminator and size limit."""
-        transport = TransportPort(port="COM3")
+        transport = TransportSerial(port="COM3")
         mock_serial = mocker.MagicMock()
         mock_serial.is_open = True
         mock_serial.read_until.return_value = b"OK"

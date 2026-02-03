@@ -1,6 +1,7 @@
 """
 Shared fixtures for transports tests.
 """
+
 import pytest
 
 
@@ -25,7 +26,7 @@ def mock_socket_conn(mocker):
 
 @pytest.fixture
 def serial_port_kwargs():
-    """Standard kwargs for TransportPort."""
+    """Standard kwargs for TransportSerial."""
     return {
         "port": "COM3",
         "baudrate": 38400,
@@ -36,7 +37,7 @@ def serial_port_kwargs():
 
 @pytest.fixture
 def wifi_kwargs():
-    """Standard kwargs for TransportWifi."""
+    """Standard kwargs for TransportSocket."""
     return {
         "address": "192.168.0.10",
         "port": 35000,

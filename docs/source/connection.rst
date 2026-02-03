@@ -311,10 +311,10 @@ Example output showing protocol fallback:
     :caption: output
     :emphasize-lines: 2
 
-    2026-01-01 01:01:01 INFO     obdii.connection Attempting to connect to <TransportPort COM10 at 38400 baud>.
+    2026-01-01 01:01:01 INFO     obdii.connection Attempting to connect to <TransportSerial COM10 at 38400 baud>.
     2026-01-01 01:01:01 WARNING  obdii.connection Requested protocol ISO_15765_4_CAN_B cannot be used.
     2026-01-01 01:01:01 INFO     obdii.connection Protocol set to ISO_15765_4_CAN.
-    2026-01-01 01:01:01 INFO     obdii.connection Successfully connected to <TransportPort COM10 at 38400 baud>.
+    2026-01-01 01:01:01 INFO     obdii.connection Successfully connected to <TransportSerial COM10 at 38400 baud>.
     2026-01-01 01:01:01 INFO     obdii.connection Connection closed.
 
 Auto Connect

@@ -1,7 +1,7 @@
-from .transport_port import TransportPort
-from .transport_wifi import TransportWifi
+from .transport_serial import TransportSerial
+from .transport_socket import TransportSocket
 
 __all__ = [
-    "TransportPort",
-    "TransportWifi",
+    "TransportSerial",
+    "TransportSocket",
 ]

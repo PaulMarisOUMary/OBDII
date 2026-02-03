@@ -1,9 +1,10 @@
 """
 Unit tests for obdii.utils.scan module.
 """
+
 from obdii.utils.scan import scan_transports, scan_ports, scan_wifi
 from obdii.transports.transport_base import TransportBase
-from obdii.transports.transport_wifi import TransportWifi
+from obdii.transports.transport_socket import TransportSocket
 
 
 class TestScanTransports:
@@ -15,12 +16,12 @@ class TestScanTransports:
         mock_transport1.read_bytes.return_value = b"ELM327 v1.5"
         mock_transport2 = mocker.Mock(spec=TransportBase)
         mock_transport2.read_bytes.return_value = b'>'
-        
+
         mock_cls = mocker.Mock(side_effect=[mock_transport1, mock_transport2])
         candidates = [{"port": "COM3"}, {"port": "COM4"}]
-        
+
         result = scan_transports(candidates, mock_cls)
-        
+
         assert len(result) == 2
         mock_transport1.connect.assert_called_once()
         mock_transport1.write_bytes.assert_called_once()
@@ -30,9 +31,11 @@ class TestScanTransports:
         mock_transport = mocker.Mock(spec=TransportBase)
         mock_transport.read_bytes.return_value = b"ELM327 v1.5"
         mock_cls = mocker.Mock(return_value=mock_transport)
-        
-        result = scan_transports([{"port": "COM3"}, {"port": "COM4"}], mock_cls, return_first=True)
-        
+
+        result = scan_transports(
+            [{"port": "COM3"}, {"port": "COM4"}], mock_cls, return_first=True
+        )
+
         assert len(result) == 1
         assert mock_cls.call_count == 1
 
@@ -43,14 +46,14 @@ class TestScanTransports:
             (Exception("Write failed"), 'write_bytes'),
             (Exception("Read failed"), 'read_bytes'),
         ]
-        
+
         for error, method in scenarios:
             mock_transport = mocker.Mock(spec=TransportBase)
             getattr(mock_transport, method).side_effect = error
             mock_cls = mocker.Mock(return_value=mock_transport)
-            
+
             result = scan_transports([{"port": "COM3"}], mock_cls)
-            
+
             assert result == []
             mock_transport.close.assert_called()
 
@@ -59,9 +62,9 @@ class TestScanTransports:
         mock_transport = mocker.Mock(spec=TransportBase)
         mock_transport.read_bytes.return_value = b"INVALID"
         mock_cls = mocker.Mock(return_value=mock_transport)
-        
+
         result = scan_transports([{"port": "COM3"}], mock_cls)
-        
+
         assert result == []
         mock_transport.close.assert_called()
 
@@ -70,9 +73,9 @@ class TestScanTransports:
         mock_transport = mocker.Mock(spec=TransportBase)
         mock_transport.read_bytes.return_value = b"ELM327"
         mock_cls = mocker.Mock(return_value=mock_transport)
-        
+
         result = scan_transports([{"port": "COM3"}], mock_cls, probe=b"TEST", timeout=5)
-        
+
         assert len(result) == 1
         mock_transport.write_bytes.assert_called_once_with(b"TEST")
         mock_transport.connect.assert_called_once_with(timeout=5)
@@ -86,10 +89,12 @@ class TestScanPorts:
         mock_port = mocker.Mock()
         mock_port.device = "COM3"
         mocker.patch("serial.tools.list_ports.comports", return_value=[mock_port])
-        mock_scan = mocker.patch("obdii.utils.scan.scan_transports", return_value=["device"])
-        
+        mock_scan = mocker.patch(
+            "obdii.utils.scan.scan_transports", return_value=["device"]
+        )
+
         result = scan_ports(return_first=False, timeout=10)
-        
+
         assert result == ["device"]
         candidates = mock_scan.call_args[0][0]
         assert {"port": "COM3"} in candidates
@@ -100,11 +105,13 @@ class TestScanPorts:
         """Test Linux /dev/pts/* port inclusion (excluding ptmx)."""
         mocker.patch("platform.system", return_value="Linux")
         mocker.patch("serial.tools.list_ports.comports", return_value=[])
-        mocker.patch("obdii.utils.scan.glob", return_value=["/dev/pts/1", "/dev/pts/ptmx"])
+        mocker.patch(
+            "obdii.utils.scan.glob", return_value=["/dev/pts/1", "/dev/pts/ptmx"]
+        )
         mock_scan = mocker.patch("obdii.utils.scan.scan_transports", return_value=[])
-        
+
         scan_ports()
-        
+
         candidates = mock_scan.call_args[0][0]
         assert {"port": "/dev/pts/1"} in candidates
         assert {"port": "/dev/pts/ptmx"} not in candidates
@@ -115,16 +122,18 @@ class TestScanWifi:
 
     def test_scan_wifi_basic_functionality(self, mocker):
         """Test WiFi scanning with common addresses and parameter forwarding."""
-        mock_scan = mocker.patch("obdii.utils.scan.scan_transports", return_value=["device"])
-        
+        mock_scan = mocker.patch(
+            "obdii.utils.scan.scan_transports", return_value=["device"]
+        )
+
         result = scan_wifi(return_first=False, timeout=15)
-        
+
         assert result == ["device"]
         candidates = mock_scan.call_args[0][0]
         assert {"address": "192.168.0.10", "port": 35000} in candidates
         assert {"address": "192.168.1.10", "port": 35000} in candidates
         assert {"address": "192.168.0.74", "port": 23} in candidates
         assert len(candidates) == 3
-        assert mock_scan.call_args[0][1] == TransportWifi
+        assert mock_scan.call_args[0][1] == TransportSocket
         assert mock_scan.call_args[1]["return_first"] is False
         assert mock_scan.call_args[1]["timeout"] == 15

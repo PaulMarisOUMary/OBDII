@@ -6,7 +6,7 @@ from .transport_base import TransportBase
 from ..basetypes import MISSING
 
 
-class TransportWifi(TransportBase):
+class TransportSocket(TransportBase):
     def __init__(
         self,
         address: str = MISSING,
@@ -25,11 +25,13 @@ class TransportWifi(TransportBase):
 
         if address is MISSING or port is MISSING:
             raise ValueError(
-                "Both address and port must be specified for TransportWifi."
+                "Both address and port must be specified for TransportSocket."
             )
 
     def __repr__(self) -> str:
-        return f"<TransportWifi {self.config.get('address')}:{self.config.get('port')}>"
+        return (
+            f"<TransportSocket {self.config.get('address')}:{self.config.get('port')}>"
+        )
 
     def is_connected(self) -> bool:
         if self.socket_conn is None:
