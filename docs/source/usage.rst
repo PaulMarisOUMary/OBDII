@@ -66,14 +66,14 @@ The :mod:`obdii.utils.scan` module makes this easy by scanning for available dev
     :caption: main.py
     :linenos:
 
-    from obdii.utils.scan import scan_ports, scan_wifi
+    from obdii.utils.scan import scan_ports, scan_network
 
     # Scan for devices connected via serial ports
     ports = scan_ports()
     print("Available OBDII devices:", ports)
 
     # Scan for devices connected via WiFi
-    wifi_devices = scan_wifi()
+    wifi_devices = scan_network()
     print("Available OBDII WiFi devices:", wifi_devices)
 
 Query data

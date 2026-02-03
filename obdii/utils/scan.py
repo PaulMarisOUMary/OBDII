@@ -80,7 +80,7 @@ def scan_ports(return_first: bool = True, **kwargs):
     )
 
 
-def scan_wifi(return_first: bool = True, **kwargs):
+def scan_network(return_first: bool = True, **kwargs):
     """Scan common WiFi endpoints for ELM327 compatible devices."""
     common = [
         ("192.168.0.10", 35000),  # Most common

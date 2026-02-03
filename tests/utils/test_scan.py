@@ -2,7 +2,7 @@
 Unit tests for obdii.utils.scan module.
 """
 
-from obdii.utils.scan import scan_transports, scan_ports, scan_wifi
+from obdii.utils.scan import scan_transports, scan_ports, scan_network
 from obdii.transports.transport_base import TransportBase
 from obdii.transports.transport_socket import TransportSocket
 
@@ -118,15 +118,15 @@ class TestScanPorts:
 
 
 class TestScanWifi:
-    """Test suite for scan_wifi function."""
+    """Test suite for scan_network function."""
 
-    def test_scan_wifi_basic_functionality(self, mocker):
+    def test_scan_network_basic_functionality(self, mocker):
         """Test WiFi scanning with common addresses and parameter forwarding."""
         mock_scan = mocker.patch(
             "obdii.utils.scan.scan_transports", return_value=["device"]
         )
 
-        result = scan_wifi(return_first=False, timeout=15)
+        result = scan_network(return_first=False, timeout=15)
 
         assert result == ["device"]
         candidates = mock_scan.call_args[0][0]
