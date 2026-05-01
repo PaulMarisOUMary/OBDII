@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from time import time
-from typing import Any, List, Optional
+from typing import Any, Optional, List, Dict
 
-from .basetypes import BytesRows, OneOrMany, Real
+from .basetypes import OneOrMany, Real
 from .command import Command
 from .protocol import Protocol
 
@@ -18,13 +18,13 @@ class Context:
 class ResponseBase:
     context: Context
     raw: bytes
-    messages: List[bytes]
     timestamp: float = field(default_factory=time)
 
 
 @dataclass
 class Response(ResponseBase):
-    parsed_data: Optional[BytesRows] = None
+    messages: Optional[Dict[bytes, List[int]]] = None
+    unparsed: Optional[List[int]] = None
 
     value: Optional[Any] = None
 
