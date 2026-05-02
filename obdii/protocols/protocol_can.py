@@ -22,6 +22,7 @@ class FrameKind(IntEnum):
         CF = Consecutive Frame
         FC = Flow Control Frame
     """
+
     SINGLE = 0x00
     FIRST = 0x10
     CONSECUTIVE = 0x20
@@ -35,6 +36,7 @@ class CANFrame:
         SN = Sequence Number
         DLC = Data Length Code
     """
+
     __slots__ = ("ecu", "kind", "sn", "dlc", "payload")
 
     def __init__(
@@ -44,7 +46,7 @@ class CANFrame:
         payload: List[int],
         sn: int = 0,
         dlc: int = 0,
-        ) -> None:
+    ) -> None:
         self.ecu = ecu
         self.kind = kind
         self.sn = sn
@@ -77,13 +79,48 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
     @staticmethod
     def to_lines(raw: bytes) -> List[bytes]:
         return [
-            line
-            for line in raw.splitlines()
-            if line.strip() and line.strip() != b'>'
+            line for line in raw.splitlines() if line.strip() and line.strip() != b'>'
         ]
 
     @staticmethod
     def to_frames(lines: List[bytes], header_len: int) -> List[CANFrame]:
+        """
+        Parse a list of raw ELM327 lines into CANFrame objects.
+
+        Frame anatomy and examples
+        --------------------------
+
+        Single Frame (SF) - complete message in one line
+
+        .. code-block:: none
+
+            7E8 04 41 0C 41 C2
+            |   |  |
+            |   |  +-- payload: mode (41) + PID (0C) + data (41 C2)
+            |   +-- PCI: high nibble 0x0 = SF, low nibble 0x4 = DLC (4 bytes)
+            +-- ECU address (11-bit)
+
+        First Frame (FF) - first frame of a multi-frame message
+
+        .. code-block:: none
+
+            7E8 10 14 49 02 01 57 50 30
+            |   |  |  |
+            |   |  |  +-- payload start: mode (49) + PID (02) + data (57 50 30)
+            |   |  +-- DLC low byte: 0x14 = 20 -> DLC(20 bytes)
+            |   +-- PCI: high nibble 0x1 = FF, low nibble 0x0 = DLC high bits
+            +-- ECU address (11-bit)
+
+        Consecutive Frame (CF) - continuation of a multi-frame message
+
+        .. code-block:: none
+
+            7E8 21 5A 5A 5A 39 39 5A 54
+            |   |  |
+            |   |  +-- payload continuation (no mode, no PID, only data)
+            |   +-- PCI: high nibble 0x2 = CF, low nibble 0x1 = SN
+            +-- ECU address (11-bit)
+        """
         frames: List[CANFrame] = []
         header_chars = (header_len + 3) // 4
 
@@ -103,10 +140,7 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
                 continue
 
             try:
-                byte_vals = [
-                    int(rest[i:i+2], 16)
-                    for i in range(0, len(rest), 2)
-                ]
+                byte_vals = [int(rest[i : i + 2], 16) for i in range(0, len(rest), 2)]
             except ValueError:
                 continue
 
@@ -119,30 +153,26 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
 
             if kind == FrameKind.SINGLE:
                 dlc = pci & 0x0F
-                payload = byte_vals[1:1 + dlc]
+                payload = byte_vals[1 : 1 + dlc]
 
-                # mode = payload[0]
-                # pid = payload[1]
-
-                # data = payload[2:]
-
-                frame = CANFrame(ecu=ecu, kind=FrameKind.SINGLE, dlc=dlc, payload=payload)
+                frame = CANFrame(
+                    ecu=ecu, kind=FrameKind.SINGLE, dlc=dlc, payload=payload
+                )
             elif kind == FrameKind.FIRST:
                 dlc = ((pci & 0x0F) << 8) | byte_vals[1]
                 payload = byte_vals[2:]
 
-                # mode = payload[0]
-                # pid = payload[1]
-
-                # data = payload[2:]
-
-                frame = CANFrame(ecu=ecu, kind=FrameKind.FIRST, dlc=dlc, payload=payload)
+                frame = CANFrame(
+                    ecu=ecu, kind=FrameKind.FIRST, dlc=dlc, payload=payload
+                )
 
             elif kind == FrameKind.CONSECUTIVE:
                 sn = pci & 0x0F
                 payload = byte_vals[1:]
 
-                frame = CANFrame(ecu=ecu, kind=FrameKind.CONSECUTIVE, sn=sn, payload=payload)
+                frame = CANFrame(
+                    ecu=ecu, kind=FrameKind.CONSECUTIVE, sn=sn, payload=payload
+                )
             else:
                 _log.warning(f"Unknown frame kind in line: {line!r}")
                 continue
@@ -160,16 +190,8 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
                 return None
             return payload[2:]
 
-        first_frames = [
-            f
-            for f in frames
-            if f.kind == FrameKind.FIRST
-        ]
-        consecutives = [
-            f
-            for f in frames
-            if f.kind == FrameKind.CONSECUTIVE
-        ]
+        first_frames = [f for f in frames if f.kind == FrameKind.FIRST]
+        consecutives = [f for f in frames if f.kind == FrameKind.CONSECUTIVE]
 
         if not first_frames:
             _log.warning("No First Frame found.")
@@ -201,10 +223,7 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
         mode = Mode.get_from(context.command.mode)
         if mode is Mode.AT:
             value = "\n".join(
-                [
-                    line.decode(errors="ignore").strip()
-                    for line in self.to_lines(raw)
-                ]
+                [line.decode(errors="ignore").strip() for line in self.to_lines(raw)]
             )
             return Response(**vars(response_base), value=value)
 
@@ -249,7 +268,11 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
             try:
                 value = resolver(message)
             except Exception as e:
-                _log.error(f"Unexpected error during formula execution: {e}", exc_info=True)
+                _log.error(
+                    f"Unexpected error during formula execution: {e}", exc_info=True
+                )
                 value = None
 
-        return Response(**vars(response_base), unparsed=message, messages=ecu_messages, value=value)
+        return Response(
+            **vars(response_base), unparsed=message, messages=ecu_messages, value=value
+        )

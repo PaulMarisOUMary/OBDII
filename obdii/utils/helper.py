@@ -18,11 +18,7 @@ from ..basetypes import MISSING
 
 
 def debug_raw(raw: bytes) -> str:
-    lines = [
-        line
-        for line in raw.splitlines()
-        if line.strip() and line.strip() != b'>'
-    ]
+    lines = [line for line in raw.splitlines() if line.strip() and line.strip() != b'>']
     return "\n".join(f"[{bytes_to_string(line)}]" for line in lines) + "\n"
 
 
