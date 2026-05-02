@@ -15,14 +15,11 @@ from typing import Any, Dict
 
 from .bits import bytes_to_string
 from ..basetypes import MISSING
-from ..response import ResponseBase
 
 
-def debug_responsebase(response_base: ResponseBase) -> str:
-    messages = response_base.messages[:-1]
-    if not messages:
-        return '\n'
-    return '\n'.join(f"[{bytes_to_string(line)}]" for line in messages) + '\n'
+def debug_raw(raw: bytes) -> str:
+    lines = [line for line in raw.splitlines() if line.strip() and line.strip() != b'>']
+    return "\n".join(f"[{bytes_to_string(line)}]" for line in lines) + "\n"
 
 
 def override_class_attributes(

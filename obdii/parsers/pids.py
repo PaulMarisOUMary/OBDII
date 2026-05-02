@@ -1,7 +1,5 @@
 from typing import Any, Dict, Iterable, List, Tuple, Union
 
-from ..basetypes import BytesRows
-
 
 class SupportedPIDS:
     """
@@ -15,12 +13,13 @@ class SupportedPIDS:
     -------
     .. code-block:: python3
 
-        parsed_data = [(b"BE", b"1F", b"A8", b"13")]
+        unparsed = [190, 31, 168, 19]
+        # 190       31        168       19
         # B    E    1    F    A    8    1    3
         # 1011 1110 0001 1111 1010 1000 0001 0011
 
         supported_pids = SupportedPIDS(0x01)
-        result = supported_pids(parsed_data)
+        result = supported_pids(unparsed)
 
         >>> result
         [0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x13, 0x15, 0x1C, 0x1F, 0x20]
@@ -37,25 +36,24 @@ class SupportedPIDS:
         """
         self.base_pid = base_pid
 
-    def __call__(self, parsed_data: BytesRows) -> List[int]:
+    def __call__(self, unparsed: List[int]) -> List[int]:
         """
         Parse supported PIDs from the response data.
 
         Parameters
         ----------
-        parsed_data: BytesRows
-            The parsed response data containing hex byte strings.
+        unparsed: List[int]
+            The data to parse.
 
         Returns
         -------
-        List[:class:`int`]
+        List[int]
             List of supported PIDs.
         """
-        concatenated_data = sum(parsed_data, ())
+        if not unparsed:
+            raise ValueError("Invalid unparsed: must contain at least one value.")
 
-        binary_string = ''.join(
-            f"{int(hex_value, 16):08b}" for hex_value in concatenated_data
-        )
+        binary_string = ''.join(f"{byte:08b}" for byte in unparsed)
 
         supported_pids = [
             self.base_pid + i for i, bit in enumerate(binary_string) if bit == '1'
@@ -72,7 +70,7 @@ class EnumeratedPIDS:
     -------
     .. code-block:: python3
 
-        parsed_data = [(b"00", b"00")]
+        unparsed = [0, 0]
 
         fuel_system_status = EnumeratedPIDS(
             {
@@ -84,7 +82,7 @@ class EnumeratedPIDS:
                 16: "Closed loop, using at least one oxygen sensor but there is a fault in the feedback system",
             }
         )
-        result = fuel_system_status(parsed_data)
+        result = fuel_system_status(unparsed)
 
         >>> result
         [(0, "The motor is off"), (0, "The motor is off")]
@@ -115,26 +113,21 @@ class EnumeratedPIDS:
 
         return extended
 
-    def __call__(self, parsed_data: BytesRows) -> List[Tuple[int, Any]]:
+    def __call__(self, unparsed: List[int]) -> List[Tuple[int, Any]]:
         """
         Map parsed data bytes to enumerated values.
 
         Parameters
         ----------
-        parsed_data: BytesRows
-            The parsed response data containing hex byte strings.
+        unparsed: List[int]
+            The data to map.
 
         Returns
         -------
         List[Tuple[int, Any]]
             List of tuples containing the byte value and its corresponding enumerated meaning.
         """
-        concatenated_data = sum(parsed_data, ())
+        if not unparsed:
+            raise ValueError("Invalid unparsed: must contain at least one value.")
 
-        mapped_values = []
-
-        for data in concatenated_data:
-            hbtd = int(data, 16)
-            mapped_values.append((hbtd, self.mapping.get(hbtd, None)))
-
-        return mapped_values
+        return [(byte, self.mapping.get(byte, None)) for byte in unparsed]

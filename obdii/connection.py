@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from logging import Formatter, Handler, getLogger, INFO
 from re import IGNORECASE, search as research
 from types import TracebackType
@@ -12,7 +14,7 @@ from .response import Context, Response, ResponseBase
 from .transports.transport_base import TransportBase
 from .transports import TransportSerial, TransportSocket
 from .utils.bits import bytes_to_string, filter_bytes
-from .utils.helper import debug_responsebase, setup_logging
+from .utils.helper import debug_raw, setup_logging
 
 
 _log = getLogger(__name__)
@@ -284,11 +286,9 @@ class Connection:
         """
         raw = self.transport.read_bytes()
 
-        messages = [line for line in raw.splitlines() if line]
+        response_base = ResponseBase(context, raw)
 
-        response_base = ResponseBase(context, raw, messages)
-
-        _log.debug(f"<<< Read:\n{debug_responsebase(response_base)}")
+        _log.debug(f"<<< Read:\n{debug_raw(raw)}")
 
         try:
             return self.protocol_handler.parse_response(response_base)
@@ -304,7 +304,7 @@ class Connection:
         self.transport.close()
         _log.info("Connection closed.")
 
-    def __enter__(self):
+    def __enter__(self) -> Connection:
         """
         Support usage as a context manager.
 

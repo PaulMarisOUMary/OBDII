@@ -20,7 +20,7 @@ from ast import (
 from typing import List, Any, NoReturn
 from operator import add, sub, mul, truediv, floordiv, mod, pow, xor
 
-from ..basetypes import BytesRows, Real
+from ..basetypes import Real
 
 
 class SafeEvaluator(NodeVisitor):
@@ -76,12 +76,12 @@ class Formula:
     -------
     .. code-block:: python3
 
-        # 0B (hex) | 11 (dec) -> A
-        # 40 (hex) | 64 (dec) -> B
-        parsed_data = [(b'0B', b'40')]
+        # 11 (dec) -> A
+        # 64 (dec) -> B
+        unparsed = [11, 64]
 
         formula = Formula("(256*A+B)/4")
-        result = formula(parsed_data)
+        result = formula(unparsed)
         # (256 * 11 + 64)/4
 
         >>> result
@@ -94,32 +94,28 @@ class Formula:
 
         Parameters
         ----------
-        expression: :class:`str`
+        expression: str
             The expression string to evaluate. Variable names are converted to uppercase.
         """
         self.expression = expression.upper()
 
         self.parsed_expr = parse(self.expression, mode="eval")
 
-    def __call__(self, parsed_data: BytesRows) -> Real:
+    def __call__(self, unparsed: List[int]) -> Real:
         """
-        Evaluate the formula on the given parsed_data.
+        Evaluate the formula on the given unparsed.
 
         Parameters
         ----------
-        parsed_data: :class:`BytesRows`
-            The parsed data to evaluate the formula against.
+        unparsed: List[int]
+            The data to evaluate the formula against.
         """
-        if not parsed_data or not parsed_data[0]:
+        if not unparsed:
             raise ValueError(
-                "Invalid parsed_data: must contain at least one non-empty list."
+                "Invalid unparsed: must contain at least one non-empty list."
             )
 
-        first_item = parsed_data[0]
-
-        values = {
-            chr(ord('A') + i): int(first_item[i], 16) for i in range(len(first_item))
-        }
+        values = {chr(ord('A') + i): v for i, v in enumerate(unparsed)}
 
         evaluator = SafeEvaluator(values)
         return evaluator.visit(self.parsed_expr.body)
@@ -133,15 +129,15 @@ class MultiFormula:
     -------
     .. code-block:: python3
 
-        # 8F (hex) | 143 (dec) -> A
-        # 7D (hex) | 125 (dec) -> B
-        # 95 (hex) | 149 (dec) -> C
-        # 80 (hex) | 128 (dec) -> D
-        # 6F (hex) | 111 (dec) -> E
-        parsed_data = [(b"8F", b"7D", b"95", b"80", b"6F")]
+        # 143 (dec) -> A
+        # 125 (dec) -> B
+        # 149 (dec) -> C
+        # 128 (dec) -> D
+        # 111 (dec) -> E
+        unparsed = [143, 125, 149, 128, 111]
 
         engine_torque = MultiFormula("A-125", "B-125", "C-125", "D-125", "E-125")
-        result = engine_torque(parsed_data)
+        result = engine_torque(unparsed)
 
         >>> result
         [18, 0, 24, 3, -14]
@@ -153,18 +149,18 @@ class MultiFormula:
 
         Parameters
         ----------
-        *expressions: :class:`str`
+        *expressions: str
             Expression strings to evaluate. Variable names are converted to uppercase.
         """
         self.formulas = [Formula(expr) for expr in expressions]
 
-    def __call__(self, parsed_data: BytesRows) -> List[Real]:
+    def __call__(self, unparsed: List[int]) -> List[Real]:
         """
-        Evaluate all formulas on the given parsed_data.
+        Evaluate all formulas on the given unparsed.
 
         Parameters
         ----------
-        parsed_data: :class:`BytesRows`
-            The parsed data to evaluate the formulas against.
+        unparsed: List[int]
+            The data to evaluate the formulas against.
         """
-        return [formula(parsed_data) for formula in self.formulas]
+        return [formula(unparsed) for formula in self.formulas]

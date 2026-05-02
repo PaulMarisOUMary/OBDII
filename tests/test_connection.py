@@ -1,7 +1,6 @@
 """
 Unit tests for obdii.connection module.
 """
-
 import pytest
 
 from typing import List, Tuple
@@ -124,7 +123,7 @@ class TestQueryBehavior:
         ft.connected = True
 
         dummy_resp = Response(
-            Context(Command(Mode.AT, 'I', 0), Protocol.AUTO), b"OK\r>", [b"OK", b'>']
+            Context(Command(Mode.AT, 'I', 0), Protocol.AUTO), b"OK\r>"
         )
         wait_mock = mocker.patch.object(
             conn, "wait_for_response", return_value=dummy_resp
@@ -144,7 +143,7 @@ class TestQueryBehavior:
         ft.connected = True
 
         dummy_resp = Response(
-            Context(Command(Mode.AT, 'I', 0), Protocol.AUTO), b"OK\r>", [b"OK", b'>']
+            Context(Command(Mode.AT, 'I', 0), Protocol.AUTO), b"OK\r>"
         )
         mocker.patch.object(conn, "wait_for_response", return_value=dummy_resp)
 
@@ -169,8 +168,8 @@ class TestWaitForResponse:
         conn = Connection(ft, auto_connect=False)
 
         class DummyHandler(ProtocolBase):
-            def parse_response(self, rb):
-                return Response(rb.context, rb.raw, rb.messages, parsed_data=[(b'X',)])
+            def parse_response(self, response_base):
+                return Response(response_base.context, response_base.raw, unparsed=[0xAA, 0xBB])
 
         conn.protocol_handler = DummyHandler()
         ctx = Context(Command(Mode.AT, 'I', 0), Protocol.AUTO)
@@ -179,7 +178,7 @@ class TestWaitForResponse:
 
         assert isinstance(resp, Response)
         assert resp.raw == b"LINE1\rLINE2\r>"
-        assert resp.parsed_data == [(b'X',)]
+        assert resp.unparsed == [0xAA, 0xBB]
 
     def test_wait_for_response_unsupported_returns_fallback(self):
         ft = FakeTransport()
@@ -189,7 +188,7 @@ class TestWaitForResponse:
         conn.init_completed = True
 
         class DummyHandler(ProtocolBase):
-            def parse_response(self, rb):
+            def parse_response(self, response_base):
                 raise NotImplementedError()
 
         conn.protocol_handler = DummyHandler()
@@ -199,7 +198,6 @@ class TestWaitForResponse:
 
         assert isinstance(resp, Response)
         assert resp.raw == b"DATA\r>"
-        assert [m for m in resp.messages if m]  # non-empty messages list
 
 
 class TestCloseAndContextManager:

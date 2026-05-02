@@ -18,25 +18,23 @@ class TestProtocolCANSingleFrame:
     @pytest.mark.parametrize(
         ("protocol", "raw_messages", "expected_data"),
         [
-            # 11-bit header: 7E8 03 41 0C 1A F8
-            # After split: 7E 8 03 41 0C 1A F8 (7 components)
-            # Normalized: 00 00 7E 8 03 41 0C 1A F8 (9 components)
-            # Index 4 = 03, payload_length = 0x03 - 2 = 1
-            # Last 1 byte: (b'F8',)
+            # 11-bit: 7E8 03 41 0C F8
+            # PCI = 0x03 (SF, 3 bytes total: mode + PID + 1 data byte)
+            # Mode 0x41 + PID 0x0C + Data 0xF8
+            # After stripping mode+PID, returns [0xF8]
             (
                 Protocol.ISO_15765_4_CAN,
-                [b"7E8 03 41 0C 1A F8", b'>'],
-                [(b'F8',)],
+                b"7E8 03 41 0C F8\r>",
+                [0xF8],
             ),
-            # 29-bit header: 18DAF11005410A7B
-            # After split: 18 DA F1 10 05 41 0A 7B (8 components)
-            # No normalization prefix for 29-bit
-            # Index 4 = 05, payload_length = 0x05 - 2 = 3
-            # Last 3 bytes: (b'41', b'0A', b'7B')
+            # 29-bit: 18DAF110 05 41 0A 41 0A 7B
+            # PCI = 0x05 (SF, 5 bytes total: mode + PID + 3 data bytes)
+            # Mode 0x41 + PID 0x0A + Data 0x41 0x0A 0x7B
+            # After stripping mode+PID, returns [0x41, 0x0A, 0x7B]
             (
                 Protocol.ISO_15765_4_CAN_B,
-                [b"18DAF11005410A7B", b'>'],
-                [(b'41', b'0A', b'7B')],
+                b"18DAF110 05 41 0A 41 0A 7B\r>",
+                [0x41, 0x0A, 0x7B],
             ),
         ],
         ids=["11bit-single-frame", "29bit-single-frame"],
@@ -44,12 +42,12 @@ class TestProtocolCANSingleFrame:
     def test_single_frame_parsing(self, protocol, raw_messages, expected_data):
         cmd = Command(Mode.REQUEST, 0x0C, 2)
         ctx = Context(cmd, protocol)
-        rb = ResponseBase(ctx, b''.join(raw_messages), raw_messages)
+        rb = ResponseBase(ctx, raw_messages)
         handler = ProtocolCAN()
 
         resp = handler.parse_response(rb)
 
-        assert resp.parsed_data == expected_data
+        assert resp.unparsed == expected_data
 
 @pytest.mark.skip(reason="Multi-frame reassembly not yet implemented")
 class TestProtocolCANMultiFrame:
@@ -68,13 +66,8 @@ class TestProtocolCANMultiFrame:
         # etc.
         cmd = Command(Mode.VEHICLE_INFO, 0x02, 20)
         ctx = Context(cmd, Protocol.ISO_15765_4_CAN)
-        raw_messages = [
-            b"7E8 10 14 49 02 01 57 56 57",
-            b"7E8 21 5A 5A 5A 31 4A 4D 33",
-            b"7E8 22 36 33 39 37 36 00 00",
-            b'>',
-        ]
-        rb = ResponseBase(ctx, b'\r'.join(raw_messages), raw_messages)
+        raw = b"7E8 10 14 49 02 01 57 56 57\r7E8 21 5A 5A 5A 31 4A 4D 33\r7E8 22 36 33 39 37 36 00 00\r>"
+        rb = ResponseBase(ctx, raw)
         handler = ProtocolCAN()
 
         resp = handler.parse_response(rb)
@@ -83,51 +76,10 @@ class TestProtocolCANMultiFrame:
         # It will parse each line separately
         # This test documents current behavior and will need updating
         # when multi-frame support is added
-        assert resp.parsed_data is not None
-        assert len(resp.parsed_data) > 0
+        assert resp.unparsed is not None
+        assert len(resp.unparsed) > 0
 
 
-class TestProtocolCANHelpers:
-    """Helper method behavior in ProtocolCAN."""
-
-    def test_strip_prompt_removes_prompt(self):
-        handler = ProtocolCAN()
-        messages = [b"DATA1", b"DATA2", b'>']
-
-        result = handler._strip_prompt(messages)
-
-        assert result == [b"DATA1", b"DATA2"]
-
-    def test_strip_prompt_no_prompt_unchanged(self):
-        handler = ProtocolCAN()
-        messages = [b"DATA1", b"DATA2"]
-
-        result = handler._strip_prompt(messages)
-
-        assert result == [b"DATA1", b"DATA2"]
-
-    @pytest.mark.parametrize(
-        ("protocol", "line", "expected"),
-        [
-            (
-                Protocol.ISO_15765_4_CAN,
-                b"7E803410C1AF8",
-                (b'00', b'00', b'07', b'E8', b'03', b'41', b'0C', b'1A', b'F8'),
-            ),
-            (
-                Protocol.ISO_15765_4_CAN_B,
-                b"18DAF11005410A7B",
-                (b'18', b'DA', b'F1', b'10', b'05', b'41', b'0A', b'7B'),
-            ),
-        ],
-        ids=["11bit-adds-prefix", "29bit-no-prefix"],
-    )
-    def test_normalize_components(self, protocol, line, expected):
-        handler = ProtocolCAN()
-
-        result = handler._normalize_components(line, protocol)
-
-        assert result == expected
 
 
 class TestProtocolCANATCommands:
@@ -136,8 +88,8 @@ class TestProtocolCANATCommands:
     def test_at_command_single_line_response(self):
         cmd = Command(Mode.AT, 'Z', 0)
         ctx = Context(cmd, Protocol.ISO_15765_4_CAN)
-        raw_messages = [b"ELM327 v1.5", b'>']
-        rb = ResponseBase(ctx, b'\r'.join(raw_messages), raw_messages)
+        raw = b"ELM327 v1.5\r>"
+        rb = ResponseBase(ctx, raw)
         handler = ProtocolCAN()
 
         resp = handler.parse_response(rb)
@@ -151,8 +103,8 @@ class TestProtocolCANErrors:
     def test_no_data_error_raises(self):
         cmd = Command(Mode.REQUEST, 0x0C, 2)
         ctx = Context(cmd, Protocol.ISO_15765_4_CAN)
-        raw_messages = [b"NO DATA", b'>']
-        rb = ResponseBase(ctx, b'\r'.join(raw_messages), raw_messages)
+        raw = b"NO DATA\r>"
+        rb = ResponseBase(ctx, raw)
         handler = ProtocolCAN()
 
         from obdii.errors import MissingDataError
@@ -162,35 +114,10 @@ class TestProtocolCANErrors:
     def test_can_error_raises(self):
         cmd = Command(Mode.REQUEST, 0x0C, 2)
         ctx = Context(cmd, Protocol.ISO_15765_4_CAN)
-        raw_messages = [b"CAN ERROR", b'>']
-        rb = ResponseBase(ctx, b'\r'.join(raw_messages), raw_messages)
+        raw = b"CAN ERROR\r>"
+        rb = ResponseBase(ctx, raw)
         handler = ProtocolCAN()
 
         from obdii.errors import CanError
         with pytest.raises(CanError):
             handler.parse_response(rb)
-
-
-class TestProtocolCANValidation:
-    """Component validation and warning scenarios."""
-
-    def test_validate_components_warns_on_length_mismatch(self, caplog):
-        handler = ProtocolCAN()
-        cmd = Command(Mode.REQUEST, 0x0C, 2)
-        # Components with payload indicating 5 bytes but command expects 2
-        components = (b'00', b'00', b'7E', b'8', b'07', b'41', b'0C', b'1A', b'F8')
-
-        handler._validate_components(components, cmd, length=5)
-
-        assert "Expected 2 bytes, but received 5 bytes" in caplog.text
-
-    def test_validate_components_warns_on_wrong_response_code(self, caplog):
-        handler = ProtocolCAN()
-        cmd = Command(Mode.REQUEST, 0x0C, 2)
-        # Components with wrong response code (0x42 instead of 0x41)
-        components = (b'00', b'00', b'7E', b'8', b'03', b'42', b'0C', b'1A')
-
-        handler._validate_components(components, cmd, length=1)
-
-        assert "Unexpected response code 0x42" in caplog.text
-        assert "expected 0x41" in caplog.text

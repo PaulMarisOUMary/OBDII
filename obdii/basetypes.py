@@ -5,9 +5,7 @@ from typing import (
     Any,
     Dict,
     Iterable,
-    List,
     Literal,
-    Tuple,
     Type,
     TypeVar,
     Union,
@@ -88,5 +86,3 @@ MISSING: Any = _MissingSentinel()
 OneOrMany = Union[T, Iterable[T]]
 
 Real = Union[int, float]
-
-BytesRows = List[Tuple[bytes, ...]]
