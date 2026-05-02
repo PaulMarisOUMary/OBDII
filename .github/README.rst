@@ -75,7 +75,7 @@ Usage Example
 
         # Query vehicle's engine speed (rpm)
         response = conn.query(commands.ENGINE_SPEED)
-        print(f"Engine Speed: {response.value} {response.unit}")
+        print(f"Engine Speed: {response.value} {response.units}")
 
 More examples in the `examples folder <https://github.com/PaulMarisOUMary/OBDII/tree/main/examples>`_ and `Usage Guide <https://py-obdii.readthedocs.io/en/latest/usage.html>`_.
 

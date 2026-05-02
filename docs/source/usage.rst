@@ -100,4 +100,4 @@ Once connected, you can send commands and get responses from your car.
         print(f"Version: {version.value}")
 
         response = conn.query(commands.ENGINE_SPEED)
-        print(f"Engine Speed: {response.value} {response.unit}")
+        print(f"Engine Speed: {response.value} {response.units}")
