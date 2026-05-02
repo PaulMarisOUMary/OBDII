@@ -88,5 +88,3 @@ MISSING: Any = _MissingSentinel()
 OneOrMany = Union[T, Iterable[T]]
 
 Real = Union[int, float]
-
-BytesRows = List[Tuple[bytes, ...]]
