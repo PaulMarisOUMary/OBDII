@@ -103,6 +103,10 @@ class Connection:
         if log_handler or log_formatter or log_level:
             setup_logging(log_handler, log_formatter, log_level, log_root)
 
+        from . import __version__ as version
+
+        _log.info(f"Initialized {__package__} (v{version}).")
+
         if auto_connect:
             self.connect(**kwargs)
 
