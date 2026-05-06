@@ -14,5 +14,5 @@ C = partial(Command, M)
 class Mode04(GroupCommands, registry_id=M):
     """Clear Diagnostic Trouble Codes Command"""
 
-    CLEAR_DTC = C('', 0x00, None, None, None)
+    CLEAR_DTC = C('')
     """Clear Diagnostic Trouble Codes / Malfunction indicator lamp (MIL) / Check engine light and Freeze frame data"""

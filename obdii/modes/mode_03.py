@@ -4,6 +4,7 @@ from .group_commands import GroupCommands
 
 from ..command import Command
 from ..mode import Mode
+from ..parsers.dtc import DTC
 
 
 M = Mode.STATUS_DTC
@@ -15,5 +16,5 @@ C = partial(Command, M)
 class Mode03(GroupCommands, registry_id=M):
     """Get Diagnostic Trouble Codes Command"""
 
-    GET_DTC = C('', 0x00, None, None, None)
+    GET_DTC = C('', resolver=DTC.parse)
     """Request Diagnostic Trouble Codes (DTCs)"""

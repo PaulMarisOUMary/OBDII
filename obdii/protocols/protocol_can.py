@@ -2,6 +2,7 @@ from enum import IntEnum
 from logging import getLogger
 from typing import List, Optional, Dict
 
+from ..command import Command
 from ..errors import ResponseBaseError
 from ..mode import Mode
 from ..protocol import Protocol
@@ -182,13 +183,15 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
         return frames
 
     @staticmethod
-    def to_message(frames: List[CANFrame]) -> Optional[List[int]]:
+    def to_message(frames: List[CANFrame], command: Command) -> Optional[List[int]]:
+        strip = 2 if command.pid != '' else 1
+
         if len(frames) == 1 and frames[0].kind == FrameKind.SINGLE:
             payload = frames[0].payload
-            if len(payload) < 2:
+            if len(payload) < strip:
                 _log.warning("Single Frame payload too short to strip mode + pid")
                 return None
-            return payload[2:]
+            return payload[strip:]
 
         first_frames = [f for f in frames if f.kind == FrameKind.FIRST]
         consecutives = [f for f in frames if f.kind == FrameKind.CONSECUTIVE]
@@ -214,7 +217,7 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
             _log.warning(f"Incomplete message: expected {dlc}, got {len(message)}")
             return None
 
-        return message[2:]
+        return message[strip:]
 
     def parse_response(self, response_base: ResponseBase) -> Response:
         context = response_base.context
@@ -252,7 +255,7 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
         message = None
         ecu_messages: Dict[bytes, List[int]] = {}
         for ecu, frames_list in ecu_frames.items():
-            _message = self.to_message(frames_list)
+            _message = self.to_message(frames_list, context.command)
             if _message is not None:
                 ecu_messages[ecu] = _message
                 if message is None:
