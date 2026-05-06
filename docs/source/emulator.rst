@@ -1,7 +1,8 @@
 .. title:: Emulating a Vehicle
 
+:description: Learn how to emulate a vehicle with py-obdii using ELM327-Emulator on Linux and Windows. Test your OBDII Python code without a real car or adapter.
+
 .. meta::
-    :description: Learn how to emulate a vehicle with py-obdii using ELM327-Emulator on Linux and Windows. Test your OBDII Python code without a real car or adapter.
     :keywords: py-obdii, obdii emulator, elm327 emulator python, obdii virtual serial port, obdii development without car, com0com windows, obdii testing linux
     :robots: index, follow
 

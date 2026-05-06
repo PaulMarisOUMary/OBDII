@@ -2,20 +2,29 @@
 
 {% block extrahead %}
     {{ super() }}
+
+    {% set base_url = "https://py-obdii.readthedocs.io/en/latest/" %}
+
+    {% set raw_desc = meta.get('description') if meta else None %}
+
+    {% set page_desc = raw_desc or 'OBDII Documentation' %}
+    {% set page_title = meta.get('title', title|striptags|e) if meta else title|striptags|e %}
+    {% set page_image = meta.get('image', base_url ~ '_static/py-obdii-logo.png') if meta else base_url ~ '_static/py-obdii-logo.png' %}
+    {% set page_url = base_url ~ pagename ~ ".html" %}
+
+    {% if raw_desc %}
+    <meta name="description" content="{{ raw_desc|e }}" lang="en" xml:lang="en" />
+    {% endif %}
+
+    <meta property="og:description" content="{{ page_desc }}" />
+    <meta property="og:url" content="{{ page_url }}" />
+    <meta property="og:image" content="{{ page_image }}" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="{{ meta['title'] if meta and 'title' in meta else title|e }}" />
-    <meta property="og:description" content="{{ meta['description'] if meta and 'description' in meta else 'OBDII Documentation' }}" />
-    <meta property="og:url" content="{{ pathto('', 1) ~ pagename ~ '.html' }}" />
-    <meta property="og:site_name" content="OBDII Docs" />
-        {% if meta and 'image' in meta %}
-            <meta property="og:image" content="{{ meta['image'] }}" />
-            <meta name="twitter:image" content="{{ meta['image'] }}" />
-        {% else %}
-            <meta property="og:image" content="https://py-obdii.readthedocs.io/en/latest/_static/py-obdii-logo.png" />
-            <meta name="twitter:image" content="https://py-obdii.readthedocs.io/en/latest/_static/py-obdii-logo.png" />
-        {% endif %}
+    <meta property="og:site_name" content="py-obdii Docs" />
+
+    <meta name="twitter:description" content="{{ page_desc }}" />
+    <meta name="twitter:image" content="{{ page_image }}" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="{{ meta['title'] if meta and 'title' in meta else title|e }}" />
-    <meta name="twitter:description" content="{{ meta['description'] if meta and 'description' in meta else 'OBDII Documentation' }}" />
+
     <meta name="google-site-verification" content="HeaR0LBQU0XW1n_WxYlHwhl-BcK1qPllAXcO3LRpc4Y" />
 {% endblock %}

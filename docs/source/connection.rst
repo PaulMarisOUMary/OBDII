@@ -1,7 +1,8 @@
 .. title:: Connection Guide
 
+:description: Learn how to connect py-obdii to USB, Bluetooth, WiFi and Ethernet OBDII adapters on Linux, Windows and macOS.
+
 .. meta::
-    :description: Learn how to connect py-obdii to USB, Bluetooth, WiFi and Ethernet OBDII adapters on Linux, Windows and macOS.
     :keywords: py-obdii, obdii python library, obdii usb connection, obdii bluetooth raspberry pi, elm327 python, obdii adapter linux, obdii windows python
     :robots: index, follow
 
