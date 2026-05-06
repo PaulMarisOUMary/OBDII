@@ -1,8 +1,8 @@
 .. title:: Usage
 
 .. meta::
-    :description: Basic usage of the py-obdii library.
-    :keywords: py-obdii, py-obd2, obdii, obd2, quickstart, setup
+    :description: Learn how to use py-obdii to send AT commands, query vehicle sensors like engine speed, scan for OBDII adapters via serial or WiFi, and read real-time car data in Python.
+    :keywords: py-obdii usage, python obdii query, elm327 at commands python, obdii engine speed python, scan obdii serial port python, obdii real-time data python, obdii commands python, py-obdii connection example
     :robots: index, follow
 
 .. _usage:

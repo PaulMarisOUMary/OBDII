@@ -1,8 +1,8 @@
 .. title:: Installation Guide
 
 .. meta::
-    :description: Installation instructions for py-obdii.
-    :keywords: py-obdii, py-obd2, obdii, obd2, installation, setup, requirements, virtual environment, dependencies, extras
+    :description: Step-by-step installation guide for py-obdii. Install via pip, GitHub or from source on Linux, Windows and macOS. Includes virtual environment setup and optional dependencies.
+    :keywords: py-obdii install, pip install py-obdii, python obdii library setup, elm327 python install, obdii python requirements, py-obdii virtual environment, py-obdii extras sim dev
     :robots: index, follow
 
 .. _installation:

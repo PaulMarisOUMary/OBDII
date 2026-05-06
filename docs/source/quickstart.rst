@@ -1,8 +1,8 @@
 .. title:: Quickstart
 
 .. meta::
-    :description: Quickstart instructions for py-obdii.
-    :keywords: py-obdii, py-obd2, obdii, obd2, quickstart, setup
+    :description: Get started with py-obdii in minutes. Query vehicle sensors like engine speed with a real OBDII adapter or a simulated emulator. No car needed to start developing.
+    :keywords: py-obdii quickstart, python obdii getting started, obdii query engine speed python, elm327 python example, obdii python tutorial, obdii adapter python code, py-obdii minimal example
     :robots: index, follow
 
 .. _quickstart:
