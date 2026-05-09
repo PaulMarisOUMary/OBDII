@@ -22,7 +22,7 @@ version = release
 
 branch = "main" if any(tag in release for tag in ['a', 'b', "rc"]) else release
 
-repo_url = "https://github.com/PaulMarisOUMary/OBDII"
+repo_url = f"https://github.com/{author}/OBDII"
 pypi_url = f"https://pypi.org/project/{project}"
 discord_url = "https://discord.gg/vn9bHUxeYB"
 
@@ -147,7 +147,7 @@ except ImportError:
     html_theme = "alabaster"
     html_theme_options = {
         "description": "Modern Python library for OBDII communication",
-        "github_user": "PaulMarisOUMary",
+        "github_user": author,
         "github_repo": "OBDII",
         "github_button": True,
         "github_type": "star",
@@ -164,13 +164,13 @@ html_last_updated_fmt = ''
 
 html_meta = {
     "description": "A modern, easy to use, Python ≥3.8 library for interacting with OBDII devices.",
-    "keywords": "OBD2, OBDII, ELM327, python, automotive, py-obdii, diagnostics",
-    "author": "PaulMarisOUMary",
+    "keywords": "py-obdii, python obdii library, elm327 python, obdii diagnostic tool, read trouble codes python, vehicle sensor data python, obdii usb bluetooth wifi, car diagnostics python",
+    "author": author,
 }
 
 html_context = {
     "display_github": True,
-    "github_user": "PaulMarisOUMary",
+    "github_user": author,
     "github_repo": "OBDII",
     "github_version": branch,
     "conf_py_path": "/docs/source/",
@@ -186,13 +186,13 @@ latex_elements = {
 }
 
 latex_documents = [
-    ("index", "py-obdii.tex", "py-obdii Documentation", author, "manual"),
+    ("index", f"{project}.tex", f"{project} Documentation", author, "manual"),
 ]
 
 # -- Options for manual page output -------------------------------------------
 
 man_pages = [
-    ("index", "py-obdii", "py-obdii Documentation", [author], 1)
+    ("index", project, f"{project} Documentation", [author], 1)
 ]
 
 # -- Options for Texinfo output -----------------------------------------------
@@ -200,10 +200,10 @@ man_pages = [
 texinfo_documents = [
     (
         "index",
-        "py-obdii",
-        "py-obdii Documentation",
+        project,
+        f"{project} Documentation",
         author,
-        "py-obdii",
+        project,
         "Modern Python library for OBDII communication",
         "Miscellaneous",
     ),

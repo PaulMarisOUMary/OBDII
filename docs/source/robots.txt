@@ -1,3 +1,11 @@
 User-agent: *
 
+Disallow: /en/*/search.html
+Disallow: /en/*/genindex.html
+Disallow: /en/*/py-modindex.html
+
+Disallow: /en/*/_modules/
+Disallow: /en/*/_sources/
+Disallow: /en/*/.doctrees/
+
 Sitemap: https://py-obdii.readthedocs.io/sitemap.xml

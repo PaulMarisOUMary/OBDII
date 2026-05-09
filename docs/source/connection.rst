@@ -77,7 +77,7 @@ Use this method if your adapter connects via USB cable.
 
                     $ ls /dev/ttyUSB*
 
-        #. Chose the correct port from the output (e.g., ``/dev/ttyUSB0``).
+        #. Choose the correct port from the output (e.g., ``/dev/ttyUSB0``).
 
         #. Use this port for connecting.
         
@@ -110,7 +110,7 @@ Use this method if your adapter connects via USB cable.
 
                 You can also find the COM port in "Device Manager" under "Ports (COM & LPT)".
 
-        #. Chose the corresponding COM port (e.g., ``COM3``).
+        #. Choose the corresponding COM port (e.g., ``COM3``).
 
         #. Use this port for connecting.
 
@@ -210,7 +210,7 @@ Use this method if your adapter communicates wirelessly over Bluetooth.
 
                 You can also find the COM port in "Device Manager" under "Ports (COM & LPT)".
         
-        #. Chose the corresponding COM port (e.g., ``COM7``).
+        #. Choose the corresponding COM port (e.g., ``COM7``).
 
         #. Use this port for connecting.
 

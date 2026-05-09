@@ -5,6 +5,7 @@
     :titlesonly:
 
     core
+    errors
     modes/index
     parsers
     protocols
