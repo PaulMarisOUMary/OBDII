@@ -72,10 +72,10 @@ dev = [
     "ty>=0.0.6,<1",
 ]
 docs = [
-    "sphinx>=8.2,<9",
-    "sphinx-autobuild",
+    "sphinx>=9.1,<10",
+    "sphinx-autobuild>=2025.0,<2026",
     "sphinxawesome-theme>=5.3,<6",
-    "sphinx-design",
+    "sphinx_design>=0.7,<1",
 ]
 sim = [
     "ELM327-emulator>=3,<4",
@@ -97,6 +97,7 @@ local_scheme = "no-local-version"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+addopts = "--cov=obdii --cov-report=term-missing --cov-fail-under=60"
 
 [tool.pyright]
 include = [

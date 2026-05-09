@@ -32,6 +32,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.x
+          cache: pip
 
       - name: Install dependencies
         run: |
@@ -41,3 +42,8 @@ jobs:
         working-directory: docs
         run: |
           sphinx-build -b html -j auto -a -n -T -W --keep-going source build/html
+
+      - name: Check broken links
+        continue-on-error: true
+        working-directory: docs
+        run: sphinx-build -b linkcheck -j auto source build/linkcheck
