@@ -1,11 +1,11 @@
 Contributing
 ============
 
-Thanks for considering contributing !
+Thanks for considering contributing!
 
 The following is a set of guidelines for contributing to the repository. These are guidelines, not hard rules.
 
-Contribution of all kind are welcome: bug reports, new features, documentation improvements, tests, examples, etc.
+Contributions of all kinds are welcome: bug reports, new features, documentation improvements, tests, examples, etc.
 
 Questions
 ---------
@@ -13,14 +13,6 @@ Questions
 Generally questions are better suited in `GitHub Discussions <https://github.com/PaulMarisOUMary/OBDII/discussions/categories/q-a>`_.
 
 Please do not use issues for questions. Most of them don't belong there unless they provide value to a larger audience.
-
-Reference Documentation
------------------------
-
-When implementing features, you can refer to the official `ELM327 PDF </docs/ELM327.PDF>`_, starting from page 8.   
-This document outlines standard behaviors, AT commands, protocols, etc.
-
-Other technical references exist, but are behind paywalls and are not currently available. See `this <https://github.com/users/PaulMarisOUMary/projects/9?pane=issue&itemId=113877896>`_ and `this <https://github.com/users/PaulMarisOUMary/projects/9?pane=issue&itemId=114252340>`_ for more details.
 
 Don't know where to start ?
 ---------------------------
@@ -33,12 +25,19 @@ If you want to contribute but aren't sure how to begin, here are some ways to ge
 - Improve existing documentation, add examples, or clarify explanations.
 - Add new scripts in ``examples/`` to showcase library usage.
 - Write tests for untested features and increase coverage.
-- Implement new features or small improvements.
 - Refactor code, improve type hints, and maintain consistency.
+- Implement new features or small improvements.
 
 You can also check ongoing work and ideas in the `Repository Projects <https://github.com/PaulMarisOUMary/OBDII/projects>`_.
 
 Starting with small contributions is encouraged, every little improvement helps.
+
+Community
+---------
+
+Have an idea, want to discuss a potential feature, or just want to follow along with where the project is heading ? Join the conversation in the `#bikeshedding <https://discord.gg/vn9bHUxeYB>`_ channel on our `Discord server <https://discord.gg/vn9bHUxeYB>`_.
+
+`GitHub Discussions <https://github.com/PaulMarisOUMary/OBDII/discussions>`_ as an alternative to Discord, is also a great place to propose ideas, share feedback, or ask questions.
 
 Getting Started
 ---------------
@@ -94,7 +93,7 @@ Include the following to help us resolve them quickly:
 - Provide a clear and descriptive title.
 - Describe the steps to reproduce the issue, ideally with a minimal code snippet.
 - Expected vs. actual behavior, what you thought would happen vs. what happened.
-- Environment details, Python version, OS, OBDII device model, and install method.
+- Environment details, Python and library version, OS, OBDII device model, and install method.
 - Full traceback and/or logs if applicable.
 
 Incomplete bug reports may require follow-up questions and could be closed if not clarified.
@@ -104,16 +103,11 @@ Pull Requests
 
 Before opening a pull request, please make sure that:
 
-- Keep each PR focused on a single issue or feature.
-- Reference related issues (e.g., "Fix #123").
 - Ideally the code follows the existing style.
+- Each PR is focused on a single issue or feature.
+- You reference related issues (e.g., "Fix #123").
 
-Commit Messages
----------------
-
-- Use clear, descriptive commit messages in present tense (e.g., "Add feature X", not "Added feature X").
-- Group related changes into single commits.
-- Reference related issues in the description when applicable (e.g., "Fix #123").
+Before implementing a large feature or a breaking change, consider discussing it first in the `#bikeshedding <https://discord.gg/vn9bHUxeYB>`_ channel on Discord, this helps avoid wasted effort and ensures alignment with project goals.
 
 Code Formatting and Linting
 ---------------------------
@@ -174,7 +168,7 @@ Before opening a pull request, make sure that all tests pass:
     pytest
 
 Project Documentation
--------------
+---------------------
 
 This library uses `Sphinx <https://www.sphinx-doc.org/>`_ for documentation.
 If you add or change features, please updates the documentation accordingly.
@@ -193,6 +187,14 @@ To build and view the documentation locally, run:
 
     sphinx-autobuild docs/source docs/build/html -a -n -T --keep-going
 
+Reference Documentation
+-----------------------
+
+When implementing features, you can refer to the official `ELM327 PDF <https://github.com/PaulMarisOUMary/OBDII/blob/main/docs/ELM327.PDF>`_, starting from page 8.   
+This document outlines standard behaviors, AT commands, protocols, etc.
+
+Other technical references exist, but are behind paywalls and are not currently available. See `this <https://github.com/users/PaulMarisOUMary/projects/9?pane=issue&itemId=114252340>`_ and `this <https://github.com/users/PaulMarisOUMary/projects/9?pane=issue&itemId=140230980>`_ for more details.
+
 -------
 
-Your contributions make OBDII better and more reliable for everyone !
+Your contributions make OBDII better and more reliable for everyone!

@@ -31,6 +31,14 @@
 .. toctree::
    :hidden:
    :titlesonly:
+   :caption: Project:
+
+   project/contributing
+   project/license
+
+.. toctree::
+   :hidden:
+   :titlesonly:
    :caption: API:
 
    api/index
