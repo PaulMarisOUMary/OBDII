@@ -100,3 +100,24 @@ body {
     outline: 2px solid currentColor;
     outline-offset: 3px;
 }
+
+.mermaid-container svg {
+    background-color: #1a1a1a !important;
+}
+
+.mermaid-container pre.mermaid {
+    background-color: #1a1a1a !important;
+    margin-top: 1.5rem !important;
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    margin-top: 0 !important;
+}
+
+.mermaid-fullscreen-modal {
+    width: 100vw !important;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.25) !important;
+}

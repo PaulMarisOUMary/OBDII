@@ -36,8 +36,8 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.napoleon",
     # "sphinx.ext.coverage",
-    # "sphinx.ext.graphviz",
     # "sphinx.ext.todo",
+    "sphinxcontrib.mermaid",
     "sphinx_design",
 ]
 

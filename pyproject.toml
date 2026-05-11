@@ -68,13 +68,14 @@ test = [
     "pytest-mock>=3.14,<3.15",
 ]
 dev = [
-    "ruff>=0.14,<1",
-    "ty>=0.0.6,<1",
+    "ruff>=0.15,<1",
+    "ty>=0.0.34,<1",
 ]
 docs = [
     "sphinx>=9.1,<10",
     "sphinx-autobuild>=2025.0,<2026",
     "sphinxawesome-theme>=5.3,<6",
+    "sphinxcontrib-mermaid>=2.0.2,<3",
     "sphinx_design>=0.7,<1",
 ]
 sim = [

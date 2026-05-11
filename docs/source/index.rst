@@ -34,6 +34,7 @@
    :caption: Project:
 
    project/contributing
+   project/architecture
    project/license
 
 .. toctree::
