@@ -16,7 +16,11 @@ class ResponseBaseError(Exception):
 
         super().__init__(self.message)
 
-    def __init_subclass__(cls) -> None:
+    def __init_subclass__(cls, abstract: bool = False, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        if abstract:
+            return
+
         if not cls.pattern and not cls.regex_pattern:
             raise TypeError(
                 f"{cls.__name__} must define either 'pattern' or 'regex_pattern'"
@@ -27,6 +31,9 @@ class ResponseBaseError(Exception):
     def detect(cls, response: bytes) -> Optional[ResponseBaseError]:
         """Detect an error in a response and return the corresponding error instance."""
         for err in cls._registry:
+            if not issubclass(err, cls):
+                continue
+
             if err.pattern and err.pattern in response:
                 return err(response)
 
@@ -39,79 +46,83 @@ class ResponseBaseError(Exception):
 # Errors
 
 
-class InvalidCommandError(ResponseBaseError):
+class ResponseError(ResponseBaseError, abstract=True):
+    """Base class for all response errors."""
+
+
+class InvalidCommandError(ResponseError):
     """The command received on the RS232 input was not recognized or misunderstood."""
 
     pattern = b'?'
 
 
-class BufferFullError(ResponseBaseError):
+class BufferFullError(ResponseError):
     """The ELM327's 256-byte buffer is full."""
 
     pattern = b"BUFFER FULL"
 
 
-class BusBusyError(ResponseBaseError):
+class BusBusyError(ResponseError):
     """The ELM327 detected excessive bus activity and was unable to respond."""
 
     pattern = b"BUS BUSY"
 
 
-class BusError(ResponseBaseError):
-    """A generic error has occured on the bus."""
+class BusError(ResponseError):
+    """A generic error has occurred on the bus."""
 
     pattern = b"BUS ERROR"
 
 
-class CanError(ResponseBaseError):
+class CanError(ResponseError):
     """The CAN system had difficulty initializing, sending, or receiving."""
 
     pattern = b"CAN ERROR"
 
 
-class InvalidDataError(ResponseBaseError):
+class InvalidDataError(ResponseError):
     """There was a response from the vehicle, but the information was incorrect or could not be recovered."""
 
     regex_pattern = compile(rb"(?<!<)DATA ERROR")
 
 
-class InvalidLineError(ResponseBaseError):
+class InvalidLineError(ResponseError):
     """There was an error in the line that this points to."""
 
     pattern = b"<DATA ERROR"
 
 
-class DeviceInternalError(ResponseBaseError):
+class DeviceInternalError(ResponseError):
     """Internal errors reported as ERR with a two digit code following."""
 
     regex_pattern = compile(rb"ERR\d{2}")
 
 
-class SignalFeedbackError(ResponseBaseError):
+class SignalFeedbackError(ResponseError):
     """Output energized, but input signal not detected. Possible wiring issue. Verify connections."""
 
     pattern = b"FB ERROR"
 
 
-class MissingDataError(ResponseBaseError):
+class MissingDataError(ResponseError):
     """Vehicle did not respond within timeout."""
 
     pattern = b"NO DATA"
 
 
-class CanDataError(ResponseBaseError):
+class CanDataError(ResponseError):
     """Received CAN data contains errors. Verify protocol and baud rate settings."""
 
     pattern = b"<RX ERROR"
 
 
-class StoppedError(ResponseBaseError):
+class StoppedError(ResponseError):
     """Operation interrupted by RS232 character or low RTS signal."""
 
     pattern = b"STOPPED"
 
 
-class ProtocolConnectionError(ResponseBaseError):
+class ProtocolConnectionError(ResponseError):
     """No supported protocol detected. Verify vehicle ignition status, compatibility, and connections."""
 
     pattern = b"UNABLE TO CONNECT"
@@ -120,19 +131,23 @@ class ProtocolConnectionError(ResponseBaseError):
 # Warnings
 
 
-class InactivityWarning(ResponseBaseError):
+class ResponseWarning(ResponseBaseError, abstract=True):
+    """Base class for all response warnings."""
+
+
+class InactivityWarning(ResponseWarning):
     """No RS232 activity has been detected for a specified duration (4 or 19 minutes)."""
 
     pattern = b"ACT ALERT"
 
 
-class LowPowerWarning(ResponseBaseError):
+class LowPowerWarning(ResponseWarning):
     """The ELM327 is entering Low Power mode in 2 seconds. No interruption possible."""
 
     pattern = b"LP ALERT"
 
 
-class LowVoltageResetWarning(ResponseBaseError):
+class LowVoltageResetWarning(ResponseWarning):
     """Indicates low 5V supply voltage, triggering a reset."""
 
     pattern = b"LV RESET"
