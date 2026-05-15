@@ -380,6 +380,21 @@ If you want the logging configuration provided by the library to affect all logg
         log_root=False,
     ) as conn: ...
 
+Disabling Default Logging Setup
+"""""""""""""""""""""""""""""""
+
+If you are integrating ``obdii`` into a framework that manages its own logging, you may want to disable the library's default logging setup entirely and let the framework handle it. This can be done by passing ``None`` to the ``log_handler`` parameter:
+
+.. code-block:: python
+    :caption: main.py
+    :linenos:
+
+    from obdii import Connection
+
+    with Connection("COM10", log_handler=None) as conn: ...
+
+Logging will still work as normal through the ``obdii`` logger, but the configuration is now your responsibility.
+
 Extra Keyword Arguments
 ^^^^^^^^^^^^^^^^^^^^^^^
 

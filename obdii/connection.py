@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from logging import Formatter, Handler, getLogger, INFO
+from logging import Formatter, Handler, getLogger
 from re import IGNORECASE, search as research
 from types import TracebackType
 from typing import Callable, List, Optional, Tuple, Type, Union
@@ -29,9 +29,9 @@ class Connection:
         smart_query: bool = False,
         early_return: bool = False,
         *,
-        log_handler: Handler = MISSING,
+        log_handler: Optional[Handler] = MISSING,
         log_formatter: Formatter = MISSING,
-        log_level: int = INFO,
+        log_level: int = MISSING,
         log_root: bool = False,
         **kwargs,
     ) -> None:
@@ -100,7 +100,7 @@ class Connection:
             Protocol.USER2_CAN,
         ]
 
-        if log_handler or log_formatter or log_level:
+        if log_handler is not None:
             setup_logging(log_handler, log_formatter, log_level, log_root)
 
         from . import __version__ as version

@@ -43,22 +43,21 @@ def setup_logging(
     root: bool = True,
 ) -> None:
     """A helper function to setup logging."""
-    if level is MISSING:
-        level = INFO
-
-    if handler is MISSING:
-        handler = StreamHandler()
+    _handler = handler if handler is not MISSING else StreamHandler()
+    _level = level if level is not MISSING else INFO
 
     if formatter is MISSING:
-        if isinstance(handler, StreamHandler) and _stream_supports_colour(
-            handler.stream
+        if isinstance(_handler, StreamHandler) and _stream_supports_colour(
+            _handler.stream
         ):
-            formatter = _ColorFormatter()
+            _formatter = _ColorFormatter()
         else:
             dt_fmt = "%Y-%m-%d %H:%M:%S"
-            formatter = Formatter(
+            _formatter = Formatter(
                 "[{asctime}] [{levelname:<8}] {name}: {message}", dt_fmt, style='{'
             )
+    else:
+        _formatter = formatter
 
     if root:
         logger = getLogger()
@@ -66,9 +65,10 @@ def setup_logging(
         library, _, _ = __name__.partition('.')
         logger = getLogger(library)
 
-    handler.setFormatter(formatter)
-    logger.setLevel(level)
-    logger.addHandler(handler)
+    _handler.setFormatter(_formatter)
+    logger.setLevel(_level)
+    if _handler not in logger.handlers:
+        logger.addHandler(_handler)
 
 
 def _stream_supports_colour(stream: Any) -> bool:
