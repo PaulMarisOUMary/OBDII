@@ -378,7 +378,7 @@ class Mode01(GroupCommands, registry_id=M):
     """Transmission Actual Gear"""
     DIESEL_EXHAUST_FLUID_DOSING = C(0xA5, 4, 0, 127.5, '%')
     """Commanded Diesel Exhaust Fluid Dosing"""
-    ODOMETER = C(0xA6, 4, 0, 429496729.5, "km", F("(A*(2**24)+B(2**16)+C*(2**8)+D)/10"))
+    ODOMETER = C(0xA6, 4, 0, 429496729.5, "km", F("(A*(2**24)+B*(2**16)+C*(2**8)+D)/10"))
     """Odometer (Starting with MY 2019 the California Air Resources Board mandated that all vehicles must supply odometer)"""
     NOX_CONCENTRATION_SENSORS_3_4 = C(0xA7, 4, None, None, None)
     """NOx Sensor Concentration Sensors 3 and 4"""
