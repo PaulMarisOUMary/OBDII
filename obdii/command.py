@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from copy import deepcopy
 from re import Match, Pattern, compile
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Generic, Optional, Tuple, Union
 
-from .basetypes import MISSING, OneOrMany, Real
+from .basetypes import MISSING, OneOrMany, Real, T
 from .mode import Mode
 
 
@@ -138,7 +138,7 @@ class Template:
         return result
 
 
-class Command:
+class Command(Generic[T]):
     def __init__(
         self,
         mode: Union[Mode, int, str],
@@ -147,7 +147,7 @@ class Command:
         min_values: Optional[OneOrMany[Real]] = MISSING,
         max_values: Optional[OneOrMany[Real]] = MISSING,
         units: Optional[OneOrMany[str]] = MISSING,
-        resolver: Optional[Callable] = MISSING,
+        resolver: Optional[Callable[..., T]] = MISSING,
     ) -> None:
         """
         Initialize a Command instance.
@@ -194,7 +194,7 @@ class Command:
     def __hash__(self) -> int:
         return hash((self.mode, self.pid))
 
-    def __call__(self, *args, **kwargs) -> Command:
+    def __call__(self, *args, **kwargs) -> Command[T]:
         """
         Formats the command with the provided positional or keyword arguments.
 

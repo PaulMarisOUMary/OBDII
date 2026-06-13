@@ -5,7 +5,7 @@ from re import IGNORECASE, search as research
 from types import TracebackType
 from typing import Callable, List, Optional, Tuple, Type, Union
 
-from .basetypes import MISSING
+from .basetypes import MISSING, T
 from .command import Command
 from .modes import ModeAT
 from .protocol import Protocol
@@ -238,7 +238,7 @@ class Connection:
             return int(match.group(1), 16)
         return -1
 
-    def query(self, command: Command) -> Response:
+    def query(self, command: Command[T]) -> Response[T]:
         """
         Send a command and wait for the response.
 
@@ -274,7 +274,7 @@ class Connection:
 
         return self.wait_for_response(context)
 
-    def wait_for_response(self, context: Context) -> Response:
+    def wait_for_response(self, context: Context[T]) -> Response[T]:
         """
         Wait for a raw response from the transport and parses it using the protocol handler.
 
