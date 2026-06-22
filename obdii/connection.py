@@ -84,7 +84,6 @@ class Connection:
         ]
         self.init_completed = False
 
-        # 0x06 to 0x09, 0x01 to 0x05, 0x0A to 0x0C
         self.protocol_preferences = [
             Protocol.ISO_15765_4_CAN,
             Protocol.ISO_15765_4_CAN_B,
@@ -93,8 +92,8 @@ class Connection:
             Protocol.SAE_J1850_PWM,
             Protocol.SAE_J1850_VPW,
             Protocol.ISO_9141_2,
-            Protocol.ISO_14230_4_KWP,
             Protocol.ISO_14230_4_KWP_FAST,
+            Protocol.ISO_14230_4_KWP,
             Protocol.SAE_J1939_CAN,
             Protocol.USER1_CAN,
             Protocol.USER2_CAN,
