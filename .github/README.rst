@@ -136,9 +136,9 @@ ID    Protocol         Specifications           Supported
 ===== ================ ======================== ===========
 0x01  SAE J1850 PWM    41.6 Kbaud               No         
 0x02  SAE J1850 VPW    10.4 Kbaud               No         
-0x03  ISO 9141-2       5 baud init, 10.4 Kbaud  No         
-0x04  ISO 14230-4 KWP  5 baud init, 10.4 Kbaud  No         
-0x05  ISO 14230-4 KWP  fast init, 10.4 Kbaud    No         
+0x03  ISO 9141-2       5 baud init, 10.4 Kbaud  Yes        
+0x04  ISO 14230-4 KWP  5 baud init, 10.4 Kbaud  Yes        
+0x05  ISO 14230-4 KWP  fast init, 10.4 Kbaud    Yes        
 0x06  ISO 15765-4 CAN  11 bit ID, 500 Kbaud     Yes        
 0x07  ISO 15765-4 CAN  29 bit ID, 500 Kbaud     Yes        
 0x08  ISO 15765-4 CAN  11 bit ID, 250 Kbaud     Yes        

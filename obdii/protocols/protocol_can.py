@@ -75,13 +75,10 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
     - [0x0A] SAE J1939 CAN (29 bit ID, 250 Kbaud)
     - [0x0B] USER1 CAN (11 bit ID, 125 Kbaud)
     - [0x0C] USER2 CAN (11 bit ID, 50 Kbaud)
-    """
 
-    @staticmethod
-    def to_lines(raw: bytes) -> List[bytes]:
-        return [
-            line for line in raw.splitlines() if line.strip() and line.strip() != b'>'
-        ]
+    Required configuration:
+    - HEADER_ON
+    """
 
     @staticmethod
     def to_frames(lines: List[bytes], header_len: int) -> List[CANFrame]:
@@ -141,7 +138,7 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
                 continue
 
             try:
-                byte_vals = [int(rest[i : i + 2], 16) for i in range(0, len(rest), 2)]
+                byte_vals = [int(rest[i : i + 2], 16) for i in range(0, rest_len, 2)]
             except ValueError:
                 continue
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Optional, Type, List
 
 from ..protocol import Protocol
 from ..response import ResponseBase, Response
@@ -36,6 +36,12 @@ class ProtocolBase(ABC):
     @classmethod
     def get_protocol_attributes(cls, protocol: Protocol) -> Dict[str, Any]:
         return cls._protocol_attributes.get(protocol, {})
+
+    @staticmethod
+    def to_lines(raw: bytes) -> List[bytes]:
+        return [
+            line for line in raw.splitlines() if line.strip() and line.strip() != b'>'
+        ]
 
     @abstractmethod
     def parse_response(self, response_base: ResponseBase) -> Response: ...
