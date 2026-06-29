@@ -26,6 +26,19 @@ Plug in a USB, Bluetooth, WiFi or Ethernet adapter, then query engine speed, fau
 
 Whether you're building a diagnostic tool, a performance data logger, a custom dashboard, a smart home integration, or just learning how vehicles communicate, this library handles the complexity of vehicle communication, so you don't have to.
 
+Installation
+------------
+
+Python 3.8 or higher is required.
+
+Install from PyPI using pip:
+
+.. code-block:: console
+
+    pip install py-obdii
+
+For more installation options, see the `Installation Guide <https://py-obdii.readthedocs.io/en/latest/installation.html>`_.
+
 Usage Example
 -------------
 
@@ -50,19 +63,6 @@ Usage Example
         print(f"Engine Speed: {response.value} {response.units}")
 
 More examples in the `examples folder <https://github.com/PaulMarisOUMary/OBDII/tree/main/examples>`_ and `Usage Guide <https://py-obdii.readthedocs.io/en/latest/usage.html>`_.
-
-Installation
-------------
-
-Python 3.8 or higher is required.
-
-Install from PyPI using pip:
-
-.. code-block:: console
-
-    pip install py-obdii
-
-For more installation options, see the `Installation Guide <https://py-obdii.readthedocs.io/en/latest/installation.html>`_.
 
 Emulator Support
 ----------------
