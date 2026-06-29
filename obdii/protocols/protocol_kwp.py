@@ -20,6 +20,7 @@ class KWPFrame:
     Abbreviations:
         ECU = Electronic Control Unit
         FMT = Format
+        SRC = Source
     """
 
     __slots__ = ("ecu", "payload")
@@ -122,6 +123,7 @@ class ProtocolKWP(ProtocolBase, protocols=KWP_PROTOCOLS):
                 continue
 
             src = byte_vals[2]
+            ecu = f"{src:02X}".encode("ascii")
 
             header_len = 3
             if protocol is not Protocol.ISO_9141_2:
@@ -133,7 +135,7 @@ class ProtocolKWP(ProtocolBase, protocols=KWP_PROTOCOLS):
 
             frames.append(
                 KWPFrame(
-                    f"{src:02X}".encode("ascii"),
+                    ecu,
                     payload,
                 )
             )
