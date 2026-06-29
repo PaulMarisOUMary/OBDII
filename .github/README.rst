@@ -17,42 +17,14 @@ OBDII
     :target: https://discord.gg/vn9bHUxeYB
     :alt: Discord Support Server invite
 
-A modern, easy to use, Python ≥3.8 library for interacting with Vehicles via OBDII devices.
-
 Overview
 --------
 
-This library lets you interact with almost any vehicles through the OBDII (`On-Board Diagnostics II <https://en.wikipedia.org/wiki/On-board_diagnostics#OBD-II>`_) port.
+Connect to any vehicle through its `OBDII <https://en.wikipedia.org/wiki/On-board_diagnostics#OBD-II>`_ port and start reading real-time data from Python in a few lines of code.
 
-Connect through an OBDII adapter via USB, Bluetooth, WiFi, or Ethernet to monitor sensors, read diagnostic data, retrieve trouble codes, and access a wide range of vehicle information.
+Plug in a USB, Bluetooth, WiFi or Ethernet adapter, then query engine speed, fault codes, fuel level, VIN, and much more.
 
-Whether you're building:
-
-- A Diagnostic Tool
-- A Performance Data Logger
-- A Car Maintenance Tracker
-- A Custom Dashboard Display
-- A Vehicle Option Unlocker
-- A Smart Home Vehicle Integration
-- A Fleet Management System
-- A Real-time Vehicle Health Monitor
-- An App to learn about Automotive Systems
-- Or any other automotive applications..
-
-The library handles the complexity of vehicle communication and provides the foundation you need for developing your automotive projects.
-
-Installation
-------------
-
-Python 3.8 or higher is required.
-
-Install from PyPI using pip:
-
-.. code-block:: console
-
-    pip install py-obdii
-
-For more installation options, see the `Installation Guide <https://py-obdii.readthedocs.io/en/latest/installation.html>`_.
+Whether you're building a diagnostic tool, a performance data logger, a custom dashboard, a smart home integration, or just learning how vehicles communicate, this library handles the complexity of vehicle communication, so you don't have to.
 
 Usage Example
 -------------
@@ -78,6 +50,19 @@ Usage Example
         print(f"Engine Speed: {response.value} {response.units}")
 
 More examples in the `examples folder <https://github.com/PaulMarisOUMary/OBDII/tree/main/examples>`_ and `Usage Guide <https://py-obdii.readthedocs.io/en/latest/usage.html>`_.
+
+Installation
+------------
+
+Python 3.8 or higher is required.
+
+Install from PyPI using pip:
+
+.. code-block:: console
+
+    pip install py-obdii
+
+For more installation options, see the `Installation Guide <https://py-obdii.readthedocs.io/en/latest/installation.html>`_.
 
 Emulator Support
 ----------------
@@ -113,7 +98,7 @@ Hardware Requirements
 For real-world usage, an ELM327-compatible OBDII adapter is required to connect to your vehicle.
 
 - **USB**: reliable, plug and play
-- **Ethernet**: reliable
+- **Ethernet**: reliable, low latency
 - **Bluetooth**: wireless, convenient
 - **WiFi**: wireless, mobile compatible
 
@@ -122,44 +107,43 @@ More information on connecting to different adapter types can be found in the `C
 Compatibility
 -------------
 
-Supported Vehicles
-^^^^^^^^^^^^^^^^^^
-
-Almost every vehicle from 2008 onwards should be compatible (CAN Protocols).
-In future updates additional protocols and olders vehicles will be supported.
+All ELM327 protocols are supported, covering vehicles from the
+mid-1990s through today.
 
 Protocol Support
 ^^^^^^^^^^^^^^^^
 
-===== ================ ======================== ===========
-ID    Protocol         Specifications           Supported  
-===== ================ ======================== ===========
-0x01  SAE J1850 PWM    41.6 Kbaud               No         
-0x02  SAE J1850 VPW    10.4 Kbaud               No         
-0x03  ISO 9141-2       5 baud init, 10.4 Kbaud  Yes        
-0x04  ISO 14230-4 KWP  5 baud init, 10.4 Kbaud  Yes        
-0x05  ISO 14230-4 KWP  fast init, 10.4 Kbaud    Yes        
-0x06  ISO 15765-4 CAN  11 bit ID, 500 Kbaud     Yes        
-0x07  ISO 15765-4 CAN  29 bit ID, 500 Kbaud     Yes        
-0x08  ISO 15765-4 CAN  11 bit ID, 250 Kbaud     Yes        
-0x09  ISO 15765-4 CAN  29 bit ID, 250 Kbaud     Yes        
-0x0A  SAE J1939 CAN    29 bit ID, 250 Kbaud     Yes        
-0x0B  USER1 CAN        11 bit ID, 125 Kbaud     Yes        
-0x0C  USER2 CAN        11 bit ID, 50 Kbaud      Yes        
-===== ================ ======================== ===========
+===== ================ ========================
+ID    Protocol         Specifications          
+===== ================ ========================
+0x01  SAE J1850 PWM    41.6 Kbaud              
+0x02  SAE J1850 VPW    10.4 Kbaud              
+0x03  ISO 9141-2       5 baud init, 10.4 Kbaud 
+0x04  ISO 14230-4 KWP  5 baud init, 10.4 Kbaud 
+0x05  ISO 14230-4 KWP  fast init, 10.4 Kbaud   
+0x06  ISO 15765-4 CAN  11 bit ID, 500 Kbaud    
+0x07  ISO 15765-4 CAN  29 bit ID, 500 Kbaud    
+0x08  ISO 15765-4 CAN  11 bit ID, 250 Kbaud    
+0x09  ISO 15765-4 CAN  29 bit ID, 250 Kbaud    
+0x0A  SAE J1939 CAN    29 bit ID, 250 Kbaud    
+0x0B  USER1 CAN        11 bit ID, 125 Kbaud    
+0x0C  USER2 CAN        11 bit ID, 50 Kbaud     
+===== ================ ========================
 
 Support & Contact
 -----------------
 
-For questions start a discussion on Github, for support open an issue.
-Your feedback and questions are greatly appreciated and will help improve this project !
+Found a bug?
 
 - `Open an Issue <https://github.com/PaulMarisOUMary/OBDII/issues>`_
+
+Have a question?
+
 - `Join the Discussion <https://github.com/PaulMarisOUMary/OBDII/discussions>`_
 - `Discord Support Server <https://discord.gg/vn9bHUxeYB>`_
 
+Your feedback is greatly appreciated and helps improve this project.
+
 -------
 
-Thank you for using or `contributing <https://github.com/PaulMarisOUMary/OBDII/tree/main?tab=contributing-ov-file>`_ to this project.
-
-Follow our updates by leaving a star to this repository !
+Follow our updates by leaving a star to this repository!
