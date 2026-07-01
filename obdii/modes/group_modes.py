@@ -1,4 +1,4 @@
-from typing import Union, Literal, overload
+from typing import Union, Literal, cast, overload
 
 from .basetypes import Modes, ModesType
 from .group_commands import GroupCommands
@@ -45,7 +45,7 @@ class GroupModes(Modes):
         self, key: Union[Literal[Mode.VEHICLE_INFO], Literal[9]]
     ) -> Mode09: ...
 
-    def __getitem__(self, key: Union[Mode, int, str]) -> Union[ModesType, Command]:  # type: ignore[invalid-method-override]
+    def __getitem__(self, key: Union[Mode, int, str]) -> Union[ModesType, Command]:  # type: ignore
         if not isinstance(key, (Mode, int)):
             return super().__getitem__(key)
 
@@ -53,4 +53,4 @@ class GroupModes(Modes):
         mode_key = self.modes.get(mode)
         if not isinstance(mode_key, GroupCommands):
             raise KeyError(f"Mode '{key}' not found")
-        return mode_key
+        return cast(ModesType, mode_key)

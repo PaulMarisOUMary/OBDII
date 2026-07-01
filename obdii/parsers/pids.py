@@ -105,11 +105,11 @@ class EnumeratedPIDS:
         extended = {}
 
         for key, value in mapping.items():
-            if isinstance(key, Iterable) and not isinstance(key, (bytes, int, str)):
+            if isinstance(key, int):
+                extended[key] = value
+            else:
                 for k in key:
                     extended[k] = value
-            else:
-                extended[key] = value
 
         return extended
 

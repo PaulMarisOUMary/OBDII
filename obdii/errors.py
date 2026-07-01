@@ -21,9 +21,9 @@ class ResponseBaseError(Exception):
         if abstract:
             return
 
-        if not cls.pattern and not cls.regex_pattern:
+        if not cls.__doc__ or (not cls.pattern and not cls.regex_pattern):
             raise TypeError(
-                f"{cls.__name__} must define either 'pattern' or 'regex_pattern'"
+                f"{cls.__name__} must have a docstring, and define either 'pattern' or 'regex_pattern'"
             )
         ResponseBaseError._registry.add(cls)
 

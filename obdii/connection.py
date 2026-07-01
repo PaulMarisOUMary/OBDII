@@ -147,7 +147,7 @@ class Connection:
         except Exception as e:
             self.transport.close()
             _log.error(f"Failed to connect to {repr(self.transport)}: {e}")
-            raise ConnectionError(f"Failed to connect: {e}")
+            raise ConnectionError(f"Failed to connect: {e}") from e
 
     def _initialize_connection(self) -> None:
         """Initializes the connection using the init sequence."""

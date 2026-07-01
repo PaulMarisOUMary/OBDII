@@ -16,8 +16,9 @@ from ast import (
     UnaryOp,
     Name,
     Constant,
+    operator as AstOperator,
 )
-from typing import List, Any, NoReturn
+from typing import List, Any, NoReturn, Dict, Type, Callable
 from operator import add, sub, mul, truediv, floordiv, mod, pow, xor
 
 from ..basetypes import Real
@@ -26,7 +27,7 @@ from ..basetypes import Real
 class SafeEvaluator(NodeVisitor):
     """A safe evaluator that only allows basic math operations."""
 
-    operators = {
+    operators: Dict[Type[AstOperator], Callable[[Real, Real], Real]] = {
         Add: add,
         Sub: sub,
         Mult: mul,

@@ -148,5 +148,8 @@ quote-style = "preserve"
 [tool.ty.environment]
 python-platform = "all"
 
+[tool.ty.analysis]
+respect-type-ignore-comments = true
+
 [tool.bandit.assert_used]
 skips = ["*_test.py", "*/test_*.py"]
