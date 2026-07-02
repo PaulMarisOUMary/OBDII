@@ -6,14 +6,15 @@ import pytest
 from obdii.command import Command
 from obdii.mode import Mode
 from obdii.modes.group_commands import GroupCommands
-from obdii.modes.group_modes import GroupModes
-from obdii.modes import Mode01, Mode02, Mode03, Mode04, Mode09
+from obdii.modes import Mode01, Mode02, Mode03, Mode04, Mode09, Modes
 
 
 @pytest.fixture
 def group_modes():
-    """Fixture that returns an instance of GroupModes."""
-    return GroupModes()
+    """Fixture that returns an instance of Modes, the concrete aggregate of
+    GroupModes with every requestable mode -- GroupModes alone has nothing
+    to aggregate, since it only discovers modes among its own bases."""
+    return Modes()
 
 
 class TestGroupModesInitialization:

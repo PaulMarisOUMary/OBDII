@@ -12,8 +12,20 @@ from .mode_04 import Mode04
 from .mode_09 import Mode09
 
 
+class Modes(
+    GroupModes,
+    Mode01,
+    Mode02,
+    Mode03,
+    Mode04,
+    Mode09,
+):
+    """The concrete, top-level aggregate of every standard OBD mode."""
+
+
 at_commands: Final[ModeAT] = ModeAT()
-commands: Final[GroupModes] = GroupModes()
+commands: Final[Modes] = Modes()
+
 
 __all__ = [
     "at_commands",
