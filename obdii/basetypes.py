@@ -10,6 +10,7 @@ from typing import (
     TypeVar,
     Union,
     overload,
+    TypeAlias,
 )
 
 
@@ -83,6 +84,6 @@ class _MissingSentinel(metaclass=SingletonMeta):
 
 MISSING: Any = _MissingSentinel()
 
-OneOrMany = Union[T, Iterable[T]]
+OneOrMany: TypeAlias = Union[T, Iterable[T]]
 
-Real = Union[int, float]
+Real: TypeAlias = Union[int, float]
