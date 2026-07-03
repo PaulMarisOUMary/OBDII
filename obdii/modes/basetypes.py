@@ -1,4 +1,4 @@
-from typing import Union, TypeAlias, TYPE_CHECKING
+from typing import Union, TYPE_CHECKING
 
 from ..mode import Mode
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .mode_09 import Mode09
 
 
-CommandKey: TypeAlias = Union[int, str]
-RegistryKey: TypeAlias = Union[Mode, int, str]
+CommandKey = Union[int, str]
+RegistryKey = Union[Mode, int, str]
 
-ModesType: TypeAlias = Union["Mode01", "Mode02", "Mode03", "Mode04", "Mode09"]
+ModesType = Union["Mode01", "Mode02", "Mode03", "Mode04", "Mode09"]
