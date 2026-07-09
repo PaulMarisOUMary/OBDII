@@ -1,15 +1,13 @@
 from enum import IntEnum
 from logging import getLogger
-from typing import List, Optional, Dict
+from typing import List, Optional
 
-from ..command import Command
-from ..errors import ResponseBaseError
-from ..mode import Mode
 from ..protocol import Protocol
-from ..response import ResponseBase, Response
-from ..utils.bits import filter_bytes
+from ..response import Context
+from ..utils.bits import filter_bytes, to_bytes
 
 from .protocol_base import ProtocolBase
+from .mixins import Frame, ParsingMixin
 
 
 _log = getLogger(__name__)
@@ -29,16 +27,15 @@ class FrameKind(IntEnum):
     CONSECUTIVE = 0x20
 
 
-class CANFrame:
+class CANFrame(Frame):
     """Minimal representation of a single CAN line as returned by the ELM327.
 
     Abbreviations:
-        ECU = Electronic Control Unit
         SN = Sequence Number
         DLC = Data Length Code
     """
 
-    __slots__ = ("ecu", "kind", "sn", "dlc", "payload")
+    __slots__ = ("kind", "sn", "dlc")
 
     def __init__(
         self,
@@ -48,11 +45,10 @@ class CANFrame:
         sn: int = 0,
         dlc: int = 0,
     ) -> None:
-        self.ecu = ecu
+        super().__init__(ecu, payload)
         self.kind = kind
         self.sn = sn
         self.dlc = dlc
-        self.payload = payload
 
 
 CAN_PROTOCOLS = {
@@ -66,7 +62,7 @@ CAN_PROTOCOLS = {
 }
 
 
-class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
+class ProtocolCAN(ParsingMixin[CANFrame], ProtocolBase, protocols=CAN_PROTOCOLS):
     """Supported Protocols:
     - [0x06] ISO 15765-4 CAN (11 bit ID, 500 Kbaud)
     - [0x07] ISO 15765-4 CAN (29 bit ID, 500 Kbaud)
@@ -80,8 +76,7 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
     - HEADER_ON
     """
 
-    @staticmethod
-    def to_frames(lines: List[bytes], header_len: int) -> List[CANFrame]:
+    def to_frames(self, lines: List[bytes], context: Context) -> List[CANFrame]:
         """
         Parse a list of raw ELM327 lines into CANFrame objects.
 
@@ -119,6 +114,9 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
             |   +-- PCI: high nibble 0x2 = CF, low nibble 0x1 = SN
             +-- ECU address (11-bit)
         """
+        attr = self.get_protocol_attributes(context.protocol)
+        header_len = attr["header_length"]
+
         frames: List[CANFrame] = []
         header_chars = (header_len + 3) // 4
 
@@ -132,14 +130,10 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
             ecu = line[:header_chars]
             rest = line[header_chars:]
 
-            rest_len = len(rest)
-            if rest_len % 2 != 0:
-                _log.warning(f"Odd byte count after header in line {line!r}")
-                continue
-
             try:
-                byte_vals = [int(rest[i : i + 2], 16) for i in range(0, rest_len, 2)]
-            except ValueError:
+                byte_vals = to_bytes(rest)
+            except ValueError as e:
+                _log.warning(f"Invalid hex payload in line: {line!r}: {e}")
                 continue
 
             if not byte_vals:
@@ -179,8 +173,10 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
 
         return frames
 
-    @staticmethod
-    def to_message(frames: List[CANFrame], command: Command) -> Optional[List[int]]:
+    def to_message(
+        self, frames: List[CANFrame], context: Context
+    ) -> Optional[List[int]]:
+        command = context.command
         strip = 2 if command.pid != '' else 1
 
         if len(frames) == 1 and frames[0].kind == FrameKind.SINGLE:
@@ -215,64 +211,3 @@ class ProtocolCAN(ProtocolBase, protocols=CAN_PROTOCOLS):
             return None
 
         return message[strip:]
-
-    def parse_response(self, response_base: ResponseBase) -> Response:
-        context = response_base.context
-        raw = response_base.raw
-
-        mode = Mode.get_from(context.command.mode)
-        if mode is Mode.AT:
-            value = "\n".join(
-                [line.decode(errors="ignore").strip() for line in self.to_lines(raw)]
-            )
-            return Response(**vars(response_base), value=value)
-
-        error = ResponseBaseError.detect(raw)
-        if error:
-            _log.error(error.message)
-            raise error
-
-        lines = self.to_lines(raw)
-        if not lines:
-            _log.warning("Empty response.")
-            return Response(**vars(response_base), value=None)
-
-        attr = self.get_protocol_attributes(context.protocol)
-        header_len = attr["header_length"]
-
-        frames = self.to_frames(lines, header_len)
-        if not frames:
-            _log.warning("No valid frames parsed.")
-            return Response(**vars(response_base), value=None)
-
-        ecu_frames: Dict[bytes, List[CANFrame]] = {}
-        for frame in frames:
-            ecu_frames.setdefault(frame.ecu, []).append(frame)
-
-        message = None
-        ecu_messages: Dict[bytes, List[int]] = {}
-        for ecu, frames_list in ecu_frames.items():
-            _message = self.to_message(frames_list, context.command)
-            if _message is not None:
-                ecu_messages[ecu] = _message
-                if message is None:
-                    message = _message
-
-        if not ecu_messages:
-            _log.warning("No message could be reassembled.")
-
-        value = None
-        resolver = context.command.resolver
-
-        if resolver:
-            try:
-                value = resolver(message)
-            except Exception as e:
-                _log.error(
-                    f"Unexpected error during formula execution: {e}", exc_info=True
-                )
-                value = None
-
-        return Response(
-            **vars(response_base), unparsed=message, messages=ecu_messages, value=value
-        )

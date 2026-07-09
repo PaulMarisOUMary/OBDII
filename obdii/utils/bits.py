@@ -1,21 +1,5 @@
 from re import escape, sub
-from typing import Tuple
-
-
-def split_hex_bytes(data: bytes) -> Tuple[bytes, ...]:
-    """Split a bytes object of hexadecimal characters into 2-character chunks, where each chunk represents one byte (8 bits)."""
-    if len(data) % 2 != 0:
-        data = b'0' + data
-
-    return tuple(data[i : i + 2] for i in range(0, len(data), 2))
-
-
-def is_bytes_hex(data: bytes) -> bool:
-    """Check if a bytes object contains only hexadecimal characters."""
-    if not data:
-        return False
-    hex_chars = set(b'0123456789ABCDEFabcdef')
-    return all(b in hex_chars for b in data)
+from typing import List
 
 
 def filter_bytes(data: bytes, *patterns: bytes) -> bytes:
@@ -28,6 +12,11 @@ def filter_bytes(data: bytes, *patterns: bytes) -> bytes:
 
     pattern = b'|'.join(escape(p) for p in patterns)
     return sub(pattern, b'', data)
+
+
+def to_bytes(line: bytes) -> List[int]:
+    """Convert a bytes of hexadecimal characters to a list of integers, where each integer represents one byte."""
+    return list(bytes.fromhex(line.decode("ascii")))
 
 
 def bytes_to_string(data: bytes) -> str:

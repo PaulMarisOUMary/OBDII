@@ -4,137 +4,37 @@ Unit tests for obdii.utils.bits module.
 import pytest
 
 from obdii.utils.bits import (
-    split_hex_bytes,
-    is_bytes_hex,
-    filter_bytes,
     bytes_to_string,
+    filter_bytes,
+    to_bytes,
 )
 
 
-class TestSplitHexBytes:
-    """Test suite for split_hex_bytes function."""
+class TestToBytes:
+    """Test suite for to_bytes function."""
 
     @pytest.mark.parametrize(
         ("data", "expected"),
         [
-            (b"AABBCCDD", (b"AA", b"BB", b"CC", b"DD")),
-            (b"0123456789ABCDEF", (b"01", b"23", b"45", b"67", b"89", b"AB", b"CD", b"EF")),
-            (b"AB", (b"AB",)),
-            (b"00", (b"00",)),
-            (b"FF", (b"FF",)),
+            (b"ABCD", [0xAB, 0xCD]),
+            (b"0ABC", [0x0A, 0xBC]),
+            (b"0000", [0x00, 0x00]),
         ],
-        ids=["four_bytes", "eight_bytes", "one_pair", "zero_pair", "max_byte"]
-    )
-    def test_even_length_bytes(self, data, expected):
-        """Test splitting bytes with even length."""
-        result = split_hex_bytes(data)
-        
-        assert result == expected
-        assert all(len(chunk) == 2 for chunk in result)
-
-    @pytest.mark.parametrize(
-        ("data", "expected"),
-        [
-            (b"ABC", (b"0A", b"BC")),
-            (b'F', (b"0F",)),
-            (b"12345", (b"01", b"23", b"45")),
-            (b"ABCDE", (b"0A", b"BC", b"DE")),
-            (b'1', (b"01",)),
-            (b'9', (b"09",)),
-        ],
-        ids=["three_chars", "single_F", "five_digits", "five_hex", "single_1", "single_9"]
+        ids=["four_bytes", "leading_zero", "double_zero"]
     )
     def test_odd_length_bytes(self, data, expected):
-        """Test splitting bytes with odd length - should prepend '0'."""
-        result = split_hex_bytes(data)
+        """Test bytes."""
+        result = to_bytes(data)
         
         assert result == expected
-        assert all(len(chunk) == 2 for chunk in result)
+        assert all(0 <= chunk < 2**8 for chunk in result)
 
     def test_empty_bytes(self):
-        """Test splitting empty bytes."""
-        result = split_hex_bytes(b'')
+        """Test empty bytes."""
+        result = to_bytes(b'')
         
-        assert result == ()
-        assert isinstance(result, tuple)
-
-
-class TestIsBytesHex:
-    """Test suite for is_bytes_hex function."""
-
-    @pytest.mark.parametrize(
-        "data",
-        [
-            b"ABCDEF",
-            b"0123456789",
-            b"DEADBEEF",
-            b"abcdef",
-            b"AbCdEf",
-            b"0a1B2c3D",
-            b'A',
-            b'0',
-            b'f',
-            b"FF",
-            b"aBcDeF0123456789",  # Long mixed case
-            b"00000000",  # All zeros
-            b"FFFFFFFF",  # All max
-        ],
-        ids=[
-            "uppercase",
-            "numbers",
-            "deadbeef",
-            "lowercase",
-            "mixed_case",
-            "mixed_numbers",
-            "single_A",
-            "single_0",
-            "single_f",
-            "double_F",
-            "long_mixed",
-            "all_zeros",
-            "all_max",
-        ],
-    )
-    def test_valid_hex_bytes(self, data):
-        """Test valid hexadecimal bytes."""
-        assert is_bytes_hex(data) is True
-
-    @pytest.mark.parametrize(
-        "data",
-        [
-            b'',
-            b"GHIJK",
-            b"12XY34",
-            b"ABC DEF",
-            b"!@#$%",
-            b"AB\r\nCD",
-            b"AB CD",
-            b"0x12",
-            b"AB-CD",
-            b"AB:CD",
-            b'g',
-            b'Z',
-            b"\x00\x01",  # Binary data
-        ],
-        ids=[
-            "empty",
-            "invalid_letters",
-            "mixed_invalid",
-            "with_space",
-            "special_chars",
-            "with_newlines",
-            "hex_with_space",
-            "hex_prefix",
-            "with_dash",
-            "with_colon",
-            "invalid_g",
-            "invalid_Z",
-            "binary_data",
-        ],
-    )
-    def test_invalid_hex_bytes(self, data):
-        """Test invalid hexadecimal bytes."""
-        assert is_bytes_hex(data) is False
+        assert result == []
+        assert isinstance(result, list)
 
 
 class TestFilterBytes:

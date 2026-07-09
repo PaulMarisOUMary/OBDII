@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from types import MappingProxyType
-from typing import Any, Dict, List, Mapping, Optional, Type
+from typing import Any, Dict, Mapping, Optional, Type
 
 from ..response import Response, ResponseBase
 from ..protocol import Protocol
@@ -44,12 +44,6 @@ class ProtocolBase(ABC):
         return cls._instances[protocol]
 
     @classmethod
-
-    @staticmethod
-    def to_lines(raw: bytes) -> List[bytes]:
-        return [
-            line for line in raw.splitlines() if line.strip() and line.strip() != b'>'
-        ]
     def get_protocol_attributes(cls, protocol: Protocol) -> Mapping[str, Any]:
         return cls._protocol_attributes.get(protocol, _EMPTY_ATTRIBUTES)
 
