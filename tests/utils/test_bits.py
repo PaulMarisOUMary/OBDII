@@ -6,12 +6,13 @@ import pytest
 from obdii.utils.bits import (
     bytes_to_string,
     filter_bytes,
-    to_bytes,
+    hex_to_ints,
+    hex_byte_length,
 )
 
 
-class TestToBytes:
-    """Test suite for to_bytes function."""
+class TestHexToInts:
+    """Test suite for hex_to_ints function."""
 
     @pytest.mark.parametrize(
         ("data", "expected"),
@@ -24,17 +25,129 @@ class TestToBytes:
     )
     def test_odd_length_bytes(self, data, expected):
         """Test bytes."""
-        result = to_bytes(data)
+        result = hex_to_ints(data)
         
         assert result == expected
         assert all(0 <= chunk < 2**8 for chunk in result)
 
     def test_empty_bytes(self):
         """Test empty bytes."""
-        result = to_bytes(b'')
+        result = hex_to_ints(b'')
         
         assert result == []
         assert isinstance(result, list)
+
+
+class TestHexByteLength:
+    """Test suite for hex_byte_length function."""
+
+    def test_empty_string_returns_zero(self):
+        """Test that an empty string returns 0 bytes."""
+        result = hex_byte_length('')
+
+        assert result == 0
+        assert isinstance(result, int)
+
+    @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            (0x00, 1),
+            (0x0C, 1),
+            (0x1A, 1),
+            (0xFF, 1),
+        ],
+        ids=[
+            "zero",
+            "engine_coolant_temp_pid",
+            "single_hex_digit_value",
+            "max_single_byte",
+        ],
+    )
+    def test_single_byte_int(self, value, expected):
+        """Test int values that fit in a single hex-encoded byte."""
+        result = hex_byte_length(value)
+
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            (0x8220, 2),
+            (0x9023, 2),
+            (0x0100, 2),
+            (0xFFFF, 2),
+        ],
+        ids=[
+            "honda_atf_temp_8220",
+            "honda_atf_temp_9023",
+            "leading_zero_byte",
+            "max_two_bytes",
+        ],
+    )
+    def test_two_byte_int(self, value, expected):
+        """Test int values spanning two hex-encoded bytes."""
+        result = hex_byte_length(value)
+
+        assert result == expected
+
+    def test_three_byte_int(self):
+        """Test an int value spanning three hex-encoded bytes."""
+        result = hex_byte_length(0xFFFFFF)
+
+        assert result == 3
+
+    @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            ("0C", 1),
+            ("00", 1),
+            ("FF", 1),
+        ],
+        ids=["single_byte_hex_string", "zero_hex_string", "max_single_byte_hex_string"],
+    )
+    def test_single_byte_str(self, value, expected):
+        """Test pre-formatted single-byte hex strings."""
+        result = hex_byte_length(value)
+
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            ("8220", 2),
+            ("9023", 2),
+            ("0100", 2),
+        ],
+        ids=[
+            "honda_atf_temp_8220_str",
+            "honda_atf_temp_9023_str",
+            "leading_zero_byte_str",
+        ],
+    )
+    def test_two_byte_str(self, value, expected):
+        """Test pre-formatted two-byte hex strings."""
+        result = hex_byte_length(value)
+
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        ("int_value", "str_value"),
+        [
+            (0x0C, "0C"),
+            (0x8220, "8220"),
+            (0x00, "00"),
+        ],
+        ids=["single_byte_pid", "two_byte_pid", "zero_pid"],
+    )
+    def test_int_and_str_agree(self, int_value, str_value):
+        """Test that an int and its pre-formatted hex string equivalent agree."""
+        assert hex_byte_length(int_value) == hex_byte_length(str_value)
+
+    def test_odd_length_hex_string_rounds_up(self):
+        """Test that an odd-length hex string still rounds up to a whole byte."""
+        result = hex_byte_length("ABC")
+
+        assert result == 2
 
 
 class TestFilterBytes:

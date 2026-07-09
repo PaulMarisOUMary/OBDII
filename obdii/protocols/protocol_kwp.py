@@ -3,7 +3,7 @@ from typing import List
 
 from ..protocol import Protocol
 from ..response import Context
-from ..utils.bits import filter_bytes, to_bytes
+from ..utils.bits import filter_bytes, hex_to_ints
 
 from .protocol_base import ProtocolBase
 from .mixins import Frame, J1979Mixin, ParsingMixin
@@ -80,7 +80,7 @@ class ProtocolKWP(ParsingMixin, J1979Mixin, ProtocolBase, protocols=KWP_PROTOCOL
             line = filter_bytes(raw_lines, b' ')
 
             try:
-                byte_vals = to_bytes(line)
+                byte_vals = hex_to_ints(line)
             except ValueError as e:
                 _log.warning(f"Invalid hex payload in line: {line!r}: {e}")
                 continue

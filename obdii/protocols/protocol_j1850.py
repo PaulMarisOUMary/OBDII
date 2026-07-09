@@ -3,7 +3,7 @@ from typing import List, Final
 
 from ..protocol import Protocol
 from ..response import Context
-from ..utils.bits import filter_bytes, to_bytes
+from ..utils.bits import filter_bytes, hex_to_ints
 
 from .protocol_base import ProtocolBase
 from .mixins import Frame, J1979Mixin, ParsingMixin
@@ -71,7 +71,7 @@ class ProtocolJ1850(ParsingMixin, J1979Mixin, ProtocolBase, protocols=J1850_PROT
             line = filter_bytes(raw_lines, b' ')
 
             try:
-                byte_vals = to_bytes(line)
+                byte_vals = hex_to_ints(line)
             except ValueError as e:
                 _log.warning(f"Invalid hex payload in line: {line!r}: {e}")
                 continue

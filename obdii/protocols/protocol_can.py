@@ -1,10 +1,10 @@
 from enum import IntEnum
 from logging import getLogger
-from typing import List, Optional
+from typing import List, Optional, Union, cast
 
 from ..protocol import Protocol
 from ..response import Context
-from ..utils.bits import filter_bytes, to_bytes
+from ..utils.bits import filter_bytes, hex_to_ints, hex_byte_length
 
 from .protocol_base import ProtocolBase
 from .mixins import Frame, ParsingMixin
@@ -131,7 +131,7 @@ class ProtocolCAN(ParsingMixin[CANFrame], ProtocolBase, protocols=CAN_PROTOCOLS)
             rest = line[header_chars:]
 
             try:
-                byte_vals = to_bytes(rest)
+                byte_vals = hex_to_ints(rest)
             except ValueError as e:
                 _log.warning(f"Invalid hex payload in line: {line!r}: {e}")
                 continue
@@ -176,8 +176,8 @@ class ProtocolCAN(ParsingMixin[CANFrame], ProtocolBase, protocols=CAN_PROTOCOLS)
     def to_message(
         self, frames: List[CANFrame], context: Context
     ) -> Optional[List[int]]:
-        command = context.command
-        strip = 2 if command.pid != '' else 1
+        pid = cast(Union[str, int], context.command.pid)
+        strip = 1 + hex_byte_length(pid)
 
         if len(frames) == 1 and frames[0].kind == FrameKind.SINGLE:
             payload = frames[0].payload

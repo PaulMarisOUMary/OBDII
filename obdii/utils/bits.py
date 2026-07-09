@@ -1,5 +1,5 @@
 from re import escape, sub
-from typing import List
+from typing import List, Union
 
 
 def filter_bytes(data: bytes, *patterns: bytes) -> bytes:
@@ -14,13 +14,20 @@ def filter_bytes(data: bytes, *patterns: bytes) -> bytes:
     return sub(pattern, b'', data)
 
 
-def to_bytes(line: bytes) -> List[int]:
-    """Convert a bytes of hexadecimal characters to a list of integers, where each integer represents one byte."""
-    return list(bytes.fromhex(line.decode("ascii")))
-
-
 def bytes_to_string(data: bytes) -> str:
     """Decode a bytes object to a string, ignoring errors and stripping whitespace."""
     if not data:
         return ''
     return data.decode(errors="ignore").strip()
+
+
+def hex_to_ints(line: bytes) -> List[int]:
+    """Convert a bytes of hexadecimal characters to a list of integers, where each integer represents one byte."""
+    return list(bytes.fromhex(line.decode("ascii")))
+
+
+def hex_byte_length(value: Union[int, str]) -> int:
+    """Number of bytes needed to represent a value once hex-encoded."""
+    if isinstance(value, int):
+        return max(1, (value.bit_length() + 7) // 8)
+    return (len(value) + 1) // 2

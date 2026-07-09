@@ -1,10 +1,11 @@
 from abc import abstractmethod, ABC
 from logging import getLogger
-from typing import List, Optional, Dict, TypeVar, Generic
+from typing import Dict, Generic, List, Optional, TypeVar, Union, cast
 
 from ..errors import ResponseBaseError
 from ..mode import Mode
 from ..response import Context, Response, ResponseBase
+from ..utils.bits import hex_byte_length
 
 
 _log = getLogger(__name__)
@@ -104,8 +105,8 @@ class ParsingMixin(ParsingABC[FrameT], Generic[FrameT]):
 
 class J1979Mixin(ParsingABC):
     def to_message(self, frames: List[Frame], context: Context) -> Optional[List[int]]:
-        command = context.command
-        strip = 2 if command.pid != '' else 1
+        pid = cast(Union[str, int], context.command.pid)
+        strip = 1 + hex_byte_length(pid)
 
         if len(frames) == 1:
             payload = frames[0].payload
