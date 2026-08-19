@@ -26,6 +26,12 @@ keywords = [
     "car data",
     "vehicle data",
     "can bus",
+    "raspberry pi obd",
+    "diagnostic trouble codes",
+    "dtc",
+    "obd2 wifi",
+    "obd2 bluetooth",
+    "vehicle telemetry",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -78,6 +84,7 @@ docs = [
     "sphinxawesome-theme>=5.3,<6",
     "sphinxcontrib-mermaid>=2.0.2,<3",
     "sphinx_design>=0.7,<1",
+    "sphinx-sitemap>=2.9,<3",
 ]
 sim = [
     "ELM327-emulator>=3,<4",

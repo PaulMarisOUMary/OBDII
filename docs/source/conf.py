@@ -30,7 +30,6 @@ discord_url = "https://discord.gg/vn9bHUxeYB"
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.extlinks",
@@ -39,6 +38,7 @@ extensions = [
     # "sphinx.ext.todo",
     "sphinxcontrib.mermaid",
     "sphinx_design",
+    "sphinx_sitemap",
 ]
 
 templates_path = ["_templates"]
@@ -55,10 +55,6 @@ autodoc_default_options = {
     "undoc-members": True,
     "show-inheritance": True,
 }
-
-# autosummary
-autosummary_generate = True
-autosummary_imported_members = False
 
 # napoleon
 napoleon_numpy_docstring = True
@@ -164,6 +160,20 @@ html_js_files = ["progress-bar.js"]
 html_extra_path = ["robots.txt"]
 
 html_last_updated_fmt = ''
+
+from os import environ
+
+html_baseurl = environ.get(
+    "READTHEDOCS_CANONICAL_URL", "https://py-obdii.readthedocs.io/en/latest/"
+)
+sitemap_url_scheme = "{link}"
+sitemap_show_lastmod = True
+sitemap_excludes = [
+    "search.html",
+    "genindex.html",
+    "py-modindex.html",
+    "_modules/*",
+]
 
 html_meta = {
     "description": "A modern, easy to use, Python ≥3.8 library for interacting with OBDII devices.",
