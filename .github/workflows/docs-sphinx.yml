@@ -8,6 +8,8 @@ on:
       - "!tests/**/*.py"
       - "requirements.txt"
       - "pyproject.toml"
+      - "docs/**"
+      - ".github/README.rst"
     branches: [ main ]
   pull_request:
     paths:
@@ -16,6 +18,8 @@ on:
       - "!tests/**/*.py"
       - "requirements.txt"
       - "pyproject.toml"
+      - "docs/**"
+      - ".github/README.rst"
     branches: [ main ]
 
   workflow_dispatch:

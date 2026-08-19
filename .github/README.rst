@@ -104,6 +104,8 @@ For real-world usage, an ELM327-compatible OBDII adapter is required to connect 
 
 More information on connecting to different adapter types can be found in the `Connection Guide <https://py-obdii.readthedocs.io/en/latest/connection.html>`_.
 
+.. _compatibility:
+
 Compatibility
 -------------
 

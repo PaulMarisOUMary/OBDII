@@ -12,7 +12,7 @@ Quickstart
 ==========
 
 This page helps you get started quickly with the library.
-It assumes the library is already installed, if not check the :ref:`installation` section.
+It assumes the library is already :ref:`installed <installing>` and that your Python version meets the :ref:`requirements`. If not, check the :ref:`installation` section.
 
 Overview
 --------

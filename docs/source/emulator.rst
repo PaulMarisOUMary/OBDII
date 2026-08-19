@@ -6,6 +6,10 @@
     :keywords: py-obdii, obdii emulator, elm327 emulator python, obdii virtual serial port, obdii development without car, com0com windows, obdii testing linux
     :robots: index, follow
 
+.. |contribute-button| replace::
+
+    Untested, help us improve this part of the documentation. :bdg-link-success:`Contribute <https://github.com/PaulMarisOUMary/OBDII/edit/main/docs/source/emulator.rst>`
+
 .. _emulator:
 
 Emulating a Vehicle
@@ -35,7 +39,7 @@ This is especially handy when you're iterating quickly, writing tests, or just d
     
         Run and use the emulator on Linux.
 
-        #. Install the library with development dependencies
+        #. Install the library with the `sim` extra
 
         #. Start the ELM327 Emulator
 
@@ -61,7 +65,7 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
         To run and use the emulator on Windows, you will need to create virtual serial ports.
 
-        #. Install the library with development dependencies
+        #. Install the library with the `sim` extra
 
         #. Install a kernel-mode virtual serial port driver like `com0com <https://com0com.sourceforge.net>`_
 
@@ -94,3 +98,8 @@ This is especially handy when you're iterating quickly, writing tests, or just d
 
                 with Connection("COM6", baudrate=38400) as conn:
                     # Your code here
+
+    .. tab-item:: macOS
+        :sync: macos
+
+        |contribute-button|
