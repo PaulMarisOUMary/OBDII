@@ -12,7 +12,6 @@ from typing import (
     overload,
 )
 
-
 T = TypeVar('T')
 
 
@@ -68,7 +67,7 @@ class SingletonMeta(type):
 class _MissingSentinel(metaclass=SingletonMeta):
     __slots__ = ()
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, _MissingSentinel)
 
     def __bool__(self) -> bool:

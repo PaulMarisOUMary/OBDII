@@ -1,5 +1,4 @@
 import platform
-
 from glob import glob
 from typing import Any, Dict, List, Type
 

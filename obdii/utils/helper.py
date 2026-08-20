@@ -13,8 +13,8 @@ from os import environ
 from sys import platform
 from typing import Any, Dict
 
-from .bits import bytes_to_string
 from ..basetypes import MISSING
+from .bits import bytes_to_string
 
 
 def debug_raw(raw: bytes) -> str:

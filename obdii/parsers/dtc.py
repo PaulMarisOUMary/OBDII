@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import List, Any
-
+from typing import Any, List
 
 _CATEGORY_BITS = {
     0b00: 'P',
@@ -69,7 +68,7 @@ class DTC:
         category
     """
 
-    __slots__ = ("code", "category", "scope", "system", "descriptor")
+    __slots__ = ("category", "code", "descriptor", "scope", "system")
 
     code: str
     """Full DTC code, e.g. "U0158"."""

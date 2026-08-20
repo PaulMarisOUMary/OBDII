@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from re import compile, Pattern
-from typing import Set, Type, Optional
+from re import Pattern, compile
+from typing import Optional, Set, Type
 
 
 class ResponseBaseError(Exception):
@@ -12,7 +12,7 @@ class ResponseBaseError(Exception):
 
     def __init__(self, response: bytes) -> None:
         self.response = response
-        self.message = f"{self.__class__.__name__}: {self.__class__.__doc__} - Got: {str(self.response)}"
+        self.message = f"{self.__class__.__name__}: {self.__class__.__doc__} - Got: {self.response!s}"
 
         super().__init__(self.message)
 

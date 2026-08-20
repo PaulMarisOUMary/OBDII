@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from time import time
-from typing import Generic, Optional, List, Dict
+from typing import Dict, Generic, List, Optional
 
 from .basetypes import OneOrMany, Real, T
 from .command import Command

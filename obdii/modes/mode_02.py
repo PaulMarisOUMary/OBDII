@@ -1,11 +1,9 @@
 from copy import deepcopy
 
-from .group_commands import GroupCommands
-from .mode_01 import Mode01
-
 from ..command import Command
 from ..mode import Mode
-
+from .group_commands import GroupCommands
+from .mode_01 import Mode01
 
 M = Mode.FREEZE_FRAME
 

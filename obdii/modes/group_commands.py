@@ -1,7 +1,6 @@
-from typing import Optional, ClassVar, Dict, Union, Iterator
+from typing import ClassVar, Dict, Iterator, Optional, Union
 
 from ..command import Command
-
 from .basetypes import CommandKey, RegistryKey
 
 

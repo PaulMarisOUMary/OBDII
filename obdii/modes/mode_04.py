@@ -1,8 +1,6 @@
-from .group_commands import GroupCommands
-
 from ..command import Command
 from ..mode import Mode
-
+from .group_commands import GroupCommands
 
 M = Mode.CLEAR_DTC
 C = Command

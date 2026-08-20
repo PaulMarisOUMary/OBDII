@@ -4,9 +4,8 @@ from abc import ABC, abstractmethod
 from types import MappingProxyType
 from typing import Any, Dict, Mapping, Optional, Type
 
-from ..response import Response, ResponseBase
 from ..protocol import Protocol
-
+from ..response import Response, ResponseBase
 
 _EMPTY_ATTRIBUTES: Mapping[str, Any] = MappingProxyType({})
 
