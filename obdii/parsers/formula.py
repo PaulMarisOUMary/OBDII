@@ -21,7 +21,7 @@ from ast import (
     operator as AstOperator,
 )
 from operator import add, floordiv, mod, mul, pow, sub, truediv, xor
-from typing import Any, Callable, Dict, List, NoReturn, Type
+from typing import Any, Callable, ClassVar, Dict, List, NoReturn, Type
 
 from ..basetypes import Real
 
@@ -29,7 +29,7 @@ from ..basetypes import Real
 class SafeEvaluator(NodeVisitor):
     """A safe evaluator that only allows basic math operations."""
 
-    operators: Dict[Type[AstOperator], Callable[[Real, Real], Real]] = {
+    operators: ClassVar[Dict[Type[AstOperator], Callable[[Real, Real], Real]]] = {
         Add: add,
         Sub: sub,
         Mult: mul,

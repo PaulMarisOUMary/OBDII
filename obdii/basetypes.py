@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import (
     Any,
+    ClassVar,
     Dict,
     Iterable,
     Literal,
@@ -56,7 +57,7 @@ class BaseEnum(Enum):
 
 
 class SingletonMeta(type):
-    _instances: Dict[type, object] = {}
+    _instances: ClassVar[Dict[type, object]] = {}
 
     def __call__(cls, *args, **kwargs) -> object:
         if cls not in cls._instances:

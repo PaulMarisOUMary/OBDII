@@ -1,5 +1,6 @@
 import platform
 from glob import glob
+from logging import getLogger
 from typing import Any, Dict, List, Type
 
 from serial.tools import list_ports
@@ -9,6 +10,8 @@ from ..modes import at_commands
 from ..transports.transport_base import TransportBase
 from ..transports.transport_serial import TransportSerial
 from ..transports.transport_socket import TransportSocket
+
+_log = getLogger(__name__)
 
 
 def scan_transports(
@@ -55,7 +58,8 @@ def scan_transports(
 
                 if return_first:
                     break
-        except Exception:
+        except Exception as e:  # noqa: BLE001
+            _log.debug(f"Candidate {candidate} failed probing: {e}")
             continue
         finally:
             if transport:

@@ -11,7 +11,7 @@ from logging import (
 )
 from os import environ
 from sys import platform
-from typing import Any, Dict
+from typing import Any, ClassVar, Dict, List, Tuple
 
 from ..basetypes import MISSING
 from .bits import bytes_to_string
@@ -84,7 +84,7 @@ def _stream_supports_colour(stream: Any) -> bool:
 
 
 class _ColorFormatter(Formatter):
-    LEVEL_COLORS = [
+    LEVEL_COLORS: ClassVar[List[Tuple[int, str]]] = [
         (DEBUG, "\x1b[40;1m"),
         (INFO, "\x1b[34;1m"),
         (WARNING, "\x1b[33;1m"),
@@ -92,7 +92,7 @@ class _ColorFormatter(Formatter):
         (CRITICAL, "\x1b[41m"),
     ]
 
-    FORMATS = {
+    FORMATS: ClassVar[Dict[int, Formatter]] = {
         level: Formatter(
             f"\x1b[30;1m%(asctime)s\x1b[0m {colour}%(levelname)-8s\x1b[0m \x1b[35m%(name)s\x1b[0m %(message)s",
             "%Y-%m-%d %H:%M:%S",

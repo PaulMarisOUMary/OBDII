@@ -91,7 +91,7 @@ class ParsingMixin(ParsingABC[FrameT], Generic[FrameT]):
         if resolver:
             try:
                 value = resolver(message)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 _log.error(
                     f"Unexpected error during formula execution: {e}", exc_info=True
                 )

@@ -139,6 +139,9 @@ indent-width = 4
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 ignore = ["Q"]
 
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
+
 [tool.ruff.format]
 exclude = ["obdii/modes/mode_**.py"]
 indent-style = "space"

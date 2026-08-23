@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from re import Match, Pattern, compile
-from typing import Any, Callable, Dict, Generic, Optional, Tuple, Union
+from typing import Any, Callable, ClassVar, Dict, Generic, Optional, Tuple, Union
 
 from .basetypes import MISSING, OneOrMany, Real, T
 from .mode import Mode
@@ -42,7 +42,7 @@ class Template:
     PARAM_RE = compile(r"\{\s*(?P<name>\w+)\s*(?::\s*(?P<type>\w+))?\s*\}")
     HEX_RE = compile(r"hex(?P<width>\d*)")
 
-    TYPE_MAP: Dict[Union[str, Pattern], Callable[[Dict, Any], str]] = {
+    TYPE_MAP: ClassVar[Dict[Union[str, Pattern], Callable[[Dict, Any], str]]] = {
         "str": lambda _, v: f"{v}",
         "int": lambda _, v: f"{int(v)}",
         HEX_RE: lambda m, v: format(int(v), f"0{m.get('width') or '1'}X"),
@@ -261,7 +261,7 @@ class Command(Generic[T]):
             If the PID is a Template, which means your command has likely not been formatted.
         """
         if isinstance(self.pid, Template):
-            raise ValueError("Cannot build command with unformatted PID template.")
+            raise ValueError("Cannot build command with unformatted PID template.")  # noqa: TRY004
 
         mode = self._format_to_hex(self.mode)
         pid = self._format_to_hex(self.pid)

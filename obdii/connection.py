@@ -307,7 +307,7 @@ class Connection:
         self.transport.close()
         _log.info("Connection closed.")
 
-    def __enter__(self) -> Connection:
+    def __enter__(self) -> Connection:  # noqa: PYI034
         """
         Support usage as a context manager.
 

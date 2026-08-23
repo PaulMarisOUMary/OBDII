@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from re import Pattern, compile
-from typing import Optional, Set, Type
+from typing import ClassVar, Optional, Set, Type
 
 
 class ResponseBaseError(Exception):
-    _registry: Set[Type[ResponseBaseError]] = set()
+    _registry: ClassVar[Set[Type[ResponseBaseError]]] = set()
 
     pattern: Optional[bytes] = None
     regex_pattern: Optional[Pattern] = None
