@@ -12,7 +12,7 @@ Quickstart
 ==========
 
 This page helps you get started quickly with the library.
-It assumes the library is already installed, if not check the :ref:`installation` section.
+This assumes the library is already :ref:`installed <installing>` and that your Python version meets the :ref:`requirements`. If not, start with :ref:`installation`.
 
 Overview
 --------
@@ -23,7 +23,7 @@ This library can operate in two main scenarios:
 
 #. :ref:`Real Vehicle Connection <scenario-2>`: Connects to an actual car using an OBDII adapter.
 
-Internally, both scenarios works the same way, your code remains the same, so you can switch between scenarios seamlessly. The only difference is the port you provide when establishing the connection.
+Internally, both scenarios work the same way: your code stays the same, only the port you provide when establishing the connection changes. This makes it easy to switch between them.
 
 .. _minimal-example:
 

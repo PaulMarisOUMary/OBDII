@@ -11,6 +11,9 @@
 Contributing
 ============
 
+.. note::
+   Contributions are accepted under the project's :ref:`MIT License <license>`.
+
 .. include:: ../../../.github/CONTRIBUTING.rst
    :parser: rst
    :start-line: 3

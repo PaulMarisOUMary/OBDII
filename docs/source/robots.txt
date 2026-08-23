@@ -9,3 +9,4 @@ Disallow: /en/*/_sources/
 Disallow: /en/*/.doctrees/
 
 Sitemap: https://py-obdii.readthedocs.io/sitemap.xml
+Sitemap: https://py-obdii.readthedocs.io/en/latest/sitemap.xml

@@ -11,13 +11,12 @@
 Installation
 ============
 
-Welcome to the installation guide for this library !
 This guide will help you set up the library on your system.
 
 Setup
 -----
 
-Prepare your environment and ensure all requirements are met before installing the library.
+Make sure your environment meets these requirements before installing.
 
 .. _requirements:
 
@@ -60,9 +59,7 @@ A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is always
 Install the Library
 -------------------
 
-You can install the library from multiple sources. Choose the option that best fits your needs.
-
-If unsure, you'll likely want to install it from PyPI.
+Choose the option that fits your needs. If unsure, use PyPI.
 
 From PyPI :bdg-success-line:`Recommended`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -118,11 +115,7 @@ To test pre-release versions before they're officially published on PyPI.
 Optional Dependencies
 ---------------------
 
-Depending on your use case, you may want to install additional dependencies to emulate vehicles, run tests, develop the library, or build documentation.
-
-This is why this library provides extra sets of dependencies group for different use cases.
-
-Available extras:
+Install these on top of the base package depending on what you need: emulating vehicles, running tests, developing the library, or building the documentation.
 
 .. tab-set::
 
@@ -175,7 +168,7 @@ After installation, you can verify that the library is installed correctly by ru
 
     python -c "import obdii; print(obdii.__version__)"
 
-This should print the version of the library you have installed, e.g. ``0.8.0b``.
+This should print the version of the library you have installed, e.g. ``0.10.5b``.
 
 Upgrade the Library
 -------------------

@@ -3,7 +3,7 @@
 :description: Learn how to use py-obdii to send AT commands, query vehicle sensors like engine speed, scan for OBDII adapters via serial or WiFi, and read real-time car data in Python.
 
 .. meta::
-    :keywords: py-obdii usage, python obdii query, elm327 at commands python, obdii engine speed python, scan obdii serial port python, obdii real-time data python, obdii commands python, py-obdii connection example
+    :keywords: py-obdii usage, python obdii query, elm327 at commands python, obdii engine speed python, scan obdii serial port python, obdii real-time data python, obdii commands python, read diagnostic trouble codes python, obdii clear dtc python, obdii sensors list python
     :robots: index, follow
 
 .. _usage:
@@ -56,7 +56,7 @@ There are three equivalent ways of using commands.
 Scan for devices
 ----------------
 
-Find your OBDII devices before you start. It could be connected via serial or WiFi.  
+Find your OBDII devices before you start, whether connected via serial or WiFi.
 The :mod:`obdii.utils.scan` module makes this easy by scanning for available devices.
 
 .. note::
