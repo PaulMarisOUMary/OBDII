@@ -4,11 +4,9 @@ from typing import List, Optional, Union, cast
 
 from ..protocol import Protocol
 from ..response import Context
-from ..utils.bits import filter_bytes, hex_to_ints, hex_byte_length
-
-from .protocol_base import ProtocolBase
+from ..utils.bits import filter_bytes, hex_byte_length, hex_to_ints
 from .mixins import Frame, ParsingMixin
-
+from .protocol_base import ProtocolBase
 
 _log = getLogger(__name__)
 
@@ -35,7 +33,7 @@ class CANFrame(Frame):
         DLC = Data Length Code
     """
 
-    __slots__ = ("kind", "sn", "dlc")
+    __slots__ = ("dlc", "kind", "sn")
 
     def __init__(
         self,

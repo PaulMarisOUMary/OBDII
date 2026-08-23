@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from logging import getLogger
 from typing import Dict, Generic, List, Optional, TypeVar, Union, cast
 
@@ -6,7 +6,6 @@ from ..errors import ResponseBaseError
 from ..mode import Mode
 from ..response import Context, Response, ResponseBase
 from ..utils.bits import hex_byte_length
-
 
 _log = getLogger(__name__)
 
@@ -92,7 +91,7 @@ class ParsingMixin(ParsingABC[FrameT], Generic[FrameT]):
         if resolver:
             try:
                 value = resolver(message)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 _log.error(
                     f"Unexpected error during formula execution: {e}", exc_info=True
                 )

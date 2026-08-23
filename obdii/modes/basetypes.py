@@ -1,4 +1,4 @@
-from typing import Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from ..mode import Mode
 
@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     from .mode_02 import Mode02
     from .mode_03 import Mode03
     from .mode_04 import Mode04
-
     from .mode_09 import Mode09
 
 

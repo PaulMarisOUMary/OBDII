@@ -1,4 +1,4 @@
-from importlib.metadata import version, PackageNotFoundError
+from importlib.metadata import PackageNotFoundError, version
 from logging import NullHandler, getLogger
 from pkgutil import extend_path
 
@@ -7,8 +7,7 @@ from .connection import Connection
 from .mode import Mode
 from .modes import at_commands, commands
 from .protocol import Protocol
-from .response import ResponseBase, Context, Response
-
+from .response import Context, Response, ResponseBase
 
 __title__ = "obdii"
 __author__ = "PaulMarisOUMary"
@@ -23,8 +22,6 @@ __path__ = extend_path(__path__, __name__)
 
 
 __all__ = [
-    "at_commands",
-    "commands",
     "Command",
     "Connection",
     "Context",
@@ -33,6 +30,8 @@ __all__ = [
     "Response",
     "ResponseBase",
     "Template",
+    "at_commands",
+    "commands",
 ]
 
 getLogger(__name__).addHandler(NullHandler())

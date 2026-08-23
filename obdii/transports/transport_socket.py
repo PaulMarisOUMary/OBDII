@@ -1,9 +1,8 @@
-from socket import AF_INET, SOCK_STREAM, error as s_error, socket
-from typing import Optional, Union, Dict, Any
-
-from .transport_base import TransportBase
+from socket import AF_INET, SOCK_STREAM, socket
+from typing import Any, Dict, Optional, Union
 
 from ..basetypes import MISSING
+from .transport_base import TransportBase
 
 
 class TransportSocket(TransportBase):
@@ -39,7 +38,7 @@ class TransportSocket(TransportBase):
         try:
             self.socket_conn.getpeername()
             return True
-        except s_error:
+        except OSError:
             return False
 
     def connect(self, **kwargs) -> None:

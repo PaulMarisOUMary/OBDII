@@ -75,8 +75,8 @@ test = [
     "pytest-mock>=3.14,<3.15",
 ]
 dev = [
-    "ruff>=0.15,<1",
-    "ty>=0.0.34,<1",
+    "ruff>=0.16,<1",
+    "ty>=0.0.74,<1",
 ]
 docs = [
     "sphinx>=9.1,<10",
@@ -145,6 +145,9 @@ indent-width = 4
 [tool.ruff.lint]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 ignore = ["Q"]
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
 
 [tool.ruff.format]
 exclude = ["obdii/modes/mode_**.py"]

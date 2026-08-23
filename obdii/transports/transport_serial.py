@@ -1,10 +1,9 @@
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from serial import Serial
 
-from .transport_base import TransportBase
-
 from ..basetypes import MISSING
+from .transport_base import TransportBase
 
 
 class TransportSerial(TransportBase):
@@ -52,7 +51,7 @@ class TransportSerial(TransportBase):
 
         written = self.serial_conn.write(query)
         if written != len(query):
-            raise IOError(
+            raise OSError(
                 f"Failed to write all bytes to serial port: expected {len(query)}, wrote {written}."
             )
 

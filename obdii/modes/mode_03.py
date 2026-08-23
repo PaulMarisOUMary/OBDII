@@ -1,9 +1,7 @@
-from .group_commands import GroupCommands
-
 from ..command import Command
 from ..mode import Mode
 from ..parsers.dtc import DTC
-
+from .group_commands import GroupCommands
 
 M = Mode.STATUS_DTC
 C = Command

@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from re import compile, Pattern
-from typing import Set, Type, Optional
+from re import Pattern, compile
+from typing import ClassVar, Optional, Set, Type
 
 
 class ResponseBaseError(Exception):
-    _registry: Set[Type[ResponseBaseError]] = set()
+    _registry: ClassVar[Set[Type[ResponseBaseError]]] = set()
 
     pattern: Optional[bytes] = None
     regex_pattern: Optional[Pattern] = None
 
     def __init__(self, response: bytes) -> None:
         self.response = response
-        self.message = f"{self.__class__.__name__}: {self.__class__.__doc__} - Got: {str(self.response)}"
+        self.message = f"{self.__class__.__name__}: {self.__class__.__doc__} - Got: {self.response!s}"
 
         super().__init__(self.message)
 

@@ -2,19 +2,18 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from types import MappingProxyType
-from typing import Any, Dict, Mapping, Optional, Type
+from typing import Any, ClassVar, Dict, Mapping, Optional, Type
 
-from ..response import Response, ResponseBase
 from ..protocol import Protocol
-
+from ..response import Response, ResponseBase
 
 _EMPTY_ATTRIBUTES: Mapping[str, Any] = MappingProxyType({})
 
 
 class ProtocolBase(ABC):
-    _registry: Dict[Protocol, Type[ProtocolBase]] = {}
-    _instances: Dict[Protocol, ProtocolBase] = {}
-    _protocol_attributes: Dict[Protocol, Mapping[str, Any]] = {}
+    _registry: ClassVar[Dict[Protocol, Type[ProtocolBase]]] = {}
+    _instances: ClassVar[Dict[Protocol, ProtocolBase]] = {}
+    _protocol_attributes: ClassVar[Dict[Protocol, Mapping[str, Any]]] = {}
 
     def __init_subclass__(
         cls, protocols: Optional[Dict[Protocol, Dict[str, Any]]] = None, **kwargs

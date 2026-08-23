@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import (
     Any,
+    ClassVar,
     Dict,
     Iterable,
     Literal,
@@ -11,7 +12,6 @@ from typing import (
     Union,
     overload,
 )
-
 
 T = TypeVar('T')
 
@@ -57,7 +57,7 @@ class BaseEnum(Enum):
 
 
 class SingletonMeta(type):
-    _instances: Dict[type, object] = {}
+    _instances: ClassVar[Dict[type, object]] = {}
 
     def __call__(cls, *args, **kwargs) -> object:
         if cls not in cls._instances:
@@ -68,7 +68,7 @@ class SingletonMeta(type):
 class _MissingSentinel(metaclass=SingletonMeta):
     __slots__ = ()
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, _MissingSentinel)
 
     def __bool__(self) -> bool:

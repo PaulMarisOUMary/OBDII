@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from logging import Formatter, Handler, getLogger
-from re import IGNORECASE, search as research
+from re import IGNORECASE
+from re import search as research
 from types import TracebackType
 from typing import Callable, List, Optional, Tuple, Type, Union
 
@@ -11,11 +12,10 @@ from .modes import ModeAT
 from .protocol import Protocol
 from .protocols.protocol_base import ProtocolBase
 from .response import Context, Response, ResponseBase
-from .transports.transport_base import TransportBase
 from .transports import TransportSerial, TransportSocket
+from .transports.transport_base import TransportBase
 from .utils.bits import bytes_to_string, filter_bytes
 from .utils.helper import debug_raw, setup_logging
-
 
 _log = getLogger(__name__)
 
@@ -138,15 +138,15 @@ class Connection:
         **kwargs
             Additional keyword arguments forwarded to the transport's connect method.
         """
-        _log.info(f"Attempting to connect to {repr(self.transport)}.")
+        _log.info(f"Attempting to connect to {self.transport!r}.")
         try:
             self.transport.connect(**kwargs)
             self._initialize_connection()
             self.init_completed = True
-            _log.info(f"Successfully connected to {repr(self.transport)}.")
+            _log.info(f"Successfully connected to {self.transport!r}.")
         except Exception as e:
             self.transport.close()
-            _log.error(f"Failed to connect to {repr(self.transport)}: {e}")
+            _log.error(f"Failed to connect to {self.transport!r}: {e}")
             raise ConnectionError(f"Failed to connect: {e}") from e
 
     def _initialize_connection(self) -> None:
@@ -307,7 +307,7 @@ class Connection:
         self.transport.close()
         _log.info("Connection closed.")
 
-    def __enter__(self) -> Connection:
+    def __enter__(self) -> Connection:  # noqa: PYI034
         """
         Support usage as a context manager.
 

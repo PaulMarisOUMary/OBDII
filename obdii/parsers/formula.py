@@ -1,25 +1,27 @@
 from ast import (
     Add,
-    Sub,
-    Mult,
+    BinOp,
+    BitXor,
+    Constant,
     Div,
+    Expr,
     FloorDiv,
     Mod,
+    Mult,
+    Name,
+    NodeVisitor,
     Pow,
-    BitXor,
+    Sub,
     UAdd,
+    UnaryOp,
     USub,
     parse,
-    NodeVisitor,
-    Expr,
-    BinOp,
-    UnaryOp,
-    Name,
-    Constant,
+)
+from ast import (
     operator as AstOperator,
 )
-from typing import List, Any, NoReturn, Dict, Type, Callable
-from operator import add, sub, mul, truediv, floordiv, mod, pow, xor
+from operator import add, floordiv, mod, mul, pow, sub, truediv, xor
+from typing import Any, Callable, ClassVar, Dict, List, NoReturn, Type
 
 from ..basetypes import Real
 
@@ -27,7 +29,7 @@ from ..basetypes import Real
 class SafeEvaluator(NodeVisitor):
     """A safe evaluator that only allows basic math operations."""
 
-    operators: Dict[Type[AstOperator], Callable[[Real, Real], Real]] = {
+    operators: ClassVar[Dict[Type[AstOperator], Callable[[Real, Real], Real]]] = {
         Add: add,
         Sub: sub,
         Mult: mul,

@@ -1,7 +1,7 @@
 from csv import DictWriter
-from datetime import datetime
-from logging import FileHandler, DEBUG, getLogger
-from time import time, sleep
+from datetime import datetime, timezone
+from logging import DEBUG, FileHandler, getLogger
+from time import sleep, time
 
 from obdii import Connection, Protocol, at_commands, commands
 from obdii.errors import InvalidCommandError
@@ -60,7 +60,7 @@ with Connection(
         start_time = time()
         while conn.is_connected() and (time() - start_time) < max_runtime:
             log_entry = dict.fromkeys(cmd_keys, None)
-            log_entry["timestamp"] = datetime.now().isoformat()
+            log_entry["timestamp"] = datetime.now(timezone.utc).isoformat()
 
             for cmd in batch_cmd:
                 try:

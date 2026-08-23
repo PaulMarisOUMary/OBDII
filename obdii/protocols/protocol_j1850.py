@@ -1,13 +1,11 @@
 from logging import getLogger
-from typing import List, Final
+from typing import Final, List
 
 from ..protocol import Protocol
 from ..response import Context
 from ..utils.bits import filter_bytes, hex_to_ints
-
-from .protocol_base import ProtocolBase
 from .mixins import Frame, J1979Mixin, ParsingMixin
-
+from .protocol_base import ProtocolBase
 
 _log = getLogger(__name__)
 

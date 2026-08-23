@@ -1,11 +1,14 @@
-from .group_commands import GroupCommands
-
 from ..command import Command
 from ..mode import Mode
 from ..parsers.formula import Formula, MultiFormula
-from ..parsers.mappings import FUEL_SYSTEM_STATUS, SECONDARY_AIR_STATUS, VEHICLE_STANDARDS, FUEL_TYPE_CODING
+from ..parsers.mappings import (
+    FUEL_SYSTEM_STATUS,
+    FUEL_TYPE_CODING,
+    SECONDARY_AIR_STATUS,
+    VEHICLE_STANDARDS,
+)
 from ..parsers.pids import SupportedPIDS
-
+from .group_commands import GroupCommands
 
 M = Mode.REQUEST
 C= Command

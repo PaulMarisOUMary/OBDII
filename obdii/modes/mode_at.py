@@ -1,10 +1,8 @@
 from functools import partial
 
-from .group_commands import GroupCommands
-
 from ..command import Command, Template
 from ..mode import Mode
-
+from .group_commands import GroupCommands
 
 M = Mode.AT
 C = partial(Command, M, expected_bytes=0x00, min_values=None, max_values=None, units=None)

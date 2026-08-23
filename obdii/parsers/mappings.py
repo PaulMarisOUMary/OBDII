@@ -1,6 +1,5 @@
 from .pids import EnumeratedPIDS
 
-
 FUEL_SYSTEM_STATUS = EnumeratedPIDS(
     {
         0: "The motor is off",
