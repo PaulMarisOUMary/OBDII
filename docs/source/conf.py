@@ -77,7 +77,7 @@ intersphinx_mapping = {
 }
 
 # Suppress warnings for base class references that autodoc generates
-nitpicky = False
+nitpicky = True
 suppress_warnings = ["ref.class"]
 nitpick_ignore = [
     ("py:obj", "obdii.basetypes.T"),

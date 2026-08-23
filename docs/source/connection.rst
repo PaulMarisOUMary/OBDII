@@ -15,7 +15,7 @@
 Connection
 ==========
 
-This guide explains how to connect the library to different types of OBDII adapters and start communicating with your vehicle.
+Connect the library to your OBDII adapter, whatever type it is.
 
 Understanding Adapters
 ----------------------
@@ -342,6 +342,8 @@ This reduces latency and increases polling speed for commands with a defined ``e
 
 Defaults to ``False``. Requires an ELM327 v1.3 or higher.
 
+.. _conn-logging:
+
 Logging
 ^^^^^^^
 
@@ -394,6 +396,8 @@ If you are integrating ``obdii`` into a framework that manages its own logging, 
     with Connection("COM10", log_handler=None) as conn: ...
 
 Logging will still work as normal through the ``obdii`` logger, but the configuration is now your responsibility.
+
+.. _conn-extra-kwargs:
 
 Extra Keyword Arguments
 ^^^^^^^^^^^^^^^^^^^^^^^

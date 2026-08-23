@@ -56,7 +56,7 @@ There are three equivalent ways of using commands.
 Scan for devices
 ----------------
 
-Find your OBDII devices before you start. It could be connected via serial or WiFi.  
+Find your OBDII devices before you start, whether connected via serial or WiFi.
 The :mod:`obdii.utils.scan` module makes this easy by scanning for available devices.
 
 .. note::
