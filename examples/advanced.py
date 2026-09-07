@@ -14,20 +14,21 @@ Fetch and log a batch of specified commands every second in a CSV."""
 file_handler = FileHandler("obdii.log")
 obdii_logger = getLogger("obdii")
 
-port = "COM5"  # Replace with the actual serial port
+PORT = "COM5"  # Replace with the actual serial port
+CSV_FILE = "obd_data.csv"
+MAX_RUNTIME = 15
+FETCH_INTERVAL = 1
 
 # Commands to log every second
-batch_cmd = [
+BATCH_CMDS = [
     commands.ENGINE_SPEED,
     commands.VEHICLE_SPEED,
     commands.ENGINE_OIL_TEMP,
     commands.ENGINE_COOLANT_TEMP,
 ]
-max_runtime = 15
-csv_file = "obd_data.csv"
 
 with Connection(
-    port,
+    PORT,
     protocol=Protocol.ISO_15765_4_CAN,
     auto_connect=False,
     early_return=True,
@@ -51,18 +52,20 @@ with Connection(
     )
 
     # Write in a csv cmds values within the max_runtime
-    with open(csv_file, 'w', newline='') as file:
-        cmd_keys = [cmd.name for cmd in batch_cmd]
+    with open(CSV_FILE, 'w', newline='') as file:
+        cmd_keys = [cmd.name for cmd in BATCH_CMDS]
         fieldnames = ["timestamp"] + cmd_keys
         writer = DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
 
         start_time = time()
-        while conn.is_connected() and (time() - start_time) < max_runtime:
+        while conn.is_connected() and (time() - start_time) < MAX_RUNTIME:
+            loop_start = time()
+
             log_entry = dict.fromkeys(cmd_keys, None)
             log_entry["timestamp"] = datetime.now(timezone.utc).isoformat()
 
-            for cmd in batch_cmd:
+            for cmd in BATCH_CMDS:
                 try:
                     response = conn.query(cmd)
                     log_entry[cmd.name] = response.value
@@ -70,4 +73,7 @@ with Connection(
                     obdii_logger.warning(f"{cmd.name} seems not to be supported.")
 
             writer.writerow(log_entry)
-            sleep(1)
+
+            exec_time = time() - loop_start
+            sleep_time = max(0, FETCH_INTERVAL - exec_time)
+            sleep(sleep_time)
